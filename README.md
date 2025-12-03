@@ -1,6 +1,6 @@
 # PM/Strategy LLM Workspace
 
-A Cursor-based AI assistant system for product management and strategic decision-making. This workspace automates roadmap planning, PRD creation, strategic research synthesis, and formal decision documentation.
+A Cursor and Claude Code-based AI assistant system for product management and strategic decision-making. This workspace automates roadmap planning, PRD creation, strategic research synthesis, and formal decision documentation.
 
 ## What This System Does
 
