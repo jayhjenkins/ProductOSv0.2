@@ -1,0 +1,222 @@
+---
+description: Quality validation gates for PRDs, citations, and source integrity
+globs: ["datasets/product/**", "datasets/strategy/**", "datasets/research/**"]
+---
+
+# Quality Gates
+
+Quality gates are **non-negotiable validation checks** that must pass before proceeding.
+
+---
+
+## Gate: PRD Validation (6-Point Rubric)
+
+**Purpose**: Ensure all PRDs maintain consistent quality standards.
+
+**When Applied**: Before any PRD transitions from Drafting to Actionable status.
+
+### The Iron Law
+
+**NO PRD BECOMES ACTIONABLE WITHOUT PASSING ALL 6 RUBRIC CHECKS**
+
+If a PRD fails any criterion, it must be:
+1. Refined until it passes, OR
+2. Demoted to a ticket (if too small for a PRD), OR
+3. Split into multiple PRDs (if too large for one quarter), OR
+4. Kept in Drafting status (if information is pending)
+
+### The 6 Criteria
+
+#### 1. Objectives Clear
+PRD has a well-defined customer statement with problem and desired outcome.
+
+| Pass ✓ | Fail ✗ |
+|--------|--------|
+| Complete "I am / I'm trying to / But / Because / Which makes me feel" | Only vague problem statement |
+| Specific customer description with motivations | "Users need this feature" |
+| Clear desired outcome articulated | Missing success criteria |
+
+#### 2. Use Cases Defined
+PRD has explicit in-scope use cases with descriptions.
+
+| Pass ✓ | Fail ✗ |
+|--------|--------|
+| 2+ specific use cases documented | No use cases listed |
+| Each use case has a description | Only bullet points without context |
+| Out-of-scope items explicitly stated | "Out of scope: TBD" |
+
+#### 3. Requirements Structured
+PRD has requirements organized by milestone with priority levels.
+
+| Pass ✓ | Fail ✗ |
+|--------|--------|
+| Requirements grouped by milestone | Flat list of requirements |
+| Each requirement has P0/P1/P2 priority | No prioritization |
+| Acceptance criteria defined | Vague or missing acceptance criteria |
+| User story format used | Just feature descriptions |
+
+#### 4. Timeline Present
+PRD has milestones with expected delivery timeline.
+
+| Pass ✓ | Fail ✗ |
+|--------|--------|
+| Milestones table populated | No timeline section |
+| Expected delivery dates/quarters | "Timeline: TBD" |
+| Teams assigned to milestones | No ownership identified |
+
+#### 5. Success Measurable
+PRD has success metrics and/or opportunity sizing.
+
+| Pass ✓ | Fail ✗ |
+|--------|--------|
+| Specific metrics identified | "We'll know it when we see it" |
+| Signals for success defined | No measurement plan |
+| Opportunity sizing included (if applicable) | Impact not quantified |
+
+#### 6. DACE Assigned
+PRD has Driver, Approver, and key Contributors identified.
+
+| Pass ✓ | Fail ✗ |
+|--------|--------|
+| Driver clearly identified | "Driver: TBD" |
+| Approver assigned | No approval authority |
+| At least one driving team with roles | No team ownership |
+| Escalation path defined | No escalation plan |
+
+### Validation by PRD Status
+
+| Status | Validation Requirement |
+|--------|----------------------|
+| 🚧 Drafting | Warnings allowed, no blockers. Must have: Project name, description, at least one objective |
+| 🏃 Actionable | **ALL 6 criteria must pass**. No TBD in critical fields |
+| 🔒 Closed | All criteria passed + reflects actual delivery |
+| ❗ Abandoned | No validation required |
+
+### Validation Report Format
+
+```markdown
+# PRD Validation Report: [PASS/FAIL]
+
+**PRD**: [Title]
+**Current Status**: [Status]
+**Target Status**: [Drafting/Actionable/Closed]
+
+✓/✗ Objectives Clear: [assessment]
+✓/✗ Use Cases Defined: [N] in-scope, [N] out-of-scope
+✓/✗ Requirements Structured: [N] milestones, [N] requirements
+✓/✗ Timeline Present: [assessment]
+✓/✗ Success Measurable: [N] metrics defined
+✓/✗ DACE Assigned: Driver: [name], Approver: [name]
+
+**Recommendation**: [Approve for Actionable / Needs Revision / Keep as Draft]
+
+**Required Actions** (if any):
+- [Action item 1]
+- [Action item 2]
+```
+
+---
+
+## Gate: Citation Compliance
+
+**Purpose**: Ensure all factual claims are properly sourced.
+
+**When Applied**: Before publishing strategy memos, research documents, or evidence-backed artifacts.
+
+### Requirements
+
+1. **Every factual claim requires a source reference**
+   - Link to specific document path
+   - Include verbatim quote (5-25 words)
+
+2. **Citation Format**
+   ```markdown
+   [^1]: path/to/source.md: "Exact verbatim quote from source"
+   ```
+
+3. **Verbatim Quote Standards**
+   - 5-25 words
+   - Exact wording from source
+   - Supports the specific claim made
+
+4. **Validation Process**
+   - Read each cited source
+   - Confirm quote exists verbatim
+   - Verify quote supports the claim
+
+### Failure Conditions
+
+- "(source needed)" marker present → **FAIL**
+- Quote not found in source → **FAIL**
+- Quote doesn't support claim → **FAIL**
+- Missing citation for factual claim → **FAIL**
+
+---
+
+## Gate: Source Integrity
+
+**Purpose**: Validate research source quality and freshness.
+
+**When Applied**: When gathering research context.
+
+### Checks
+
+1. **Metadata Completeness**
+   - Title, source_type, date_added present
+   - Expiry date set appropriately
+
+2. **Expiry Status**
+   - Not past expiry date (or explicitly flagged)
+   - Freshness appropriate for content type
+
+3. **Content Structure**
+   - Key Insights section present
+   - Strategic Applications section present
+   - Citation-ready quotes included
+
+---
+
+## Gate: Meeting Schema Validation
+
+**Purpose**: Ensure meeting files have proper structure for synthesis.
+
+**When Applied**: Before processing meetings for signals.
+
+### Required Elements
+
+1. **YAML Frontmatter**
+   ```yaml
+   ---
+   date: "YYYY-MM-DD"
+   type: "sales|product|customersuccess|..."
+   customer: "Company Name"
+   participants: ["Person"]
+   ---
+   ```
+
+2. **Required Sections**
+   - AI Summary (recommended)
+   - Action Items or Full Transcript
+
+### Validation
+
+- Missing date → **WARN** (skip meeting)
+- Missing customer for external → **WARN**
+- No content sections → **SKIP**
+
+---
+
+## Anti-Rationalization Blocks
+
+Common excuses explicitly rejected:
+
+| Rationalization | Reality |
+|-----------------|---------|
+| "We can fill in details later" | Actionable PRDs need complete critical fields |
+| "Everyone knows what this means" | Make it explicit and testable |
+| "This is obviously valuable" | Show metrics and opportunity sizing |
+| "Out of scope is implied" | Explicitly state exclusions |
+| "Close enough to pass" | All criteria or remain in Draft |
+| "Source is close enough" | Verbatim quotes only |
+| "We'll figure out timeline later" | Timeline required for Actionable status |
+| "DACE can be assigned later" | Driver and Approver required for Actionable |

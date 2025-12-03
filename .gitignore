@@ -1,0 +1,8 @@
+.DS_Store
+node_modules/
+venv/
+.env*
+__pycache__/
+*.log
+# Large raw artifacts (optional):
+# datasets/meetings/**/raw/

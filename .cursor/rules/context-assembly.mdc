@@ -1,0 +1,229 @@
+---
+description: Context assembly skills for meeting synthesis, research gathering, and priority scoring
+globs: ["datasets/meetings/**", "datasets/research/**", "datasets/product/**"]
+---
+
+# Context Assembly
+
+Reusable patterns for gathering and synthesizing context.
+
+---
+
+## Skill: Meeting Synthesis
+
+**Purpose**: Extract actionable product signals from meeting transcripts.
+
+**When to Use**: Product planning, CS prep, strategy sessions needing customer evidence.
+
+### Signal Types
+
+| Type | Indicators | Extract |
+|------|------------|---------|
+| Feature Requests | "We need...", "Can you build..." | Capability requested, why needed, who requested |
+| Pain Points | "It's frustrating...", "We struggle..." | Pain point, workflow impact, frequency |
+| Onboarding Friction | "Setup was confusing...", "Took X weeks..." | Step causing friction, time impact |
+| Integration Gaps | "We use [Tool] but can't connect..." | Integration needed, data flow, workaround |
+| Performance Needs | "Too slow when...", "Can't handle X records..." | Operation, current vs. needed performance |
+
+### Process
+
+1. **Determine Time Window**
+   - From `days` parameter, or
+   - From `last_run` in state file, or
+   - Default: 3 days
+
+2. **Collect Meeting Files**
+   - Scan: `datasets/meetings/Customers/**/YYYY/*.md`
+   - Scan: `datasets/meetings/Internal/Product/YYYY/*.md`
+   - Filter by date >= cutoff
+
+3. **Extract Signals from Each Meeting**
+   - Parse YAML frontmatter (date, customer, type, participants)
+   - Read sections (AI Summary, Action Items, Full Transcript)
+   - Pattern match for signal indicators
+   - Extract verbatim quotes
+
+4. **Cluster Signals**
+   - Group similar signals across customers
+   - Label clusters with action-style names
+   - Example: "Revamp onboarding to reduce TTFV"
+
+5. **Compute Metrics**
+   - Mention count (total occurrences)
+   - Unique accounts (distinct customers)
+   - Recency weight (newer = higher)
+   - Source diversity (mix of meeting types)
+
+### Output Structure
+
+```json
+{
+  "time_window": {
+    "start_date": "YYYY-MM-DD",
+    "end_date": "YYYY-MM-DD",
+    "meetings_processed": N
+  },
+  "clusters": [
+    {
+      "label": "Action-style theme name",
+      "mention_count": N,
+      "unique_accounts": N,
+      "signals": [
+        {
+          "text": "Verbatim quote",
+          "customer": "Company",
+          "date": "YYYY-MM-DD",
+          "source_file": "path"
+        }
+      ]
+    }
+  ]
+}
+```
+
+---
+
+## Skill: Priority Scoring
+
+**Purpose**: Apply consistent, objective scoring for roadmap sequencing and strategic comparisons.
+
+**When to Use**: Comparing strategic options, ranking backlog items for roadmap placement. Note: PRDs use timeline-based prioritization rather than this scoring formula.
+
+### Formula
+
+```
+Priority Score = (0.2 × SignalStrength) + (0.4 × StrategicFit) + (0.3 × Impact) - (0.1 × Complexity)
+```
+
+Score range: 0.0 to 10.0
+
+### Component Calculations
+
+#### SignalStrength (20%)
+
+```
+SignalStrength = (0.4 × CustomerScore) + (0.3 × RecencyScore) + (0.2 × DiversityScore) + (0.1 × FrequencyScore)
+```
+
+| CustomerScore | Accounts |
+|---------------|----------|
+| 3.0 | 1 account |
+| 5.0 | 2 accounts |
+| 7.0 | 3 accounts |
+| 9.0 | 4+ accounts |
+| 10.0 | 6+ accounts |
+
+| RecencyScore | Days Ago |
+|--------------|----------|
+| 10.0 | <7 days |
+| 8.0 | 7-14 days |
+| 6.0 | 14-30 days |
+| 4.0 | 30-60 days |
+| 2.0 | 60-90 days |
+
+#### StrategicFit (40%)
+
+| Score | Criteria |
+|-------|----------|
+| 8-10 | Directly advances top-tier strategic goals |
+| 5-7 | Supports goals indirectly, table-stakes feature |
+| 1-4 | Tangential, one-off request |
+
+#### Impact (30%)
+
+| Score | Criteria |
+|-------|----------|
+| 9-10 | 20%+ improvement in primary metric, unlocks new segment |
+| 7-8 | 10-20% improvement, addresses top-3 issue |
+| 5-6 | 5-10% improvement, incremental |
+| 3-4 | <5% improvement, unclear impact |
+| 1-2 | No clear metric impact |
+
+#### Complexity (10%, negative weight)
+
+```
+Complexity = (0.4 × TechnicalComplexity) + (0.4 × TimeEstimate) + (0.2 × RiskLevel)
+```
+
+| Technical | Scope |
+|-----------|-------|
+| 2-3 | Single system/surface |
+| 4-6 | Multiple systems |
+| 7-8 | Cross-platform + integrations |
+| 9-10 | Major architectural change |
+
+### Priority Tiers
+
+| Score | Tier | Placement |
+|-------|------|-----------|
+| 8.0-10.0 | High Priority | Near-term roadmap |
+| 5.0-7.9 | Medium Priority | Mid-term backlog |
+| <5.0 | Low Priority | Long-term or deferred |
+
+---
+
+## Skill: Source Normalization
+
+**Purpose**: Convert various input formats to citation-ready sources.
+
+**When to Use**: Processing files, URLs, or text into research format.
+
+### Input Handling
+
+**URLs:**
+- Fetch content
+- Extract title, author, date
+- Convert to markdown
+- Add citation metadata
+
+**Files (PDF, docs):**
+- Extract text content
+- Parse structure
+- Create markdown representation
+- Preserve source metadata
+
+**Chat/Notes:**
+- Capture insights from conversation
+- Structure into source format
+- Link to context
+
+### Output Format
+
+All sources normalized to:
+- YAML frontmatter with metadata
+- Key Insights section
+- Strategic Applications section
+- Citation-ready quotes
+- Related internal links
+
+---
+
+## Context for Strategy Sessions
+
+### Standard Context Assembly
+
+For any strategy session, gather:
+
+1. **Research Sources** from `datasets/research/sources/{topic}/`
+2. **Related Meetings** from `datasets/meetings/Internal/Strategy/`
+3. **Product Roadmap** context from `datasets/product/`
+
+### Topic-Specific Context
+
+| Topic | Additional Context |
+|-------|-------------------|
+| Pricing | Cost structure, customer WTP, competitive pricing |
+| Product | Technical constraints, user research, feature usage |
+| Competitive | Competitor analysis, market position, response history |
+| Positioning | Customer segmentation, brand perception, messaging |
+
+---
+
+## Anti-Rationalization
+
+| Rationalization | Reality |
+|-----------------|---------|
+| "Close enough" on quotes | Preserve exact wording |
+| "Skip old meetings" | Process all in time window |
+| "This signal doesn't fit" | Categorize best match or flag |
+| "I remember an older version" | Use current data only |

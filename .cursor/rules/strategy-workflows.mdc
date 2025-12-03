@@ -1,0 +1,241 @@
+---
+description: Strategic decision-making workflows - strategy sessions and formal memo generation
+globs: ["datasets/strategy/**"]
+---
+
+# Strategy Workflows
+
+## Workflow: Strategy Session
+
+**Purpose**: Conduct systematic strategic decision-making with research-backed analysis.
+
+**When to Use**: Strategic decision needed, multiple options require evaluation.
+
+### Inputs
+- `topic`: Strategic category (competitive-analysis, pricing-strategy, product-strategy, market-positioning, etc.)
+- Specific decision question
+- Time horizon (tactical: 3-6 months, strategic: 12+ months)
+
+### Steps
+
+1. **Define Session Topic**
+   - Document decision question
+   - Create session folder: `datasets/strategy/sessions/{YYYY}/{MM-DD}_{topic}/`
+   - Initialize `session-log.md`
+
+2. **Gather Research Context**
+   - Collect sources from `datasets/research/sources/{topic}/`
+   - Filter by recency and expiry
+   - Output to `{session-folder}/context.md`
+
+3. **Synthesize Meeting Context**
+   - Extract relevant customer signals (90-day window)
+   - Append to `context.md`
+
+4. **Select Decision Framework**
+   
+   | Decision Type | Recommended Frameworks |
+   |---------------|----------------------|
+   | Competitive | Porter's Five Forces, SWOT, Competitive Positioning Matrix |
+   | Product | Jobs-to-be-Done, Opportunity Solution Tree, RICE |
+   | Pricing | Value-Based Pricing, Price Elasticity, Competitive Pricing |
+   | Market Positioning | STP, Positioning Canvas, Perceptual Mapping |
+   | Organizational | Stakeholder Mapping, RACI, Change Impact Analysis |
+
+5. **Apply Framework Rigorously**
+   - Document analysis in `{session-folder}/framework.md`
+   - Include specific findings with evidence
+   - For Porter's Five Forces: Rate each force (LOW/MEDIUM/HIGH) with factors
+   - For Stakeholder Mapping: Power/Interest grid with strategies
+
+6. **Develop Concrete Scenarios**
+   - For each option:
+     - Description with specifics
+     - Concrete example (e.g., "Agency with 15 clients, $50k MRR")
+     - Pros with evidence sources
+     - Cons with risks
+     - Expected impact (quantitative where possible)
+     - Risk assessment (likelihood, impact, reversibility)
+
+7. **Facilitate Trade-off Analysis**
+   - Compare options across dimensions
+   - Document in `session-log.md`
+
+8. **Develop Recommendation**
+   - Clear recommendation with multi-point rationale
+   - Success metrics (specific, measurable, with timelines)
+   - Risk management with mitigation strategies
+   - Output to `{session-folder}/recommendations.md`
+
+9. **Offer Memo Generation**
+   - If user accepts, proceed to Strategy Memo workflow
+
+### Output Files
+- `context.md` — Research and meeting context
+- `framework.md` — Framework application and findings
+- `session-log.md` — Interactive discussion and option analysis
+- `recommendations.md` — Final recommendation with rationale
+
+### Session Quality Checklist
+
+Before marking complete:
+- [ ] Context assembled with research sources (citations ready)
+- [ ] Customer/meeting signals synthesized
+- [ ] Framework selected and applied rigorously
+- [ ] Options developed with concrete scenarios
+- [ ] Each option includes pros/cons with evidence
+- [ ] Quantitative analysis where appropriate
+- [ ] Trade-offs analyzed systematically
+- [ ] Recommendation clear with multi-point rationale
+- [ ] Success metrics specific and measurable
+- [ ] Risks assessed with likelihood/impact
+- [ ] Risk mitigations documented
+
+---
+
+## Workflow: Strategy Memo
+
+**Purpose**: Generate formal strategic decision memo with full citation compliance.
+
+**When to Use**: After strategy session completion or for standalone documentation.
+
+### Inputs
+
+**From Session (preferred):**
+- Session folder path with completed artifacts
+- All session files (context.md, framework.md, session-log.md, recommendations.md)
+
+**Standalone:**
+- Decision question
+- Will invoke research-gathering and meeting-synthesis
+
+### Steps
+
+1. **Content Extraction** (from session artifacts)
+   - Decision Question from session-log header
+   - Problem Context from context.md
+   - Research Evidence with citations
+   - Framework Analysis from framework.md
+   - Options Analysis with pros/cons
+   - Recommendation from recommendations.md
+   
+   **Quality Check:**
+   - Do NOT add content not present in session
+   - Preserve quantitative data
+   - Keep concrete examples
+
+2. **Framework Integration**
+   - Reference specific framework findings
+   - Map insights to recommendation rationale
+
+3. **MECE Structure Assembly**
+
+   ```markdown
+   ---
+   title: "[Decision Title]"
+   date: "[YYYY-MM-DD]"
+   author: "[Author]"
+   decision_type: "[strategic|tactical|operational]"
+   topic: "[Topic]"
+   status: "[draft|final]"
+   stakeholders: ["[Stakeholder1]"]
+   context_session: "[Session Path]"
+   ---
+
+   # [Decision Title]
+
+   ## Problem Statement
+   [1-2 sentence clear statement]
+
+   ## Key Evidence & Analysis
+
+   ### Research Findings
+   [Insights with citations and verbatim quotes]
+
+   ### Customer/Market Signals
+   [From meeting synthesis]
+
+   ### Framework Applied
+   [Framework name and key findings]
+
+   ### Options Considered
+   [For each option: description, pros, cons, expected impact]
+
+   ## Recommendation
+   **We recommend: Option [N] - [Name]**
+   
+   **Rationale:**
+   1. [Reason with evidence]
+   2. [Reason with evidence]
+
+   **Success Metrics:**
+   | Metric | Baseline | Target | Timeline |
+   |--------|----------|--------|----------|
+   
+   ## Risk Management
+   [Risks with likelihood/impact and mitigation]
+
+   ## Sources & Citations
+   [Full references with verbatim quotes]
+   ```
+
+4. **Citation Compliance Validation**
+   - All claims must have sources
+   - Verbatim quotes (5-25 words) required
+   - Verify all citation paths are accessible
+   - No "(source needed)" markers
+
+5. **Quality Gates**
+   
+   **Structure Validation:**
+   - Problem statement clear (1-2 sentences)
+   - Evidence includes citations
+   - Framework applied
+   - Options with pros/cons
+   - Recommendation actionable
+   - Metrics measurable
+   - Risks with likelihood/impact
+
+   **Content Validation:**
+   - Quantitative data preserved
+   - Concrete examples included
+   - MECE structure maintained
+   - No unsupported speculation
+   - Strategic focus (not implementation planning)
+
+6. **Write Memo**
+   - Location: `datasets/strategy/memos/{YYYY}/{MM-DD}_{decision-slug}.md`
+
+7. **Archive Session** (if from session)
+   - Move session folder to `datasets/strategy/archive/{YYYY}/`
+
+### Memo Quality Standards
+
+**Always Include:**
+- Problem Statement
+- Key Evidence & Analysis
+- Recommendation
+- Risk Management
+- Sources & Citations
+
+**Include When Relevant:**
+- Economic Impact Analysis (pricing, investment decisions)
+- Customer/Market Scenarios (user-facing decisions)
+- Competitive Implications (positioning decisions)
+- Technical Requirements (product/platform decisions)
+
+**Quality Warning Flags:**
+- ❌ Narrative-focused without framework application
+- ❌ High-level concepts without concrete scenarios
+- ❌ Vague abstractions instead of specific numbers
+- ❌ Options without trade-off analysis
+- ❌ Risks without likelihood/impact ratings
+- ❌ Success criteria that aren't measurable
+- ❌ Implementation details mixed with strategy
+
+- ✅ Framework-driven with specific findings
+- ✅ Concrete examples with specifics
+- ✅ Quantitative where appropriate
+- ✅ Systematic options comparison
+- ✅ Risk assessment with mitigation
+- ✅ Specific, measurable metrics

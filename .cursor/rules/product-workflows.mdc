@@ -1,0 +1,278 @@
+---
+description: Product management workflows - PRD creation, roadmap updates, product planning, and customer success prep
+globs: ["datasets/product/**", "datasets/meetings/**"]
+---
+
+# Product Workflows
+
+## Workflow: Product Planning (meetings-to-backlog)
+
+**Purpose**: Transform meeting signals into actionable PRDs.
+
+**When to Use**: Processing meeting transcripts to extract roadmap items.
+
+### Inputs
+- `days`: Lookback window (default: 3 days or from last run)
+- `include_customers`: Filter to specific customers
+- `min_mentions`, `min_sources`: Signal thresholds
+- `exclude_types`: Skip signal types (default: "bugs,housekeeping")
+
+### Steps
+
+1. **Determine Time Window**
+   - Check `datasets/product/.meetings-to-backlog-state.json` for last run
+   - Calculate cutoff date
+
+2. **Synthesize Meeting Signals**
+   - Invoke meeting-synthesis (see context-assembly rules)
+   - Extract feature requests, pain points, integration gaps
+   - Cluster signals into themes
+
+3. **Filter to PRD-Level Candidates**
+   - Apply PRD scope rubric (see quality-gates rules)
+   - Keep candidates that are outcome-oriented, quarterly-scoped, bounded, actionable, measurable, evidence-backed
+   - Drop items too small (tickets) or too large (initiatives spanning multiple quarters)
+
+4. **Draft PRD Proposals**
+   - Structure using PRD template from `datasets/product/templates/prd-template.md`
+   - Include signal evidence with customer names and dates
+   - Set initial status: 🚧 Drafting
+
+5. **Validate Each PRD**
+   - Apply 6-point rubric via PRD-validation gate
+   - PASS → continue; FAIL → refine or drop
+
+6. **Deduplicate Against Existing Backlog**
+   - Check `datasets/product/backlog.md` for similar PRDs
+   - Merge or supersede as appropriate
+
+7. **Output PRD Proposals**
+   - Prepend to `datasets/product/backlog.md`
+   - Write individual files to `datasets/product/prds/{YYYY}/PRD_{slug}.md`
+
+8. **Update State Tracking**
+   - Write timestamp to `datasets/product/.meetings-to-backlog-state.json`
+
+### Output Locations
+- `datasets/product/backlog.md` — Updated backlog
+- `datasets/product/prds/{YYYY}/PRD_{slug}.md` — Individual PRD files
+
+---
+
+## Workflow: PRD Creation (standalone)
+
+**Purpose**: Create individual PRD through interactive session.
+
+**When to Use**: Creating a single PRD from specific input or user request.
+
+### Guiding Principles
+
+1. **PRD is a living document** — It will evolve through collaboration and discovery
+2. **Narrow scope is better** — One PRD ≈ One Jira Epic ≈ One quarter of work
+3. **Share and link** — PRDs should be accessible with links to Slack channels
+4. **No fabrication** — Leave sections blank/TBD rather than making up information
+5. **Reflect what was delivered** — At close, PRD should document actual outcomes
+
+### Interactive Session Steps
+
+#### Phase 1: Core Identity
+Gather from user:
+- **Project Name**: What is this PRD called?
+- **One-liner Description**: 1-3 sentence summary for quick context
+- **Background**: Why does this project exist? What problem does it solve?
+
+#### Phase 2: Ownership (DACE)
+Gather from user:
+- **Driver**: Who is driving this initiative?
+- **Approver**: Who has final approval authority?
+- **Contributors**: Who is contributing to the work?
+- **Escalation Path**: Where to escalate blockers or decisions?
+- **Driving Teams**: Which teams own this work? (PM, PMO, Engineering, Design roles)
+- **Contributing Teams**: Which teams are contributing?
+- **Other Stakeholders**: Legal, Security, etc.
+
+*If user doesn't know, leave as TBD.*
+
+#### Phase 3: Objectives
+Gather from user:
+- **Target Customer/User**: Who is this for?
+- **Customer Statement**:
+  - I am: (narrow description of customer with motivations/attributes)
+  - I'm trying to: (desired outcome)
+  - But: (problem/barrier)
+  - Because: (root cause)
+  - Which makes me feel: (emotion)
+- **Success Metrics**: How will we measure success?
+- **Opportunity Sizing**: What's the potential impact?
+
+*Source from meeting signals if available. Leave blank if not known.*
+
+#### Phase 4: Scope
+Gather from user:
+- **Use Cases In Scope**: What specific use cases will be supported?
+- **Out of Scope**: What are we explicitly NOT doing? Why?
+
+*Be specific. Think through edge cases.*
+
+#### Phase 5: Requirements
+For each milestone, gather:
+- **Milestone Name/Summary**
+- **Requirements** with:
+  - Priority (P0/P1/P2)
+  - Dependent Teams
+  - User Story format: "In order to accomplish X, we will build Y"
+  - Acceptance Criteria: How we know requirements are met
+  - Figma links (if available)
+  - JIRA tickets (if available)
+
+*Only include requirements that are known. Don't fabricate.*
+
+#### Phase 6: Timeline
+Gather from user:
+- **Milestones**: List of major milestones
+- **Expected Delivery Timeline**: Target dates for each milestone
+- **Teams Leading Each Phase**
+
+*If timeline is not yet determined, leave as TBD.*
+
+#### Phase 7: Links and Resources
+Gather from user:
+- **Slack Channels**
+- **Figma/Design Links**
+- **Architecture/Technical Design Docs**
+- **JIRA Project/Tracking Links**
+- **Any Other Relevant Links**
+
+*Only include links that exist. Don't create placeholder URLs.*
+
+#### Phase 8: Metrics and Learning Agenda
+Gather from user:
+- **Goals and Hypotheses**: What do you want to happen?
+- **Signals**: What would indicate success?
+- **Metrics**: What to measure?
+
+### Fact-Checking Requirements
+
+**CRITICAL**: Do not fabricate information. For any section where information is not provided:
+- Leave the section blank or marked "TBD"
+- Note in changelog that section needs input
+- Ask user if they have the information available
+
+### PRD Statuses
+
+| Status | When to Use |
+|--------|-------------|
+| 🚧 Drafting | Initial creation, known to be incomplete |
+| 🏃 Actionable | Eng has agreed there's enough to start work |
+| 🔒 Closed | Represents what was finally delivered |
+| ❗ Abandoned | Project cancelled or superseded |
+
+### Validation
+- Apply 6-point PRD validation rubric before finalizing
+- Drafting PRDs may have validation warnings but not blockers
+- Actionable PRDs must pass all validation criteria
+
+### Output
+- Location: `datasets/product/prds/{YYYY}/PRD_{slug}.md`
+- Use template: `datasets/product/templates/prd-template.md`
+- Add changelog entry with creation date
+
+---
+
+## Workflow: Roadmap Updating
+
+**Purpose**: Update roadmap with newly validated PRDs.
+
+**When to Use**: After PRD validation to sequence items on roadmap.
+
+### Steps
+
+1. **Load Current Roadmap**
+   - Read `datasets/product/roadmap.md`
+
+2. **Create Snapshot**
+   - Copy to `datasets/product/snapshots/ROADMAP_{YYYY-MM-DD}.md`
+
+3. **Insert New PRDs**
+   - Add validated PRDs at appropriate position based on timeline
+   - Update changelog section
+
+4. **Write Updated Roadmap**
+   - Save to `datasets/product/roadmap.md`
+
+---
+
+## Workflow: CS Prep (Customer Success Preparation)
+
+**Purpose**: Compile customer context for QBR or strategic CS meetings.
+
+**When to Use**: Preparing for customer quarterly business reviews.
+
+### Inputs
+- `customer`: Customer name (required)
+- `days`: Lookback window (default: 90)
+
+### Steps
+
+1. **Synthesize Customer Meetings**
+   - Filter meetings to specified customer only
+   - Extract all signals (no thresholds)
+
+2. **Organize by Category**
+   - **Wins**: Positive feedback, success stories
+   - **Pain Points**: Friction, challenges, blockers
+   - **Feature Requests**: Asks for new capabilities
+   - **Onboarding/Setup**: Implementation challenges
+
+3. **Extract Key Quotes**
+   - Select 2-3 most impactful quotes per category
+   - Include speaker, date, context
+
+4. **Build Timeline**
+   - Feature request timeline with dates
+
+5. **Generate CS Brief**
+   ```markdown
+   # QBR Brief: {Customer}
+
+   **Date**: {YYYY-MM-DD}
+   **Time Window**: Last {N} days
+   **Meetings Reviewed**: {N}
+
+   ## Wins
+   - {Quote/signal}
+
+   ## Pain Points
+   - {Quote/signal}
+
+   ## Feature Requests
+   - {Request} (mentioned {N} times)
+
+   ## Timeline of Key Events
+   - {Date}: {Event}
+
+   ## Recommended Discussion Topics
+   1. {Topic}
+   ```
+
+### Output Location
+- `datasets/product/customer-briefs/{Customer}_{YYYYMMDD}_qbr.md`
+
+---
+
+## PRD Structure Standard
+
+All PRDs must include these sections (can be TBD for drafts):
+
+| Section | Requirement |
+|---------|-------------|
+| Status | Current PRD status (Drafting/Actionable/Closed/Abandoned) |
+| Description | 1-3 line summary for quick context |
+| Background | Context on why this project exists |
+| DACE | Driver, Approver, Contributors, Escalation Path |
+| Objectives | Customer statement and success metrics |
+| Use Cases | In-scope and out-of-scope items |
+| Requirements | Organized by milestone with priorities |
+| Timeline | Milestones and expected delivery dates |
+| Metrics | Learning agenda and success measures |
+| Changelog | Record of changes with dates and authors |

@@ -1,0 +1,129 @@
+---
+description: Core system behavior for the PM/Strategy workspace. Applies to all modes and workflows.
+globs: ["**/*"]
+alwaysApply: true
+---
+
+# PM/Strategy LLM System - Core Behavior
+
+You are working inside a local LLM workspace that powers:
+- **Product management automation** (roadmap updates, CS prep, PRD creation)
+- **Strategic decision-making** (research-backed sessions, formal memos)
+- **Meeting synthesis** (signal extraction, customer evidence)
+
+## Core Principles
+
+### File-First Output
+Keep responses concise, reproducible, and **file-first**:
+- Always write outputs to disk in proper locations under `datasets/`
+- Never just describe what should be done - actually write the files
+- Default to **interactive prompts** when required inputs are missing
+
+### No Fabrication
+When creating PRDs or other documents:
+- Leave sections blank or marked "TBD" rather than making up information
+- Only include information that has been provided or can be sourced
+- PRDs are living documents - incomplete sections can be filled in later
+
+### Context Map (Read/Write Targets)
+
+| Path | Purpose |
+|------|---------|
+| `datasets/meetings/` | Canonical meeting notes & transcripts |
+| `datasets/product/` | Product artifacts (backlog, roadmap, PRDs, customer-briefs, templates) |
+| `datasets/product/prds/` | PRD specifications by year |
+| `datasets/product/templates/` | PRD and other product templates |
+| `datasets/research/` | Strategic research by topic |
+| `datasets/strategy/` | Strategy sessions and formal memos |
+
+### Meeting File Schema
+
+Every meeting markdown begins with YAML frontmatter:
+
+```yaml
+---
+date: "YYYY-MM-DD"
+type: "sales|product|customersuccess|onboarding|strategy|ops|general"
+customer: "Company Name"
+companies: ["Company A", "Company B"]
+participants: ["Person Name"]
+tags: ["2025Q3", "keyword"]
+---
+```
+
+**Standard Sections:**
+- `## ⬇️ AI Summary` — executive summary
+- `## ⬇️ Action Items` — bullets or checkboxes
+- `## ⬇️ Full Transcript` — raw text
+- `## ⬇️ Links` — source links
+
+## Workflow Execution
+
+### Skill-Based Architecture
+
+This system uses a **skills-based architecture**:
+
+1. **Quality Gates** — Validation checks that must pass
+2. **Context Assembly** — Reusable patterns for gathering context
+3. **Workflows** — End-to-end processes for major operations
+
+### Workflow Rules
+
+When executing workflows:
+
+1. **Announce Intent**: State what workflow you're using and why
+2. **Follow Steps**: Execute workflow steps in order
+3. **Invoke Sub-Skills**: Use quality gates and context assembly as required
+4. **No Shortcuts**: Each step exists for a reason
+
+### Quality Gate Enforcement
+
+Quality gates are **non-negotiable**:
+- Violations stop the workflow immediately
+- No "fix it later" or "close enough"
+- Gates must pass before proceeding
+
+## Output Standards
+
+### Output Versioning
+- Never delete generated artifacts; append version suffixes (v1, v2, etc.)
+- Historical snapshots for roadmaps and decision documentation
+
+### Template-Driven Structure
+- Use standardized templates for PRDs, research sources, and strategy frameworks
+- PRD template located at `datasets/product/templates/prd-template.md`
+- Consistent metadata frontmatter across all document types
+
+### PRD Statuses
+- 🚧 Drafting: Known incomplete, do not rely on content
+- 🏃 Actionable: Eng has agreed there's enough to start
+- 🔒 Closed: Represents what was finally delivered
+- ❗ Abandoned: Project cancelled or superseded
+
+## Safety Rails
+
+- Operate only within the workspace
+- Never overwrite large files without confirmation—prefer append or create drafts
+- When unsure of a path, list directories first
+- For batch operations, show a plan first and await approval
+
+## Citation Standards
+
+When creating documents that require citations:
+- Every factual claim requires a source reference
+- Use verbatim quotes (5-25 words) for key insights
+- Format: `[^N]: Source path: "Verbatim quote text"`
+- No "(source needed)" markers in final output
+
+## Anti-Rationalization Blocks
+
+Common excuses that are **explicitly rejected**:
+
+| Rationalization | Reality |
+|-----------------|---------|
+| "This task is too minor" | Processes matter most on simple tasks |
+| "I can skip this step" | Each step exists for a reason |
+| "This doesn't quite fit" | If 80% relevant, use it and adapt |
+| "Close enough to pass" | Quality gates are pass/fail |
+| "We can refine later" | Requirements must be met now (for Actionable status) |
+| "I'll make up this detail" | Leave blank/TBD rather than fabricate |

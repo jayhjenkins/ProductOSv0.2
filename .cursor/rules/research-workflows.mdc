@@ -1,0 +1,192 @@
+---
+description: Research processing and context gathering workflows
+globs: ["datasets/research/**"]
+---
+
+# Research Workflows
+
+## Research Topics
+
+Sources are organized by strategic category:
+
+| Topic | Contents |
+|-------|----------|
+| `competitive-analysis` | Competitor capabilities, positioning, pricing |
+| `pricing-strategy` | Pricing models, packaging, value perception |
+| `market-positioning` | Market trends, customer segments, messaging |
+| `product-strategy` | Feature prioritization, roadmap direction |
+| `customer-segmentation` | Audience targeting, persona development |
+| `growth-strategy` | Acquisition, retention, expansion tactics |
+
+---
+
+## Workflow: Research Gathering
+
+**Purpose**: Assemble relevant research context for strategic sessions.
+
+**When to Use**: Before strategy sessions, when building evidence for decisions.
+
+### Inputs
+- `topic`: Strategic category (required)
+- `max_age_days`: Maximum source age (optional)
+- `include_expired`: Whether to include expired sources (default: false)
+- `keywords`: Additional keyword filter (optional)
+
+### Expiry Guidelines
+
+| Source Type | Default Max Age | Rationale |
+|-------------|-----------------|-----------|
+| Frameworks | 365-730 days | Conceptual models change slowly |
+| Market data | 90-180 days | Markets evolve quickly |
+| Competitor intel | 180-365 days | Products/pricing shift |
+| Customer insights | 180-365 days | Needs evolve over time |
+
+### Steps
+
+1. **Collect Research Files**
+   - Scan: `datasets/research/sources/{topic}/**/*.md`
+
+2. **Filter by Recency and Expiry**
+   - Read frontmatter: `added_utc`, `expiry_date`
+   - Calculate age, check expiry
+   - Flag expired sources with "[EXPIRED]"
+
+3. **Extract Key Information**
+   - `## Key Insights` → Primary takeaways
+   - `## Strategic Applications` → How to use
+   - `## Citations / Quotes` → Verbatim quotes for citation
+   - `## Related Internal Links` → Connected context
+
+4. **Apply Keyword Filters** (if provided)
+   - Search across title, insights, quotes, tags
+
+5. **Generate Gathering Report**
+
+   ```markdown
+   # Research Gathering Report
+
+   **Topic**: {topic}
+   **Sources Found**: {N total}
+   **Active Sources**: {N non-expired}
+   **Expired Sources**: {N expired}
+
+   ## Active Sources
+
+   ### Source 1: {Title}
+   - **Added**: {date} ({N} days ago)
+   - **Expires**: {date}
+   - **Path**: {file_path}
+
+   **Key Insights:**
+   - Insight 1
+   - Insight 2
+
+   **Notable Quotes:**
+   > "Quote text"
+   > — Author, Source
+
+   ---
+
+   ## Expired Sources (Require Refresh)
+
+   ### Source 3: {Title} [EXPIRED]
+   - **Recommendation**: Refresh or archive
+   ```
+
+---
+
+## Workflow: Research Processing
+
+**Purpose**: Process external sources into standardized research format.
+
+**When to Use**: Adding new research from URLs, files, or chat sessions.
+
+### Input Types
+
+**URL Processing:**
+- Fetch web content
+- Convert to standardized markdown
+- Extract key insights and frameworks
+- Add citation-ready quotes
+
+**File Processing:**
+- Process PDFs, docs, reports
+- Extract text and key concepts
+- Create structured source document
+
+**Chat Session Processing:**
+- Capture current conversation insights
+- Extract strategic decisions discussed
+- Create reusable research artifact
+
+### Source Document Format
+
+```markdown
+---
+title: "[Source Title]"
+source_type: "website|pdf|report|chat-session|framework"
+source_url: "[URL if applicable]"
+date_added: "[YYYY-MM-DD]"
+date_expires: "[YYYY-MM-DD]"
+topic: "[strategic-topic]"
+relevance_tags: ["tag1", "tag2"]
+data_confidence: "high|medium|low"
+---
+
+# [Source Title]
+
+**Source**: [Author/Organization]
+**Original URL/Location**: [If applicable]
+**Date Published**: [Original date]
+**Data Confidence**: [High/Medium/Low with justification]
+
+## Key Insights
+
+[Strategic insights that directly inform decisions]
+
+## Strategic Applications
+
+[How this applies to decision-making context]
+
+## Key Quotes/Data Points
+
+> "Verbatim quote for citation"
+> — Author, Source (Date)
+
+## Related Internal Context
+
+[Links to relevant meetings, roadmap items, other sources]
+
+## Notes
+
+[Thoughts, connections to other research]
+```
+
+### Output Location
+- `datasets/research/sources/{topic}/{filename}.md`
+
+---
+
+## Source Quality Standards
+
+### Data Confidence Levels
+
+| Level | Criteria |
+|-------|----------|
+| High | Authoritative source, recent data, verified methodology |
+| Medium | Reliable source but some limitations (age, scope) |
+| Low | Useful insights but significant limitations |
+
+### Citation Requirements
+
+- Preserve verbatim quotes (5-25 words) for key claims
+- Include source attribution
+- Format for easy citation in memos
+- Track original source URL/location
+
+### Expiry Management
+
+- Set appropriate expiry based on content type
+- Flag sources approaching expiry
+- Recommend refresh for stale data
+- Archive sources no longer relevant

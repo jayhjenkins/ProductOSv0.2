@@ -1,0 +1,33 @@
+Problem Case,Narrative,Raleon Segments,Supporting Evidence
+Performance Pattern Recognition,"When high-volume/diverse customers plan campaigns, system analyzes historical data to recommend which segments performed best for similar content. Shows ""For olive oil promotions, segments A, B, C generated 3x higher RPR."" Only valuable for brands with sufficient campaign volume and variety.","• Agencies (esp. established)
+• Enterprise brands
+• High-frequency senders","Killens: Manual ChatGPT analysis of olive oil campaign performance over 4 months
+Homestead: Time-intensive monthly performance reviews, manual data extraction
+Strategy Meeting: Need for automated recommendations vs. manual analysis"
+Frequency Management (Customer-Level),"Tracks individual customer email frequency across all overlapping segments, rolls up to real-time ""segment health score"" reflecting member fatigue risk. Alerts like ""Segment health declining - members receiving 12+ emails/month on average."" Prevents list burnout from segment overlap.","• Enterprise brands
+• High-frequency senders
+• Agencies with active clients","Killens: ""These will tend to perform a little less better... unsubscribe rates will go up"" - segment degradation from 4x daily sends
+Strategy Meeting: Sean's concern about ""over-saturated"" segments
+Better Brand: Discussion of promo-responsive vs non-responsive to protect margins"
+Automated Scoring,"Creates composite performance scores for decision-making: campaign planning (""use segments >750""), budget allocation, performance benchmarking. Must drive specific decisions, not just vanity metrics. Need clearer articulation of decision use cases.","• All segments
+• Especially agencies for client reporting","Killens: Manual weighting system (50% RPR, 25% click rate, 25% conversion)
+Agency Strategy Meeting: Need for modular pricing based on usage/value metrics"
+Real-time Data,"Continuously updates segment performance vs. outdated historical snapshots. Critical for high-frequency senders who can't wait days/weeks for updated performance data. Less critical for low-frequency senders.","• Enterprise brands
+• High-frequency senders
+• Agencies with demanding clients","Killens: ""This system will die... old data... I'm continually targeting these same people""
+Strategy Meeting: Sean can't process data fast enough for real-time needs"
+Segment Adoption Friction,"Identifies unused AI segments, surfaces easy wins with one-click A/B tests. Shows ""Your 30-day engaged has 10K people, our Ready to Buy Again has 15K with 2x conversion"" without disrupting workflows.","• All segments
+• Especially SMB brands
+• Agency end-clients","Soapbox: ""not currently using Raleon's AI segments"" despite being described as ""free money""
+RadRoller: Testing campaigns but not implementing segments
+Multiple calls: Customers not deploying proven segments"
+Complexity Overwhelm,"Provides guided segment recommendations based on business model/campaign types rather than presenting all options equally. ""Based on your subscription model, start with these 3 segments.""","• SMB brands
+• New customers
+• Agency end-clients","RadRoller: ""I don't know which segments to use"" - overwhelmed by options
+Owlette: Confusion about segments vs. subscription model integration
+Better Brand: Team concerns about understanding segment value"
+Content-Segment Matching (Meta-Style),"Objective-driven audience selection: Input goal (""Drive 100 subscriptions"") + content → system recommends optimal segments with projected performance. Reverses current process from segment-first to content/objective-first approach.","• Agencies (efficiency)
+• All brand segments (targeting)
+• High-sophistication users","Strategy Meeting: Nathan's vision for email-to-segment matching using HTML/alt text analysis
+Strategy Meeting: ""Revenue-driven email planning: Generate $20K more revenue""
+Homestead: Need for content-first workflow vs. current segment-first approach"
