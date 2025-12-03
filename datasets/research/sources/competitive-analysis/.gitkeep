@@ -1,9 +1,0 @@
-# Competitive Analysis Research
-
-This folder contains research sources related to competitive analysis, including:
-- Competitor intelligence and strategies
-- Market positioning analysis  
-- Competitive frameworks (Porter's Five Forces, etc.)
-- Industry analysis and trends
-
-Add sources using: `/research:process-source --topic="competitive-analysis"`

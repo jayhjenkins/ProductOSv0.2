@@ -4,5 +4,14 @@ venv/
 .env*
 __pycache__/
 *.log
-# Large raw artifacts (optional):
-# datasets/meetings/**/raw/
+
+# Ignore all subdirectories in datasets folders (keeps top-level files)
+datasets/product/*/
+datasets/research/*/
+datasets/strategy/*/
+datasets/meetings/*/
+
+# But allow templates folders to sync
+!datasets/product/templates/
+!datasets/research/templates/
+!datasets/strategy/templates/

@@ -1,9 +1,0 @@
-# Pricing Strategy Research
-
-This folder contains research sources related to pricing strategy, including:
-- Pricing models and frameworks
-- Competitor pricing analysis
-- Customer willingness to pay research
-- Value-based pricing strategies
-
-Add sources using: `/research:process-source --topic="pricing-strategy"`

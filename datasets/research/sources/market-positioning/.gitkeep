@@ -1,9 +1,0 @@
-# Market Positioning Research
-
-This folder contains research sources related to market positioning, including:
-- Brand positioning frameworks
-- Customer segments and personas
-- Messaging and value proposition research
-- Market category analysis
-
-Add sources using: `/research:process-source --topic="market-positioning"`
