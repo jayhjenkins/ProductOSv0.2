@@ -5,13 +5,40 @@ venv/
 __pycache__/
 *.log
 
-# Ignore all subdirectories in datasets folders (keeps top-level files)
-datasets/product/*/
-datasets/research/*/
-datasets/strategy/*/
-datasets/meetings/*/
+# Keep folder structure but ignore content files in datasets
+# This allows team members to clone the skeleton without your specific data
 
-# But allow templates folders to sync
+# Product folder: keep structure and templates, ignore everything else
+datasets/product/*
+!datasets/product/.gitkeep
+!datasets/product/*/
+!datasets/product/*/.gitkeep
+datasets/product/*/*
 !datasets/product/templates/
+!datasets/product/*/*/.gitkeep
+
+# Research folder: keep structure and templates, ignore everything else
+datasets/research/*
+!datasets/research/.gitkeep
+!datasets/research/*/
+!datasets/research/*/.gitkeep
+datasets/research/*/*
 !datasets/research/templates/
+!datasets/research/*/*/.gitkeep
+
+# Strategy folder: keep structure and templates, ignore everything else
+datasets/strategy/*
+!datasets/strategy/.gitkeep
+!datasets/strategy/*/
+!datasets/strategy/*/.gitkeep
+datasets/strategy/*/*
 !datasets/strategy/templates/
+!datasets/strategy/*/*/.gitkeep
+
+# Meetings folder: keep structure, ignore all files
+datasets/meetings/*
+!datasets/meetings/.gitkeep
+!datasets/meetings/*/
+!datasets/meetings/*/.gitkeep
+datasets/meetings/*/*
+!datasets/meetings/*/*/.gitkeep

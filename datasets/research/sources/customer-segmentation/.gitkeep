@@ -1,0 +1,9 @@
+# Customer Segmentation Research
+
+This folder contains research sources related to customer segmentation, including:
+- Customer research and behavioral analysis
+- Persona development frameworks
+- Segmentation strategies and methods
+- Customer journey mapping
+
+Add sources using: `/research:process-source --topic="customer-segmentation"`

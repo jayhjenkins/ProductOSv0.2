@@ -1,0 +1,9 @@
+# Growth Strategy Research
+
+This folder contains research sources related to growth strategy, including:
+- Acquisition channels and tactics
+- Retention and expansion strategies
+- Unit economics and scalability analysis
+- Growth frameworks and methodologies
+
+Add sources using: `/research:process-source --topic="growth-strategy"`

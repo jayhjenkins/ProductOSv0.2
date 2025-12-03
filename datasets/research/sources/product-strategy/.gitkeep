@@ -1,0 +1,9 @@
+# Product Strategy Research
+
+This folder contains research sources related to product strategy, including:
+- Product roadmap frameworks
+- Feature prioritization methods
+- User research and customer feedback
+- Product-market fit analysis
+
+Add sources using: `/research:process-source --topic="product-strategy"`
