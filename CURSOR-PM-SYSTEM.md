@@ -34,7 +34,7 @@ Rules in `.cursor/rules/` define workflows and behaviors:
 | `metrics-workflows.mdc` | Metrics definition, diagnosis, trade-offs, dashboards, goal setting |
 | `strategy-workflows.mdc` | Strategy sessions and formal memo generation |
 | `research-workflows.mdc` | Research processing and context gathering |
-| `quality-gates.mdc` | Epic validation, citation compliance, source integrity |
+| `quality-gates.mdc` | Epic validation, citation compliance, source integrity, documentation sync |
 | `context-assembly.mdc` | Meeting synthesis, priority scoring, source normalization |
 
 ## Key Workflows

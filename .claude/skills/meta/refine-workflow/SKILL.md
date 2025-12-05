@@ -259,10 +259,11 @@ Workflow is refined when:
 | Missing CSO opportunities | Optimize descriptions for auto-discovery |
 | Breaking working workflows | Test before/after with real scenarios |
 | Not updating invoking workflows | Ensure parent workflows reference new skills |
-| Forgetting documentation | Update CLAUDE.md files with new skill references |
+| Forgetting documentation | Use documentation-sync quality gate (all 6 files) |
 
 ## Related Skills
 
 - **create-skill**: Use after identifying extraction candidates
 - **skill-discovery**: Find existing skills before creating duplicates
 - **using-skills**: Ensure extracted skills are used mandatorily
+- **documentation-sync**: Required for maintaining documentation consistency after extraction

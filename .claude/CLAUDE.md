@@ -89,6 +89,7 @@ This is not optional. Finding a relevant skill = mandatory usage.
 - `source-integrity` - Checksum validation, expiry management
 - `link-verification` - URL accessibility, verbatim quote checking
 - `meeting-schema-validation` - YAML frontmatter validation
+- `documentation-sync` - Maintains consistency across 6 documentation files
 
 **Context Assembly** (`context-assembly/`):
 - `meeting-synthesis` - Extract signals from transcripts

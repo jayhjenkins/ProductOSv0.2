@@ -224,6 +224,12 @@ This document describes the AI agents (Cursor modes) available in this PM/Strate
 - No shortcuts on quality gates
 - If 80% relevant, use the process
 
+### Documentation Consistency
+- All skills and workflows require documentation sync
+- 6 files must remain consistent (.claude/CLAUDE.md, CLAUDE.md, CURSOR-PM-SYSTEM.md, AGENTS.md, README.md, .cursor/rules/*.mdc)
+- Documentation-sync quality gate enforced before skill completion
+- Maintains alignment between Cursor and Claude Code agents
+
 ### PRD Quality (6-Point Rubric)
 All PRDs must pass before becoming Actionable:
 1. **Objectives Clear** — Customer statement with problem/outcome

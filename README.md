@@ -123,6 +123,11 @@ All PRDs must pass before becoming Actionable:
 - PRDs are living documents that evolve with discovery
 - Only include information that has been provided or sourced
 
+### Documentation Consistency
+- System maintains 6 documentation files for both Cursor and Claude Code agents
+- Documentation-sync quality gate ensures all files stay consistent
+- Required when creating or modifying skills and workflows
+
 ## Research Topics
 
 | Topic | Contents |

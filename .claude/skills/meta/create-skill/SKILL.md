@@ -85,6 +85,7 @@ Restricts which tools Claude can use during skill execution.
 - Related quality-gate skills to invoke
 - Success criteria
 - Iron laws (non-negotiable requirements)
+- **Required**: Use the `documentation-sync` quality gate before considering skill complete
 
 #### 5. Common Mistakes (Essential)
 - What goes wrong
@@ -230,6 +231,7 @@ Before considering a skill complete:
 - [ ] Common mistakes section includes anti-rationalization blocks
 - [ ] Iron laws clearly stated (if applicable)
 - [ ] Success criteria are verifiable
+- [ ] Documentation-sync quality gate passed (all 6 files updated)
 
 ## Skill Categories
 
@@ -262,6 +264,7 @@ Choose the appropriate category:
 3. **TOKEN EFFICIENCY IS MANDATORY** - Respect length guidelines
 4. **ONE EXCELLENT EXAMPLE > MANY MEDIOCRE** - Quality over quantity
 5. **IRON LAWS MUST BE CLEARLY STATED** - No ambiguity in enforcement
+6. **NO SKILL COMPLETE WITHOUT DOCUMENTATION SYNC** - All 6 files must be updated
 
 ## Success Criteria
 
@@ -273,6 +276,7 @@ You've created a skill correctly when:
 - Common mistakes include anti-rationalization blocks
 - Related skills are properly referenced
 - Quality gates are enforced without compromise
+- Documentation sync validated (all 6 files consistent)
 
 ## Common Mistakes
 
@@ -284,8 +288,10 @@ You've created a skill correctly when:
 | Using @ syntax for cross-refs | Use skill names explicitly |
 | Missing iron laws | Add non-negotiable requirements |
 | Forgetting pressure testing | Add psychological pressure scenarios |
+| Skipping documentation updates | Use documentation-sync quality gate (all 6 files) |
 
 ## Related Skills
 
 - **using-skills**: Establishes mandatory skill usage protocol
 - **skill-discovery**: Helps find existing skills before creating new ones
+- **documentation-sync**: Required quality gate for maintaining documentation consistency

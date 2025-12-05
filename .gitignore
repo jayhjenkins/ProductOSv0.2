@@ -42,3 +42,6 @@ datasets/meetings/*
 !datasets/meetings/*/.gitkeep
 datasets/meetings/*/*
 !datasets/meetings/*/*/.gitkeep
+
+# Docs folder: exclude from git (implementation notes, not part of system)
+docs/

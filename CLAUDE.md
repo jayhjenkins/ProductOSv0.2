@@ -16,7 +16,7 @@ This is a comprehensive AI-driven automation workspace for product development, 
 
 **Categories**:
 1. **Meta Skills** - System improvement (using-skills, skill-discovery, create-skill, refine-workflow)
-2. **Quality Gates** - Validation checks (citation-compliance, epic-validation, content-style, source-integrity, link-verification, meeting-schema-validation)
+2. **Quality Gates** - Validation checks (citation-compliance, epic-validation, content-style, source-integrity, link-verification, meeting-schema-validation, documentation-sync)
 3. **Context Assembly** - Reusable context patterns (meeting-synthesis, research-gathering, priority-scoring, source-normalization)
 4. **Metrics Analysis** - Analytical thinking (north-star-alignment, proxy-metric-selection, funnel-metric-mapping, root-cause-diagnosis, tradeoff-evaluation)
 5. **Workflows** - End-to-end processes (23+ workflow skills for all major operations)

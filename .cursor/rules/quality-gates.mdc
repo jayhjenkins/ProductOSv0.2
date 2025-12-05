@@ -206,6 +206,91 @@ PRD has Driver, Approver, and key Contributors identified.
 
 ---
 
+## Gate: Documentation Sync
+
+**Purpose**: Ensure all system documentation remains consistent when skills or workflows are created or modified.
+
+**When Applied**: Before any skill creation or modification is considered complete.
+
+### The Iron Law
+
+**NO SKILL COMPLETE WITHOUT DOCUMENTATION SYNC**
+
+All changes to skills, workflows, quality gates, or context assembly patterns require documentation updates across 6 critical files. No exceptions.
+
+### The 6 Documentation Files
+
+1. **`.claude/CLAUDE.md`** — Cursor-specific instructions for Cursor AI agents
+2. **`CLAUDE.md`** — Root-level instructions for Claude Code agents
+3. **`CURSOR-PM-SYSTEM.md`** — System architecture documentation
+4. **`AGENTS.md`** — Agent/mode capability reference
+5. **`README.md`** — Main user-facing documentation
+6. **`.cursor/rules/*.mdc`** — Cursor workflow rule definitions
+
+### Documentation Update Requirements by Skill Type
+
+#### Meta Skills
+- ✓ Required: `.claude/CLAUDE.md`, `CLAUDE.md`
+- ⚬ Conditional: Other files only if user-facing or architectural
+
+#### Quality Gates
+- ✓ Required: `.claude/CLAUDE.md`, `CLAUDE.md`, `.cursor/rules/quality-gates.mdc`, `AGENTS.md`
+- ⚬ Conditional: `CURSOR-PM-SYSTEM.md`, `README.md` (brief mention)
+
+#### Context Assembly Skills
+- ✓ Required: `.claude/CLAUDE.md`, `CLAUDE.md`, `.cursor/rules/context-assembly.mdc`
+- ⚬ Conditional: Other files only if user-facing
+
+#### Workflow Skills
+- ✓ Required: ALL 6 FILES
+- Must include: Capability descriptions, example prompts, workflow diagrams, file locations
+
+### Validation Checklist
+
+Before considering documentation sync complete:
+
+- [ ] Skill name appears consistently across all required files
+- [ ] Descriptions are contextually appropriate for each file
+- [ ] Slash command mappings consistent (if applicable)
+- [ ] Example prompts aligned (for user-facing workflows)
+- [ ] All cross-references valid (no broken links)
+- [ ] File locations documented (if creates outputs)
+
+### Validation Questions
+
+All must answer "yes":
+- If a user reads only `.claude/CLAUDE.md`, would they know this skill exists?
+- If a user reads only `CLAUDE.md`, would they know how to use it?
+- If a user reads only `README.md`, would they discover the capability?
+- If a user reads `AGENTS.md`, would they know which agent to use?
+- If a Cursor agent loads the relevant `.mdc` file, would it have complete instructions?
+- Is `CURSOR-PM-SYSTEM.md` accurately describing the system architecture?
+
+### Failure Conditions
+
+- Skill listed in fewer than required files → **FAIL**
+- Inconsistent skill names across files → **FAIL**
+- Missing example prompts for workflows → **FAIL**
+- Broken cross-references → **FAIL**
+- Attempting to rationalize skipping documentation → **FAIL**
+
+### Anti-Rationalization Blocks
+
+| Rationalization | Reality |
+|-----------------|---------|
+| "This skill is too minor to document" | All skills must be documented for discoverability |
+| "I'll update docs later" | Documentation sync happens NOW, not later |
+| "Only one file needs updating" | Matrix determines requirements, not convenience |
+| "Users won't use this directly" | Both Cursor and Claude Code agents depend on consistency |
+
+### Reference
+
+Full documentation sync protocol available at:
+- `.claude/skills/quality-gates/documentation-sync/SKILL.md`
+- `.claude/skills/quality-gates/documentation-sync/checklist.md`
+
+---
+
 ## Anti-Rationalization Blocks
 
 Common excuses explicitly rejected:
