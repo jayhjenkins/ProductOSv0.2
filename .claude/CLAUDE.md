@@ -100,6 +100,7 @@ This is not optional. Finding a relevant skill = mandatory usage.
 - `content-pipeline` - Complete content creation (Intent → Snippets)
 - `product-planning` - Meetings → validated PRDs
 - `prd-creation` - Interactive PRD creation
+- `launch-announcement` - Internal feature launch communications
 - `strategy-session` - Research-backed decision framework
 - `mochi-sync` - Flashcard synchronization
 - [more workflow skills...]
@@ -130,6 +131,7 @@ Keep commands idempotent and time-bounded by default (e.g., last 14 days) unless
 **Project / Product**
 - `/project:meetings-to-roadmap` → `product-planning` skill
 - `/project:cs-prep` → `cs-prep` skill
+- `/launch-announcement` → `launch-announcement` skill
 
 **Content (Agentic pipeline; interactive by default)**
 - `/content:run` → `content-pipeline` skill (full pipeline)
@@ -178,6 +180,6 @@ Keep commands idempotent and time-bounded by default (e.g., last 14 days) unless
 ---
 
 ## Command Index (Quick Links)
-- Product: `/project:meetings-to-roadmap`, `/project:cs-prep`
+- Product: `/project:meetings-to-roadmap`, `/project:cs-prep`, `/launch-announcement`
 - Content: `/content:run`, `/content:resume`, `/content:verify` (see `datasets/marketing/CLAUDE.md` for stricter local rules)
 - Learning: `/project:create-notes`, `/project:notes-to-cards`

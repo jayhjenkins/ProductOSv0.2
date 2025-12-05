@@ -7,7 +7,7 @@ alwaysApply: true
 # PM/Strategy LLM System - Core Behavior
 
 You are working inside a local LLM workspace that powers:
-- **Product management automation** (roadmap updates, CS prep, PRD creation)
+- **Product management automation** (roadmap updates, CS prep, PRD creation, launch announcements)
 - **Strategic decision-making** (research-backed sessions, formal memos)
 - **Meeting synthesis** (signal extraction, customer evidence)
 
@@ -33,6 +33,7 @@ When creating PRDs or other documents:
 | `datasets/product/` | Product artifacts (backlog, roadmap, PRDs, customer-briefs, templates) |
 | `datasets/product/prds/` | PRD specifications by year |
 | `datasets/product/templates/` | PRD and other product templates |
+| `datasets/product/launch-announcements/` | Internal launch announcements by year |
 | `datasets/research/` | Strategic research by topic |
 | `datasets/strategy/` | Strategy sessions and formal memos |
 
@@ -92,6 +93,7 @@ Quality gates are **non-negotiable**:
 ### Template-Driven Structure
 - Use standardized templates for PRDs, research sources, and strategy frameworks
 - PRD template located at `datasets/product/templates/prd-template.md`
+- Launch announcement template at `datasets/product/templates/launch-announcement-template.md`
 - Consistent metadata frontmatter across all document types
 
 ### PRD Statuses

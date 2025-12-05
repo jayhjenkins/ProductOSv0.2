@@ -260,6 +260,75 @@ Gather from user:
 
 ---
 
+## Workflow: Launch Announcement
+
+**Purpose**: Create customer-centric internal launch announcements for shipped features.
+
+**When to Use**: Communicating feature releases to internal stakeholders after deployment.
+
+### Guiding Principles
+
+1. **Research-First** — Search PRDs and documentation before asking user
+2. **No Fabrication** — Never make up metrics, names, or success stories
+3. **Validation Required** — Always confirm shipped features match documentation
+4. **Customer-Centric** — Focus on customer pain and value, not just tech
+
+### Interactive Session Steps
+
+#### Phase 1: Research Documentation
+- Search `datasets/product/prds/` for matching PRD
+- Check `datasets/product/roadmap.md` for feature references
+- Search `datasets/meetings/` for customer signals
+- Announce findings to user
+
+#### Phase 2: Gather Missing Information
+Ask user for information not found in documentation:
+- **Org/Team name**: Which team shipped this?
+- **Feature name**: What is the feature called?
+- **Rollout details**: GA, beta, experiment? Who is exposed?
+- **What actually shipped**: Confirm specifics (often differs from PRD)
+- **Success metrics**: Baseline and target values (never assume)
+- **Contributors**: Who to thank by function?
+
+Optional if not found:
+- Customer problem details, surfaces/pages, coming soon items, early success story, resource links
+
+**CRITICAL**: Never fabricate numbers, names, or metrics.
+
+#### Phase 3: Structure Announcement
+
+Follow 10-section template:
+1. **Launch Title**: Emoji + Org/Team + Feature + Descriptor + Emoji
+2. **Context & Overview**: 1-2 paragraphs on problem history and what changed
+3. **Customer Problem**: Persona statement (I AM/I AM TRYING/BUT/BECAUSE/WHICH MAKES ME FEEL)
+4. **What Was Launched?**: Summary, components, where it shows up, coming soon
+5. **From → To**: Before/after value shift bullets
+6. **How Will We Define Success?**: Metrics with baseline and target
+7. **What's Next?**: Status, monitoring approach, future phases
+8. **Early Success Story**: Optional 2-4 sentence customer impact story
+9. **Shout Outs & HUGE THANKS**: Gratitude by function
+10. **Resources**: Optional links to demos, FAQs, playbooks
+
+#### Phase 4: Write Announcement
+- Output: `datasets/product/launch-announcements/{YYYY}/launch-{feature-slug}.md`
+- Format: Markdown with bold headers, bullets, light emojis
+- Tone: Clear, confident, customer-first, celebratory
+
+#### Phase 5: Confirm with User
+Ask user: "Does this accurately reflect what was shipped? Any corrections needed?"
+
+### Style Requirements
+
+- **Voice**: Use "we" for team, "our customers" for users
+- **Acceptable jargon**: "C1" (our customers), "C2" (their customers)
+- **Emojis**: Light, work-appropriate (`:rocket:`, `:sparkles:`, `:chart_with_upwards_trend:`)
+- **Structure**: Bold section headers, blank lines between sections
+
+### Output Location
+- `datasets/product/launch-announcements/{YYYY}/launch-{feature-slug}.md`
+
+---
+
 ## PRD Structure Standard
 
 All PRDs must include these sections (can be TBD for drafts):

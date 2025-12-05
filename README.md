@@ -18,6 +18,7 @@ Primary mode for product management workflows:
 - PRD creation with 6-point validation and interactive sessions
 - Roadmap sequencing based on PRD timelines
 - Customer success QBR preparation
+- Internal launch announcements for shipped features
 
 ### Strategy Consultant
 Mode for strategic decision-making:
@@ -40,7 +41,8 @@ datasets/
 ├── meetings/           # Meeting transcripts (Customers/ and Internal/)
 ├── product/            # PRDs, backlog, roadmap, customer briefs, templates
 │   ├── prds/           # PRD specifications by year
-│   └── templates/      # PRD template
+│   ├── templates/      # PRD template
+│   └── launch-announcements/ # Internal launch announcements by year
 ├── research/           # Strategic research by topic
 └── strategy/           # Sessions, memos, and archives
 
@@ -61,6 +63,12 @@ PRD Drafting → 6-Point Validation → Roadmap Update
 ```
 Core Identity → Ownership (DACE) → Objectives → Scope → 
 Requirements → Timeline → Links/Resources → Metrics → Validation
+```
+
+### Launch Announcement
+```
+Research PRD/Docs → Gather Missing Info → Structure 10-Section Template →
+Write Announcement → Confirm with User
 ```
 
 ### Strategy Sessions
@@ -129,6 +137,7 @@ Choose the appropriate Cursor mode for your task:
 - "Process meetings from the last 7 days into PRD proposals"
 - "Create a PRD for [feature] based on customer signals"
 - "Prepare a QBR brief for [Customer]"
+- "Create a launch announcement for [feature]"
 
 **Strategy Work:**
 - "Start a strategy session on pricing-strategy"

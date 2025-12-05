@@ -16,6 +16,7 @@ This document describes the AI agents (Cursor modes) available in this PM/Strate
 - **PRD Creation**: Create Product Requirements Documents that meet the 6-point validation rubric
 - **Roadmap Management**: Update and sequence product roadmaps based on PRD timelines
 - **Customer Success Prep**: Compile customer context for QBRs and strategic meetings
+- **Launch Announcements**: Create customer-centric internal announcements for shipped features
 
 ### Key Behaviors
 
@@ -37,6 +38,8 @@ This document describes the AI agents (Cursor modes) available in this PM/Strate
 "Prepare a QBR brief for Acme Corp covering the last 90 days"
 
 "Show me all customer signals related to integrations"
+
+"Create a launch announcement for the Bot Filter feature"
 ```
 
 ### Output Locations
@@ -46,6 +49,7 @@ This document describes the AI agents (Cursor modes) available in this PM/Strate
 - `datasets/product/prds/YYYY/` — PRD specifications
 - `datasets/product/templates/prd-template.md` — PRD template
 - `datasets/product/customer-briefs/` — QBR materials
+- `datasets/product/launch-announcements/YYYY/` — Internal launch announcements
 
 ---
 
@@ -177,6 +181,7 @@ This document describes the AI agents (Cursor modes) available in this PM/Strate
 | Create or validate a PRD | Product Strategist |
 | Update the product roadmap | Product Strategist |
 | Prepare for a customer QBR | Product Strategist |
+| Write internal launch announcement | Product Strategist |
 | Make a strategic decision | Strategy Consultant |
 | Apply a decision framework | Strategy Consultant |
 | Generate a strategy memo | Strategy Consultant |
