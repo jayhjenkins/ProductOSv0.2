@@ -18,7 +18,8 @@ This is a comprehensive AI-driven automation workspace for product development, 
 1. **Meta Skills** - System improvement (using-skills, skill-discovery, create-skill, refine-workflow)
 2. **Quality Gates** - Validation checks (citation-compliance, epic-validation, content-style, source-integrity, link-verification, meeting-schema-validation)
 3. **Context Assembly** - Reusable context patterns (meeting-synthesis, research-gathering, priority-scoring, source-normalization)
-4. **Workflows** - End-to-end processes (18 workflow skills for all major operations)
+4. **Metrics Analysis** - Analytical thinking (north-star-alignment, proxy-metric-selection, funnel-metric-mapping, root-cause-diagnosis, tradeoff-evaluation)
+5. **Workflows** - End-to-end processes (23+ workflow skills for all major operations)
 
 ### Mandatory Skill Usage
 
@@ -36,8 +37,13 @@ All commands now delegate to skills:
 - `/content:run` → `content-pipeline` skill
 - `/project:meetings-to-backlog` → `product-planning` skill
 - `/strategy:session` → `strategy-session` skill
+- `/metrics:definition` → `metrics-definition` workflow
+- `/metrics:diagnosis` → `metric-diagnosis` workflow
+- `/metrics:tradeoff` → `tradeoff-decision` workflow
+- `/metrics:dashboard` → `dashboard-design` workflow
+- `/metrics:goals` → `goal-setting` workflow
 - `/cards-to-mochi` → `mochi-sync` skill
-- [etc for all 19 commands]
+- [etc for all 24+ commands]
 
 ## Core Commands
 
@@ -51,6 +57,26 @@ claude code "/project:meetings-to-backlog"
 ```
 
 **Purpose**: Transform meeting transcripts into actionable roadmap items with priority scoring and structured epic format.
+
+### Metrics Analysis Workflows
+```bash
+# Define success metrics for new features
+claude code "/metrics:definition"
+
+# Investigate metric changes
+claude code "/metrics:diagnosis"
+
+# Evaluate A/B test trade-offs
+claude code "/metrics:tradeoff"
+
+# Design product health dashboards
+claude code "/metrics:dashboard"
+
+# Set OKR targets
+claude code "/metrics:goals"
+```
+
+**Purpose**: Apply analytical frameworks for metrics definition, root cause diagnosis, trade-off evaluation, dashboard design, and goal setting based on PM interview best practices.
 
 ### Marketing Content Pipeline
 ```bash

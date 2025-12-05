@@ -6,6 +6,7 @@ This document describes the PM/Strategy LLM system as implemented in Cursor. Thi
 
 This workspace provides AI-driven automation for:
 - **Product development** — roadmap updates, epic creation, backlog synthesis
+- **Metrics analysis** — define metrics, diagnose changes, evaluate trade-offs, design dashboards, set goals
 - **Strategic decision-making** — research-backed sessions, formal memos
 - **Meeting synthesis** — signal extraction, customer evidence gathering
 - **Research management** — strategic context assembly, source processing
@@ -30,6 +31,7 @@ Rules in `.cursor/rules/` define workflows and behaviors:
 |-----------|---------|
 | `core-system.mdc` | Global behavior, file structure, safety rails |
 | `product-workflows.mdc` | Epic creation, roadmap updates, product planning, CS prep |
+| `metrics-workflows.mdc` | Metrics definition, diagnosis, trade-offs, dashboards, goal setting |
 | `strategy-workflows.mdc` | Strategy sessions and formal memo generation |
 | `research-workflows.mdc` | Research processing and context gathering |
 | `quality-gates.mdc` | Epic validation, citation compliance, source integrity |
@@ -47,6 +49,38 @@ Transform meeting transcripts into actionable roadmap items:
 4. **Epic Validation** — Apply 6-point rubric
 5. **Priority Scoring** — Rank with standardized formula
 6. **Backlog Update** — Write to `datasets/product/backlog.md`
+
+### Metrics Analysis
+
+**Metrics Definition** (`/metrics:definition`):
+1. **North Star Alignment** — Map to company mission and business model
+2. **Funnel Mapping** — Decompose user journey into stages
+3. **Proxy Selection** — Create measurable indicators
+4. **Counter-Metrics** — Identify unintended effects
+
+**Metric Diagnosis** (`/metrics:diagnosis`):
+1. **4D Segmentation** — Narrow scope across People, Geography, Technology, Time
+2. **Intrinsic vs Extrinsic** — Distinguish internal vs external factors
+3. **Hypothesis Testing** — Build table and test against data
+4. **Impact Assessment** — Evaluate North Star impact
+
+**Trade-off Decision** (`/metrics:tradeoff`):
+1. **Strategic Alignment** — Which metric matters more?
+2. **Temporal Analysis** — Short-term vs long-term impact
+3. **Mitigation Exploration** — Find "best of both worlds"
+4. **Funnel Analysis** — Identify where problem occurs
+
+**Dashboard Design** (`/metrics:dashboard`):
+1. **North Star Anchoring** — Ground in company goals
+2. **Funnel Coverage** — Ensure all stages monitored
+3. **Proxy Metrics** — Define measurable indicators
+4. **Review Cadence** — Set monitoring schedule
+
+**Goal Setting** (`/metrics:goals`):
+1. **Company Impact** — Assess movement needed
+2. **Movability Validation** — Confirm team can influence
+3. **Trade-off Evaluation** — Aggressive vs conservative targets
+4. **Final Goal** — Set specific target with milestones
 
 ### Strategy Session
 
@@ -201,6 +235,11 @@ Select a mode in Cursor to activate its specialized behavior:
 - "Process meetings from the last 7 days into epic proposals"
 - "Create an epic for the Google Sheets export feature"
 - "Prepare a QBR brief for Acme Corp"
+- "Define success metrics for our new onboarding flow"
+- "Investigate why weekly active users dropped 10%"
+- "Should we ship this redesign with mixed A/B results?"
+- "Design a product health dashboard for our driver team"
+- "Set Q1 2025 goals for our engagement metrics"
 
 **Strategy Consultant:**
 - "Start a strategy session on pricing-strategy"
@@ -223,6 +262,7 @@ The following workflows from the original Claude system were intentionally remov
 The current scope is focused on:
 - Product strategy and management
 - Epic/PRD/spec creation
+- Metrics analysis and goal setting
 - Backlog and roadmap management
 - Meeting and research synthesis
 - Strategic decision documentation
