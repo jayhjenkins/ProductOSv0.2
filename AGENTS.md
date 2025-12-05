@@ -17,6 +17,7 @@ This document describes the AI agents (Cursor modes) available in this PM/Strate
 - **Roadmap Management**: Update and sequence product roadmaps based on PRD timelines
 - **Customer Success Prep**: Compile customer context for QBRs and strategic meetings
 - **Launch Announcements**: Create customer-centric internal announcements for shipped features
+- **Metrics Analysis**: Define success metrics, investigate metric changes, evaluate trade-offs, design dashboards, set goals
 
 ### Key Behaviors
 
@@ -40,6 +41,16 @@ This document describes the AI agents (Cursor modes) available in this PM/Strate
 "Show me all customer signals related to integrations"
 
 "Create a launch announcement for the Bot Filter feature"
+
+"Define success metrics for the new onboarding flow"
+
+"Investigate why WAU dropped 10% last week"
+
+"Should we ship this redesign with mixed A/B results?"
+
+"Design a product health dashboard for our team"
+
+"Set Q1 goals for driver quality metrics"
 ```
 
 ### Output Locations
@@ -182,6 +193,11 @@ This document describes the AI agents (Cursor modes) available in this PM/Strate
 | Update the product roadmap | Product Strategist |
 | Prepare for a customer QBR | Product Strategist |
 | Write internal launch announcement | Product Strategist |
+| Define success metrics for new features | Product Strategist |
+| Investigate unexpected metric changes | Product Strategist |
+| Evaluate A/B test trade-offs | Product Strategist |
+| Design product health dashboard | Product Strategist |
+| Set OKR targets for metrics | Product Strategist |
 | Make a strategic decision | Strategy Consultant |
 | Apply a decision framework | Strategy Consultant |
 | Generate a strategy memo | Strategy Consultant |

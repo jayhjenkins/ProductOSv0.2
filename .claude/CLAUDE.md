@@ -96,12 +96,24 @@ This is not optional. Finding a relevant skill = mandatory usage.
 - `priority-scoring` - Standardized ranking formula for roadmap sequencing
 - `source-normalization` - Normalize files/URLs/text to citations
 
+**Metrics Analysis** (`metrics-analysis/`):
+- `north-star-alignment` - Connect metrics to company mission and business model
+- `proxy-metric-selection` - Design measurable proxies for hard-to-measure outcomes
+- `funnel-metric-mapping` - Structure metrics along user lifecycle stages
+- `root-cause-diagnosis` - Investigate metric changes with 4D segmentation
+- `tradeoff-evaluation` - Evaluate conflicting metrics and explore mitigation
+
 **Workflows** (`workflows/`):
 - `content-pipeline` - Complete content creation (Intent → Snippets)
 - `product-planning` - Meetings → validated PRDs
 - `prd-creation` - Interactive PRD creation
 - `launch-announcement` - Internal feature launch communications
 - `strategy-session` - Research-backed decision framework
+- `metrics-definition` - Define what to measure for new features
+- `metric-diagnosis` - Investigate unexpected metric changes
+- `tradeoff-decision` - Evaluate mixed A/B test results
+- `dashboard-design` - Design product health dashboards
+- `goal-setting` - Set targets for defined metrics
 - `mochi-sync` - Flashcard synchronization
 - [more workflow skills...]
 
@@ -133,6 +145,13 @@ Keep commands idempotent and time-bounded by default (e.g., last 14 days) unless
 - `/project:cs-prep` → `cs-prep` skill
 - `/launch-announcement` → `launch-announcement` skill
 
+**Metrics Analysis**
+- `/metrics:definition` → `metrics-definition` workflow (define what to measure)
+- `/metrics:diagnosis` → `metric-diagnosis` workflow (investigate metric changes)
+- `/metrics:tradeoff` → `tradeoff-decision` workflow (evaluate mixed results)
+- `/metrics:dashboard` → `dashboard-design` workflow (design health dashboards)
+- `/metrics:goals` → `goal-setting` workflow (set metric targets)
+
 **Content (Agentic pipeline; interactive by default)**
 - `/content:run` → `content-pipeline` skill (full pipeline)
 - Modular steps → Individual content skills (intent-gathering, brief-creation, outlining, drafting, verification, snippet-generation)
@@ -157,10 +176,7 @@ Keep commands idempotent and time-bounded by default (e.g., last 14 days) unless
 - Ask before: invoking MCP tools that modify external systems (Asana, HubSpot); deleting files.
 - Prefer: create/append; keep diffs minimal and idempotent.
 
-**MCP servers (expected)**
-- Filesystem (read/write local workspace)
-- Fetch (optional; only when `--web` or `web: true`)
-- Time, Git (optional)
+
 
 ---
 
@@ -181,5 +197,6 @@ Keep commands idempotent and time-bounded by default (e.g., last 14 days) unless
 
 ## Command Index (Quick Links)
 - Product: `/project:meetings-to-roadmap`, `/project:cs-prep`, `/launch-announcement`
+- Metrics: `/metrics:definition`, `/metrics:diagnosis`, `/metrics:tradeoff`, `/metrics:dashboard`, `/metrics:goals`
 - Content: `/content:run`, `/content:resume`, `/content:verify` (see `datasets/marketing/CLAUDE.md` for stricter local rules)
 - Learning: `/project:create-notes`, `/project:notes-to-cards`

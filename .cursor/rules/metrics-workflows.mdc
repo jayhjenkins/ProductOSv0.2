@@ -1,0 +1,331 @@
+# Metrics Analysis Workflows
+
+This document describes the metrics analysis skills and workflows for product managers to utilize analytical thinking throughout their responsibilities.
+
+## Overview
+
+The metrics analysis system provides 5 core skills and 5 slash-command workflows based on PM interview best practices from Facebook, Uber, Airbnb, Snapchat, and other leading tech companies.
+
+### Core Skills (`metrics-analysis/`)
+
+1. **north-star-alignment** — Connects product metrics to company mission and business model
+2. **proxy-metric-selection** — Designs measurable proxies for hard-to-measure outcomes
+3. **funnel-metric-mapping** — Structures metrics along user lifecycle stages
+4. **root-cause-diagnosis** — Systematically investigates metric changes using 4D segmentation
+5. **tradeoff-evaluation** — Evaluates conflicting metrics and explores mitigation strategies
+
+### Workflow Commands
+
+| Command | Purpose | Time | Skills Used |
+|---------|---------|------|-------------|
+| `/metrics:definition` | Define what to measure for new features | 70-90 min | North Star → Funnel → Proxy → Trade-off |
+| `/metrics:diagnosis` | Investigate unexpected metric changes | 60-90 min | Root Cause (3x) → North Star |
+| `/metrics:tradeoff` | Evaluate mixed A/B test results | 70-90 min | North Star → Trade-off (2x) → Funnel |
+| `/metrics:dashboard` | Design product health dashboards | 85-100 min | North Star → Funnel → Proxy → Trade-off |
+| `/metrics:goals` | Set targets for defined metrics | 65-75 min | North Star → Proxy → Trade-off |
+
+## When to Use Metrics Workflows
+
+### Use `/metrics:definition` when:
+- Kicking off a new product or feature
+- Writing a PRD and need success criteria
+- Preparing for product reviews
+- Inheriting a product lacking clear metrics
+
+### Use `/metrics:diagnosis` when:
+- Key metrics drop or spike unexpectedly
+- Leadership asks "what happened?"
+- Post-mortem analysis needed
+- Validating suspected root cause
+
+### Use `/metrics:tradeoff` when:
+- A/B test shows mixed results
+- Feature launched with conflicting performance
+- Stakeholders disagree on ship/no-ship
+- Redesign shifted behavior unexpectedly
+
+### Use `/metrics:dashboard` when:
+- Standing up new product team
+- Existing dashboard feels incomplete
+- Preparing for quarterly reviews
+- Need recurring product health monitoring
+
+### Use `/metrics:goals` when:
+- After defining metrics, need to set OKRs
+- Planning roadmap impact estimation
+- Leadership asks "what's the goal?"
+- Evaluating project worthiness
+
+## Core Concepts
+
+### The 5 Business Model Types
+
+Every product metric must correlate with one of these patterns:
+
+1. **User-Generated Content + Ads** (Facebook, YouTube, Snapchat)
+   - North Star: MAU + Time on Site
+
+2. **Consumer Freemium** (Mobile games, Spotify, Dropbox)
+   - North Star: MAU + Free → Paid Conversion Rate
+
+3. **Enterprise SaaS** (Salesforce, Slack)
+   - North Star: MAU + Trial → Paid Conversion Rate
+
+4. **Two-Sided Marketplaces** (Uber, Airbnb, eBay)
+   - North Star: MAU for each side + Transactions per period
+
+5. **E-Commerce** (Amazon, Shopify)
+   - North Star: MAU + Average Order Value
+
+### The Standard Funnel Stages
+
+```
+Reach → Activation → Engagement (Breadth) → Engagement (Depth) → Retention
+```
+
+Each stage requires different metric types:
+- **Reach:** Volume metrics (downloads, visits)
+- **Activation:** Conversion rates (setup completion)
+- **Engagement (Breadth):** Frequency metrics (DAU, WAU, MAU)
+- **Engagement (Depth):** Quality metrics (transactions, value-creating actions)
+- **Retention:** Long-term metrics (churn, LTV, cohort retention)
+
+### The 4 Dimensions for Root Cause Analysis
+
+When metrics change unexpectedly, segment across:
+
+1. **People** — User segments, demographics, cohorts
+2. **Geography** — Countries, cities, urban vs. rural
+3. **Technology** — iOS vs. Android, web vs. mobile, device types
+4. **Time** — When started, day/week patterns, seasonality
+
+### Intrinsic vs. Extrinsic Factors
+
+**Intrinsic (internal):**
+- Bugs, releases, experiments, algorithm changes
+
+**Extrinsic (external):**
+- Competitor launches, economic shifts, seasonality, news events
+
+### Proxy Metric Requirements
+
+1. **Mathematical precision:** Clear numerator/denominator
+2. **Correlation validation:** Actually correlates with desired outcome
+3. **Dual versions:** Sophisticated (scientific) + Simplified (actionable)
+4. **Counter-metrics:** Identify what could go wrong
+
+### Trade-off Decision Framework
+
+When metrics conflict:
+
+1. **Strategic Alignment:** Which metric matters more to company strategy?
+2. **Temporal Analysis:** Short-term vs. long-term impact?
+3. **Mitigation Exploration:** Can we get "best of both worlds"?
+4. **Funnel Location:** Where in journey does trade-off occur?
+
+**Decision options:**
+- Ship Fully (net positive, strategic alignment)
+- Ship to Segments (positive for some users)
+- Iterate First (promising but needs modification)
+- Gradual Rollout (monitor for delayed effects)
+- Rollback (net negative, no mitigation)
+
+## Real-World Examples from Training
+
+### Example 1: Uber Driver Quality Program
+
+**Metrics Defined:**
+- Primary: Hours driven in 4.8+ rating bucket
+- Proxy: Driver quality distribution across rating tiers
+- Counter-metrics: Churn rate, acceptance rate, surge frequency
+
+**Goal Set:**
+- From 60% to 67% of hours in 4.8+ bucket in Q1
+- Based on 4 initiatives with validated impact estimates
+- 70% confidence (aspirational OKR)
+
+### Example 2: Airbnb Check-in Experience
+
+**Metrics Defined:**
+- True outcome: Seamless check-in (subjective)
+- Sophisticated proxy: Time from arrival to WiFi connected + message lag times
+- Simple proxy: W-questions sent to host (who/what/when/where/why)
+- Counter-metric: Host response time (ensure not shifting burden)
+
+### Example 3: Snapchat Redesign Trade-off
+
+**Situation:**
+- Time on site: ↑ 15%
+- Messages sent: ↓ 12%
+- Stories shared: ↓ 8%
+
+**Analysis:**
+- Strategic alignment: Social/camera app positioning critical
+- Temporal: Short-term ad revenue gain vs. long-term retention risk
+- Decision: Iterate First (targeted modifications to restore social engagement)
+- Mitigation: Keep creator content but re-integrate friend stories
+
+### Example 4: Facebook Dating Counter-Metrics
+
+**Primary Metrics:**
+- Weekly active dating users
+- Two-message conversations per user
+
+**Counter-Metrics:**
+- News Feed engagement time (cannibalization check)
+- Overall Facebook MAU (ensure not harming main product)
+- Timeline posts per day (substitution effect)
+
+### Example 5: Microsoft Teams Downloads Diagnosis
+
+**Initial:** "Downloads down 50%"
+
+**4D Segmentation:**
+- People: Enterprise customers, not consumers
+- Geography: US and Europe
+- Technology: Web and desktop
+- Time: Started last week
+
+**Root Cause:** Marketing promotion ended (return to normal baseline, not actual problem)
+
+**Action:** No fix needed, adjust baselines
+
+## Integration with Existing Workflows
+
+### PRD Creation Integration
+
+When creating PRDs with `/project:create-prd`:
+- Use `/metrics:definition` to define success criteria
+- Validates PRD requirement: "Success Measurable"
+- Outputs feed directly into PRD "Goals and Hypotheses" section
+
+### Dashboard Integration
+
+Product dashboards should include:
+- North Star metrics from `/metrics:definition`
+- Funnel coverage from `/metrics:dashboard`
+- Counter-metrics to detect trade-offs
+- Alert thresholds from `/metrics:goals`
+
+### Strategy Session Integration
+
+When conducting strategy sessions:
+- Use `/metrics:diagnosis` for understanding metric movements
+- Use `/metrics:tradeoff` for evaluating strategic options
+- Trade-off evaluation skills support decision memos
+
+## Quality Standards for Metrics
+
+### Metric Definition Standards
+
+**Every metric must have:**
+- Precise mathematical formula (numerator/denominator)
+- Clear data source
+- Actionability (team can influence it)
+- North Star connection (ladders up to company goals)
+
+**Good example:**
+- "Stories created per person per day"
+- Formula: (Total stories created) / (Daily Active People)
+
+**Bad example:**
+- "Engagement" (undefined)
+- "Better experience" (not measurable)
+
+### Counter-Metric Requirements
+
+For every primary metric, identify:
+- 2-3 counter-metrics that could indicate unintended effects
+- Acceptable ranges for each
+- Alert thresholds for escalation
+
+### Goal Setting Standards
+
+**Every goal must include:**
+- Specific target value or % improvement
+- Clear timeframe
+- Confidence level (committed vs. aspirational)
+- Dependencies and assumptions
+- Intermediate milestones
+- Review cadence
+
+## Common Patterns and Anti-Patterns
+
+### ✅ Good Practices
+
+- Start with North Star alignment before defining metrics
+- Cover full funnel (reach through retention)
+- Include both leading and lagging indicators
+- Define counter-metrics to catch unintended effects
+- Segment data across 4 dimensions before diagnosing
+- Explore mitigation before binary rollback decisions
+
+### ❌ Anti-Patterns
+
+- Vague metrics like "engagement" without formula
+- Single-metric dashboards (miss problems elsewhere)
+- Binary thinking (ship or rollback only)
+- Jumping to conclusions without segmentation
+- Ignoring long-term flywheel effects
+- No connection to company-level goals
+
+## Skills System Integration
+
+All metrics workflows follow the standard skills protocol:
+
+1. **Announce** workflow usage
+2. **Load** skill file
+3. **Follow** exactly as written
+4. **Output** to appropriate location
+
+Metrics skills can be invoked by:
+- Product workflows (PRD creation, roadmap planning)
+- Strategy workflows (decision memos, framework analysis)
+- Direct user commands (`/metrics:*`)
+
+## Training Material Sources
+
+These workflows synthesize best practices from:
+- Facebook product metrics strategy
+- Uber marketplace funnel analysis
+- Airbnb customer experience metrics
+- Snapchat engagement trade-offs
+- Microsoft Teams diagnostics
+- Industry-standard PM interview frameworks
+
+All examples are based on real case studies from leading tech companies, adapted for product management workflows.
+
+## Success Criteria
+
+Metrics workflows succeed when:
+- Metrics have precise formulas (no vague "engagement")
+- North Star connection explicitly documented
+- Full funnel covered (not just retention)
+- Counter-metrics identified (2-3 per primary)
+- Root causes narrowed to specific segments
+- Trade-offs evaluated systematically (not binary thinking)
+- Goals reality-checked against historical trends
+- Stakeholders aligned on metrics and targets
+
+## File Locations
+
+**Skills:**
+- `.claude/skills/metrics-analysis/north-star-alignment/SKILL.md`
+- `.claude/skills/metrics-analysis/proxy-metric-selection/SKILL.md`
+- `.claude/skills/metrics-analysis/funnel-metric-mapping/SKILL.md`
+- `.claude/skills/metrics-analysis/root-cause-diagnosis/SKILL.md`
+- `.claude/skills/metrics-analysis/tradeoff-evaluation/SKILL.md`
+
+**Workflows:**
+- `.claude/skills/workflows/metrics-definition/SKILL.md`
+- `.claude/skills/workflows/metric-diagnosis/SKILL.md`
+- `.claude/skills/workflows/tradeoff-decision/SKILL.md`
+- `.claude/skills/workflows/dashboard-design/SKILL.md`
+- `.claude/skills/workflows/goal-setting/SKILL.md`
+
+**Commands:**
+- `.claude/commands/metrics-definition.md`
+- `.claude/commands/metric-diagnosis.md`
+- `.claude/commands/tradeoff-decision.md`
+- `.claude/commands/dashboard-design.md`
+- `.claude/commands/goal-setting.md`

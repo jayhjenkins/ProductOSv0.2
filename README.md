@@ -7,6 +7,7 @@ A Cursor and Claude Code-based AI assistant system for product management and st
 This workspace provides three specialized AI agents (Cursor modes) for:
 
 - **Product Planning** — Transform meeting transcripts into validated, prioritized PRDs
+- **Metrics Analysis** — Define metrics, diagnose changes, evaluate trade-offs, design dashboards, set goals
 - **Strategic Decision-Making** — Conduct research-backed strategy sessions with framework analysis
 - **Research Synthesis** — Process external sources and extract customer signals from meetings
 
@@ -19,6 +20,7 @@ Primary mode for product management workflows:
 - Roadmap sequencing based on PRD timelines
 - Customer success QBR preparation
 - Internal launch announcements for shipped features
+- **Metrics analysis**: Define success metrics, diagnose metric changes, evaluate A/B test trade-offs, design health dashboards, set OKR targets
 
 ### Strategy Consultant
 Mode for strategic decision-making:
@@ -57,6 +59,15 @@ datasets/
 ```
 Meeting Transcripts → Signal Extraction → Theme Clustering → 
 PRD Drafting → 6-Point Validation → Roadmap Update
+```
+
+### Metrics Analysis
+```
+Metrics Definition: North Star → Funnel → Proxy → Counter-metrics
+Metric Diagnosis: 4D Segmentation → Intrinsic/Extrinsic → Hypothesis Testing
+Trade-off Decision: Strategic → Temporal → Mitigation → Recommendation
+Dashboard Design: North Star → Funnel → Proxy → Counter-metrics → Cadence
+Goal Setting: Company Impact → Movability → Trade-offs → Final Goal
 ```
 
 ### PRD Creation (Interactive)
@@ -139,6 +150,13 @@ Choose the appropriate Cursor mode for your task:
 - "Prepare a QBR brief for [Customer]"
 - "Create a launch announcement for [feature]"
 
+**Metrics Work:**
+- "Define success metrics for our new onboarding flow"
+- "Investigate why weekly active users dropped 10%"
+- "Should we ship this redesign given mixed A/B results?"
+- "Design a product health dashboard for our driver team"
+- "Set Q1 2025 goals for our engagement metrics"
+
 **Strategy Work:**
 - "Start a strategy session on pricing-strategy"
 - "Generate a memo from the current session"
@@ -153,7 +171,11 @@ Choose the appropriate Cursor mode for your task:
 
 - **[AGENTS.md](./AGENTS.md)** — Agent descriptions and example prompts
 - **[.cursor/rules/](/.cursor/rules/)** — Workflow and quality rule definitions
+  - `metrics-workflows.mdc` — Metrics analysis skills and workflows
+  - `product-workflows.mdc` — Product management workflows
+  - `strategy-workflows.mdc` — Strategic decision workflows
 - **[datasets/product/templates/prd-template.md](./datasets/product/templates/prd-template.md)** — PRD template
+
 
 ## Configuration
 
@@ -168,6 +190,7 @@ This system focuses on:
 - ✅ Product strategy and management
 - ✅ PRD/spec creation with interactive sessions
 - ✅ Backlog and roadmap management
+- ✅ Metrics analysis and goal setting
 - ✅ Meeting and research synthesis
 - ✅ Strategic decision documentation
 
