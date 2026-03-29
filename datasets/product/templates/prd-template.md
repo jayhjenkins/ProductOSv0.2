@@ -96,6 +96,23 @@
 | UC-2 | |
 | UC-3 | |
 
+### Agent / API Scenario Coverage
+
+> Every capability described above should also be evaluated for agent and API consumers. For each use case, note whether full API coverage exists, and capture any agent-specific scenarios that differ from the human-user path.
+
+| Use Case ID | Human Scenario | Agent / API Scenario | Full API Coverage? | Notes |
+|-------------|----------------|----------------------|--------------------|-------|
+| UC-1 | {Human user flow} | {Equivalent API / agent flow} | Yes / No / Partial | |
+| UC-2 | | | | |
+| UC-3 | | | | |
+
+{Add any agent-only or API-only scenarios that do not have a direct human-user counterpart.}
+
+| Agent / API Scenario ID | Description | API Coverage | Notes |
+|-------------------------|-------------|--------------|-------|
+| API-1 | | | |
+| API-2 | | | |
+
 ### Out of Scope
 
 {Items that are explicitly out of scope}
@@ -104,11 +121,24 @@
 |------|--------|
 | | |
 
+### Non-Goals
+
+> Non-goals are distinct from out-of-scope items. Out-of-scope items are simply not part of this effort. Non-goals define what this product **explicitly does not aim to do**, even if someone might reasonably expect it to. Stating non-goals prevents misaligned expectations and scope drift.
+
+| Non-Goal | Why It Is a Non-Goal |
+|----------|----------------------|
+| | |
+
 ---
 
 ## Requirements
 
-> **Priority Key:** [P0] = must do; [P1] = nice to have, but doesn't affect the milestones to be delivered; [P2] = if time permits or for future consideration.
+> **Priority Key (Build Phase):**
+> - **[P0] Foundation phase** — Core capabilities that everything else depends on. Ships first.
+> - **[P1] Expansion phase** — Capabilities that broaden reach, cover more use cases, or add integrations. Ships second.
+> - **[P2] Polish phase** — Refinements, optimizations, and delighters that round out the experience. Ships third.
+>
+> All three phases ship. Priority determines **sequence**, not whether something gets built.
 >
 > Note: Include concept mock-ups, designs, functional flow diagrams as helpful. Note external dependencies.
 
@@ -127,6 +157,42 @@
 | P0 | | | | | |
 | P1 | | | | | |
 | P2 | | | | | |
+
+---
+
+## Build Sequence
+
+> Everything in this PRD ships. The build sequence determines the **order** in which capabilities are delivered, not whether they are delivered. Each phase builds on the previous one, and all phases are planned from the start.
+
+### Foundation (P0)
+
+> The structural core. These capabilities must land first because everything else depends on them. Focus: get the architecture right, deliver the primary user path end-to-end.
+
+| Seq | Requirement / Capability | Depends On | Target Milestone | JIRA |
+|-----|--------------------------|------------|------------------|------|
+| F-1 | | — | | |
+| F-2 | | F-1 | | |
+| F-3 | | | | |
+
+### Expansion (P1)
+
+> Broaden the product surface. These capabilities extend the foundation to more use cases, user types, integrations, or platforms. They ship once the foundation is stable.
+
+| Seq | Requirement / Capability | Depends On | Target Milestone | JIRA |
+|-----|--------------------------|------------|------------------|------|
+| E-1 | | F-{n} | | |
+| E-2 | | | | |
+| E-3 | | | | |
+
+### Polish (P2)
+
+> Refinement and delight. These capabilities improve performance, add convenience features, and smooth rough edges. They ship once expansion is in place.
+
+| Seq | Requirement / Capability | Depends On | Target Milestone | JIRA |
+|-----|--------------------------|------------|------------------|------|
+| R-1 | | E-{n} | | |
+| R-2 | | | | |
+| R-3 | | | | |
 
 ---
 
@@ -153,13 +219,53 @@
 
 ---
 
+## Open Questions / Tracked Assumptions
+
+> This section inherits unanswered `important` and `tracked` items from the Living FAQ. Review and update this section as the Living FAQ evolves. Items resolved in the Living FAQ should be moved to a "Resolved" sub-table or removed.
+
+### Open Questions
+
+| ID | Question | Source (Living FAQ ref) | Status | Owner | Target Resolution Date |
+|----|----------|------------------------|--------|-------|------------------------|
+| OQ-1 | | {living-faq#section} | Open | | |
+| OQ-2 | | | Open | | |
+
+### Tracked Assumptions
+
+> These are assumptions the team is proceeding with that have not yet been validated. If an assumption proves false, the impacted requirements and build sequence should be revisited.
+
+| ID | Assumption | Risk if Wrong | Validation Plan | Status |
+|----|------------|---------------|-----------------|--------|
+| TA-1 | | | | Unvalidated |
+| TA-2 | | | | Unvalidated |
+
+---
+
 ## Future Work and Follow-up
 
-> This section can be useful for capturing items that did not get completed, but should be preserved for future readers, before closing a PRD.
+> This section captures items that extend beyond the current build sequence, or emerged during development and are better addressed in a subsequent effort.
 
 | Description | Priority | Impact if NOT completed | Timeframe |
 |-------------|----------|------------------------|-----------|
 | | | | |
+
+---
+
+## Appendix / Upstream Artifact Links
+
+> Links to all upstream artifacts that informed or feed into this PRD. Keep these current so readers can trace decisions back to their source.
+
+| Artifact | Link | Description |
+|----------|------|-------------|
+| Context Brief | {link} | Background context and strategic framing |
+| Press Release(s) | {link} | Working-backwards press release(s) |
+| One-Pager | {link} | Executive summary / pitch document |
+| Living FAQ | {link} | Running list of questions, answers, and tracked assumptions |
+| API Design | {link} | API specifications and design documents |
+| Agent Scenarios | {link} | Agent and programmatic use case definitions |
+| Expansion Proposals | {link} | Proposals for future expansion beyond current scope |
+| Red Team Report | {link} | Adversarial review findings and mitigations |
+| Business Case / SWAG | {link} | Financial and opportunity sizing estimates |
 
 ---
 
@@ -181,4 +287,3 @@
 | 🏃 Actionable | While it will continue to evolve with discovery through the process, Eng partners have agreed that there is enough to get going. |
 | 🔒 Closed | The PRD represents what was finally delivered. Comments have been closed with outcomes incorporated in the document. |
 | ❗ Abandoned | It shouldn't happen often, but when it does, flag a PRD this way so others will know the content may not represent a current state. |
-

@@ -19,7 +19,7 @@ This is a comprehensive AI-driven automation workspace for product development, 
 2. **Quality Gates** - Validation checks (citation-compliance, epic-validation, content-style, source-integrity, link-verification, meeting-schema-validation, documentation-sync)
 3. **Context Assembly** - Reusable context patterns (meeting-synthesis, research-gathering, priority-scoring, source-normalization)
 4. **Metrics Analysis** - Analytical thinking (north-star-alignment, proxy-metric-selection, funnel-metric-mapping, root-cause-diagnosis, tradeoff-evaluation)
-5. **Workflows** - End-to-end processes (23+ workflow skills for all major operations)
+5. **Workflows** - End-to-end processes (29+ workflow skills including Shipping Greatness discovery pipeline)
 
 ### Mandatory Skill Usage
 
@@ -43,7 +43,19 @@ All commands now delegate to skills:
 - `/metrics:dashboard` → `dashboard-design` workflow
 - `/metrics:goals` → `goal-setting` workflow
 - `/cards-to-mochi` → `mochi-sync` skill
-- [etc for all 24+ commands]
+- `/project:press-release` → `vision-clarifier` skill
+- `/project:devils-advocate` → `devils-advocate` skill
+- `/project:api-design` → `agentic-api-designer` skill
+- `/project:expand` → `ambition-expander` skill
+- `/project:red-team` → `red-team-reviewer` skill
+- `/project:swag` → `swag-modeler` skill
+- `/project:prep` → orchestrates Phases 1-3 (discover → press-release → devils-advocate + api-design)
+- `/project:build` → orchestrates Phases 4-6 (create-prd → expand → red-team → swag)
+- `/project:ship-it` → orchestrates full pipeline (prep → build)
+- `/project:status` → workflow status check
+- `/project:artifacts` → list generated artifacts
+- `/project:update-faq` → add entries to Living FAQ
+- [etc for all 36+ commands]
 
 ## Core Commands
 
@@ -57,6 +69,35 @@ claude code "/project:meetings-to-backlog"
 ```
 
 **Purpose**: Transform meeting transcripts into actionable roadmap items with priority scoring and structured epic format.
+
+### Shipping Greatness Discovery Pipeline
+```bash
+# Full discovery through context (Phases 1-3)
+claude code "/project:prep --topic 'feature idea'"
+
+# PRD through delivery (Phases 4-6, requires /prep artifacts)
+claude code "/project:build"
+
+# End-to-end pipeline
+claude code "/project:ship-it --topic 'feature idea'"
+
+# Individual phase commands
+claude code "/project:press-release --both"
+claude code "/project:devils-advocate --full"
+claude code "/project:api-design --generate"
+claude code "/project:expand --review"
+claude code "/project:red-team --full"
+claude code "/project:swag --generate"
+
+# Meta commands
+claude code "/project:status"
+claude code "/project:artifacts"
+claude code "/project:update-faq"
+```
+
+**Purpose**: AI-native product discovery pipeline based on Shipping Greatness principles. Produces a complete product package: context brief, dual press releases, one-pager, living FAQ, agent-first API design, ambitious PRD, red team validation, and business case.
+
+**Philosophy**: Code is cheap — ambiguity and timidity are expensive. Don't cut scope, expand ambition. Sequence everything, ship everything.
 
 ### Metrics Analysis Workflows
 ```bash
@@ -255,5 +296,12 @@ The system maintains integration between all workflows:
 - Research processing: Source intake → Topic categorization → Insight extraction → Context preparation
 - Strategy sessions: Context assembly → Framework application → Interactive analysis → Memo generation
 - Learning cards: Source material → Card extraction → Topic tagging → Mochi sync → Spaced repetition
+
+**Shipping Greatness Discovery Pipeline**:
+1. Discovery (context intake) → Vision (dual press releases + one-pager) → Knowledge Base (living FAQ + agentic API design)
+2. PRD Generation (from all upstream artifacts) → Ambition Expansion → Red Team Validation → Business Case (SWAG)
+3. Living FAQ is connective tissue — updated by multiple agents throughout
+4. All artifacts are markdown in the product folder, version-controlled and diffable
+5. Pipeline is cheap to run — iterate, compare, don't be precious about single passes
 
 This workspace enables sophisticated knowledge work automation while maintaining quality controls and comprehensive audit trails for all generated artifacts.

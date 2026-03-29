@@ -1,5 +1,5 @@
 ---
-description: Product management workflows - PRD creation, roadmap updates, product planning, and customer success prep
+description: Product management workflows - PRD creation, roadmap updates, product planning, customer success prep, and Shipping Greatness discovery pipeline
 globs: ["datasets/product/**", "datasets/meetings/**"]
 ---
 
@@ -344,4 +344,37 @@ All PRDs must include these sections (can be TBD for drafts):
 | Requirements | Organized by milestone with priorities |
 | Timeline | Milestones and expected delivery dates |
 | Metrics | Learning agenda and success measures |
+| Build Sequence | Foundation → Expansion → Polish phases (all ship) |
+| Agent/API Scenarios | Agent workflow coverage for each human use case |
+| Non-Goals | What the product explicitly does NOT aim to do |
+| Open Questions | Inherited from Living FAQ (important + tracked items) |
+| Appendix | Links to all upstream Shipping Greatness artifacts |
 | Changelog | Record of changes with dates and authors |
+
+---
+
+## Workflow: Shipping Greatness Discovery Pipeline
+
+**Purpose**: AI-native product discovery pipeline producing a complete product package from discovery through business case.
+
+**Philosophy**: Code is cheap — ambiguity and timidity are expensive. Don't cut scope, expand ambition. Sequence everything, ship everything.
+
+### Pipeline Phases
+
+| Phase | Command | Agent | Output |
+|-------|---------|-------|--------|
+| 1. Discovery | `/discover` | Context Gatherer (existing) | `context-brief.md` |
+| 2. Vision | `/press-release` | Vision Clarifier | Press releases + one-pager |
+| 3. Knowledge Base | `/devils-advocate` + `/api-design` | Devil's Advocate + API Designer | Living FAQ + API design |
+| 4. PRD | `/create-prd` + `/expand` | PRD Creator + Ambition Expander | PRD + expansion proposals |
+| 5. Validation | `/red-team` | Red Team Reviewer | Red team report |
+| 6. Business Case | `/swag` | SWAG Modeler | Business case model |
+
+### Orchestration Commands
+
+- **`/prep`** — Phases 1-3, stops before PRD
+- **`/build`** — Phases 4-6, requires `/prep` artifacts
+- **`/ship-it`** — Full pipeline end-to-end
+- **`/status`** — Show workflow state and blockers
+- **`/artifacts`** — List all generated artifacts
+- **`/update-faq`** — Add entries to Living FAQ

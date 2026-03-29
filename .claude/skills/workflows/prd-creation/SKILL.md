@@ -1,6 +1,6 @@
 ---
 name: prd-creation
-description: Use when creating standalone PRD from user input - gathers requirements through interactive session, validates with prd-validation, and writes PRD file using template
+description: Use when creating standalone PRD from user input or upstream artifacts - gathers requirements through interactive session, ingests Shipping Greatness artifacts (context brief, press releases, FAQ, API design), validates with prd-validation, and writes PRD file using template
 ---
 
 # PRD Creation
@@ -8,7 +8,8 @@ description: Use when creating standalone PRD from user input - gathers requirem
 ## Purpose
 
 Create individual Product Requirements Document through interactive session:
-- Structured requirements gathering across 8 phases
+- Ingest and cross-reference upstream Shipping Greatness artifacts when available
+- Structured requirements gathering across 10 phases
 - Apply PRD validation rubric
 - Generate PRD file from template
 - No fabrication - leave unknown sections as TBD
@@ -17,16 +18,48 @@ Create individual Product Requirements Document through interactive session:
 
 Activate when:
 - User invokes `/project:create-prd`
+- `/project:build` or `/project:ship-it` invokes this skill as part of the pipeline
 - Manual PRD creation needed
 - Capturing product requirements from conversation
 
 ## Guiding Principles
 
 1. **PRD is a living document** — It will evolve through collaboration and discovery
-2. **Narrow scope is better** — One PRD ≈ One Jira Epic ≈ One quarter of work
-3. **Share and link** — PRDs should be accessible with links to Slack channels
-4. **No fabrication** — Leave sections blank/TBD rather than making up information
-5. **Reflect what was delivered** — At close, PRD should document actual outcomes
+2. **Ambitious by default** — Set the ceiling as high as possible. Build the fully-featured version. Code is cheap — ambiguity and timidity are expensive
+3. **Sequence, don't cut** — Instead of asking "what's the minimum?" ask "what's the best possible version, and what do we build first?" Everything ships, sequenced by build phase
+4. **Share and link** — PRDs should be accessible with links to Slack channels
+5. **No fabrication** — Leave sections blank/TBD rather than making up information
+6. **Reflect what was delivered** — At close, PRD should document actual outcomes
+
+## Product Package Folder
+
+All Shipping Greatness artifacts for a given initiative live in a single package folder:
+
+```
+datasets/product/packages/{YYYY}/{slug}/
+```
+
+The slug is derived from the product/feature name (lowercase, hyphens, no special chars). If this skill is invoked as part of `/project:build` or `/project:ship-it`, the package folder already exists from earlier phases. If invoked standalone, create the folder if it doesn't exist.
+
+The PRD is written to **two locations**:
+1. `{package}/PRD_{slug}.md` — alongside all other package artifacts
+2. `datasets/product/prds/{YYYY}/PRD_{slug}.md` — the canonical PRD location for the existing backlog/roadmap system
+
+## Upstream Artifact Ingestion
+
+Before starting the interactive session, check the package folder for these artifacts and ingest them if they exist. Pre-populate PRD sections from them — don't re-ask the PM for information already captured upstream:
+
+| Artifact | Path | What to Extract |
+|----------|------|----------------|
+| Context Brief | `{package}/context-brief.md` | Customer problems, evidence, behavioral baselines, open questions |
+| External Press Release | `{package}/press-release-external.md` | Product vision, customer outcome, key benefits, emotional hook |
+| Internal Press Release | `{package}/press-release-internal.md` | Stakeholder impact, implementation considerations, support implications |
+| One-Pager | `{package}/one-pager.md` | Tagline, target audience, differentiators, success metrics, timeline |
+| Living FAQ | `{package}/living-faq.md` | Import `important` and `tracked` items into Open Questions section. Use answered items to inform requirements |
+| API Design | `{package}/agentic-api-design.md` | Resource model, capability inventory → populate Agent/API Scenarios section |
+| Agent Scenarios | `{package}/api-agent-scenarios.md` | End-to-end agent workflows → populate Agent/API Scenarios section |
+
+If upstream artifacts exist, announce what was imported and which sections were pre-populated. Only ask the PM to confirm or refine pre-populated content, not re-enter it.
 
 ## Workflow
 
@@ -65,11 +98,13 @@ Activate when:
 
 *Source from meeting signals if available. Leave blank if not known.*
 
-### Phase 4: Scope
+### Phase 4: Scope & Non-Goals
 
 **Ask user:**
 - **Use Cases In Scope**: What specific use cases will be supported? Include descriptions.
+- **Agent/API Scenarios**: For each human use case, what is the equivalent agent/API scenario? Does it have full API coverage per the Agentic API Design? (Pre-populate from `agentic-api-design.md` and `api-agent-scenarios.md` if available.)
 - **Out of Scope**: What are we explicitly NOT doing? Include reasons.
+- **Non-Goals**: What does this product explicitly NOT aim to do? (Distinct from out-of-scope — non-goals define philosophical boundaries, not just "not in this release.")
 
 *Be specific. Think through edge cases.*
 
@@ -78,7 +113,7 @@ Activate when:
 **For each milestone, ask:**
 - **Milestone Name/Summary**: What does this milestone deliver?
 - **Requirements** with:
-  - Priority (P0 = must do, P1 = nice to have, P2 = if time permits)
+  - Priority: P0 = Foundation phase (build first), P1 = Expansion phase (build second), P2 = Polish phase (build third). All phases ship — priority determines sequence, not whether something gets built.
   - Dependent Teams
   - User Story: "In order to accomplish X, we will build Y"
   - Acceptance Criteria: How we know requirements are met
@@ -86,6 +121,15 @@ Activate when:
   - JIRA tickets (if available)
 
 *Only include requirements that are known. Don't fabricate.*
+
+### Phase 5b: Build Sequence
+
+**Organize all requirements into build phases:**
+- **Foundation (P0)**: Core capabilities that everything else depends on
+- **Expansion (P1)**: Features that extend and enrich the foundation
+- **Polish (P2)**: Delight features, optimizations, and refinements
+
+All phases ship. This is sequencing, not cutting. Include dependency tracking between phases.
 
 ### Phase 6: Timeline
 
@@ -114,6 +158,21 @@ Activate when:
 - **Signals**: What would indicate success or validation?
 - **Metrics**: What to measure to see these signals?
 
+### Phase 9: Open Questions / Tracked Assumptions
+
+**Populate from Living FAQ:**
+- Import all `important` and `tracked` items from `living-faq.md` that remain UNANSWERED
+- Add any new questions surfaced during PRD creation
+- Track assumptions the PRD is built on — what happens if they're wrong?
+
+### Phase 10: Appendix / Upstream Artifact Links
+
+**Link to all upstream artifacts** for traceability:
+- Context Brief, Press Releases, One-Pager, Living FAQ, API Design, Agent Scenarios
+- Any expansion proposals or red team reports (if they exist from a previous `/build` run)
+
+*Only link artifacts that actually exist. Don't create placeholder links.*
+
 ### Fact-Checking Requirements
 
 **CRITICAL**: Do not fabricate information. For any section where information is not provided:
@@ -133,7 +192,9 @@ Activate when:
 
 **Use template:** `datasets/product/templates/prd-template.md`
 
-**Output:** `datasets/product/prds/{YYYY}/PRD_{slug}.md`
+**Output (dual location):**
+1. `datasets/product/packages/{YYYY}/{slug}/PRD_{slug}.md` — in the package folder with all other artifacts
+2. `datasets/product/prds/{YYYY}/PRD_{slug}.md` — canonical PRD location for backlog/roadmap integration
 
 **Set initial status:** 🚧 Drafting
 
@@ -172,6 +233,11 @@ If yes: Prepend to `datasets/product/backlog.md`
 - `prd-validation`: Validates PRD quality
 - `product-planning`: Batch PRD creation from meetings
 - `meeting-synthesis`: Gathers evidence from meeting transcripts
+- `vision-clarifier`: Produces press releases and one-pager (upstream)
+- `devils-advocate`: Produces Living FAQ (upstream)
+- `agentic-api-designer`: Produces API design (upstream)
+- `ambition-expander`: Reviews PRD and proposes scope expansion (downstream)
+- `red-team-reviewer`: Adversarial PRD validation (downstream)
 
 
 

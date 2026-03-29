@@ -64,6 +64,63 @@ This document describes the AI agents (Cursor modes) available in this PM/Strate
 
 ---
 
+## Shipping Greatness Discovery Agents
+
+**Purpose**: Extended discovery and validation agents that support the Shipping Greatness workflow — a 6-phase product development pipeline from discovery through business case.
+
+**Use When**: Running the full product discovery pipeline (`/prep`, `/build`, `/ship-it`) or individual discovery phases.
+
+### Workflow Overview
+
+```
+Phase 1: Discovery & Context Intake (/discover — existing)
+Phase 2: Vision Articulation (/press-release)
+Phase 3: Knowledge Base & Edge Cases (/devils-advocate + /api-design)
+Phase 4: Ambitious PRD Generation (/create-prd + /expand)
+Phase 5: Validation & Red Team (/red-team)
+Phase 6: Business Case (/swag)
+```
+
+### Agents
+
+| Agent | Phase | Slash Command | Core Job |
+|-------|-------|---------------|----------|
+| Context Gatherer | 1 | `/discover` | Pull customer data from MCPs and transcripts (existing) |
+| Vision Clarifier | 2 | `/press-release` | Produce dual press releases and one-pager |
+| Devil's Advocate | 3 | `/devils-advocate` | Generate objections, edge cases, Living FAQ |
+| Agentic API Designer | 3 | `/api-design` | Design agent-first API interfaces |
+| Requirements Synthesizer | 4 | `/create-prd` | Feed upstream artifacts into PRD (existing, extended) |
+| Ambition Expander | 4 | `/expand` | Push scope UP, propose additions |
+| Red Team Reviewer | 5 | `/red-team` | Adversarial critique with persona-lens reviews |
+| SWAG Modeler | 6 | `/swag` | Build and stress-test financial model |
+
+### Orchestration Commands
+
+| Command | Phases | Description |
+|---------|--------|-------------|
+| `/prep` | 1-3 | Discovery through context. Stops before PRD. |
+| `/build` | 4-6 | PRD through delivery. Requires `/prep` artifacts. |
+| `/ship-it` | 1-6 | End-to-end. The whole pipeline. |
+| `/status` | — | Show workflow state and blocking items |
+| `/artifacts` | — | List all generated artifacts |
+| `/update-faq` | — | Add entries to Living FAQ |
+
+### Key Behaviors
+
+- **Ambitious by default**: Set the ceiling high. Don't cut scope — sequence it
+- **Upstream artifact ingestion**: Every agent reads all prior artifacts, nothing is orphaned
+- **Living FAQ is connective tissue**: Questions surface everywhere, only PM finalizes answers
+- **No fabrication**: Leave sections TBD rather than making up information
+- **PM decides, agents propose**: Agents generate, synthesize, and challenge — PM has final say
+
+### Output Locations
+
+- Discovery artifacts in the working product folder (context-brief.md, press releases, FAQ, API design, etc.)
+- PRDs in `datasets/product/prds/{YYYY}/PRD_{slug}.md`
+- All artifacts are markdown, version-controlled, diffable
+
+---
+
 ## Strategy Consultant
 
 **Purpose**: Mode for strategic decision-making sessions and formal memo generation.
@@ -204,6 +261,13 @@ This document describes the AI agents (Cursor modes) available in this PM/Strate
 | Process external research | Research Analyst |
 | Find customer signals | Research Analyst |
 | Gather context for a session | Research Analyst |
+| Articulate product vision with press releases | Vision Clarifier (Shipping Greatness) |
+| Stress-test product concept | Devil's Advocate (Shipping Greatness) |
+| Design agent-first API | Agentic API Designer (Shipping Greatness) |
+| Expand PRD scope and ambition | Ambition Expander (Shipping Greatness) |
+| Adversarial PRD review | Red Team Reviewer (Shipping Greatness) |
+| Build business case / SWAG | SWAG Modeler (Shipping Greatness) |
+| Run full discovery pipeline | Use `/prep` then `/build` or `/ship-it` |
 
 ---
 
@@ -238,3 +302,12 @@ All PRDs must pass before becoming Actionable:
 4. **Timeline Present** — Milestones and expected delivery dates
 5. **Success Measurable** — Metrics and opportunity sizing
 6. **DACE Assigned** — Driver, Approver, Contributors identified
+
+### Shipping Greatness Artifact Quality
+All Shipping Greatness artifacts must meet their skill-defined quality criteria:
+- Press releases must be jargon-free and persona-specific
+- Living FAQ must have all blocking questions answered before PRD
+- API design must have 100% capability coverage
+- Expansion proposals must be evidence-backed with effort sizing
+- Red team findings must recommend fixes, never scope cuts
+- SWAG must have labeled assumptions with sensitivity analysis
