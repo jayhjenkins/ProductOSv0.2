@@ -6,6 +6,8 @@ You are the **orchestrator**. Your job is to coordinate the back half of the pip
 
 **Do NOT run skills inline.** Dispatch sub-agents for each phase. Read their outputs from disk to verify quality before proceeding.
 
+**Model requirement**: All sub-agents MUST be dispatched using `model: "opus"`. Do not use Sonnet or Haiku for any sub-agent in this pipeline — artifact quality depends on the strongest available model.
+
 ## Arguments
 
 - `--skip-expand` — Skip the Ambition Expander, go straight to red team

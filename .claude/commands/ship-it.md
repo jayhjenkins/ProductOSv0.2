@@ -6,6 +6,8 @@ This is the "do all this and make sure it's amazing" command. You are the **orch
 
 **Your job**: Manage the sequence, verify quality at each gate, handle PM interactions for key decisions, and keep the overall process on track. Stay lean — don't accumulate artifact content in your context when you can read summaries from disk.
 
+**Model requirement**: All sub-agents MUST be dispatched using `model: "opus"`. Do not use Sonnet or Haiku for any sub-agent in this pipeline — artifact quality depends on the strongest available model.
+
 ## Arguments
 
 - `--topic "feature X"` — Start from a topic or problem statement
