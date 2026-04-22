@@ -38,7 +38,7 @@ datasets/product/packages/{YYYY}/{slug}/
 
 1. If `--skip-discover` was provided, verify an existing Context Brief exists in the package folder and skip to Phase 2
 2. If `--topic` was provided, use it as the starting problem statement
-3. Run `/project:create-notes` or use Context Gathering skills to produce the Context Brief through interactive conversation with the PM
+3. Use the skills as appropriate in the /skills/context-assembly repo (typically, you'll start with the research-gathering.md skill and expand as needed from there) to produce the Context Brief through interactive conversation with the PM or autonomously with your context aggregation and MCP tools.
 
 **Output**: `{package}/context-brief.md`
 
@@ -95,9 +95,9 @@ After the sub-agent completes:
 
 ### Dispatch: Devils Advocate Agent (Phase 3a)
 
-**Task**: Stress-test the product vision from 6 adversarial perspectives and produce the Living FAQ.
+**Task**: Stress-test the product vision from business-user and customer perspectives and produce a short, audience-focused Living FAQ.
 
-> You are the Devils Advocate agent. Your job is to interrogate this product vision from every skeptical angle and produce a comprehensive Living FAQ.
+> You are the Devils Advocate agent. Your job is to stress-test this product vision from business-user and customer perspectives (CSM, PS, Support, new customer, existing customer) and produce a short, audience-focused Living FAQ.
 >
 > **Skill to follow**: Read and execute `.claude/skills/workflows/devils-advocate/SKILL.md`
 >
@@ -113,15 +113,17 @@ After the sub-agent completes:
 > **Write to disk**:
 > - `{package}/living-faq.md`
 >
-> **PM interaction**: NO — generate autonomously. Mark any answers as "DRAFT — PM review needed".
+> **PM interaction**: NO — generate autonomously. Items requiring PM input belong in the "Open Questions for PM" section.
 >
-> **When done**: Report back the count of questions by priority tag (blocking/important/tracked/deferred) and how many blocking items remain UNANSWERED.
+> **Hard caps**: ≤20 questions total, ≤50 words per answer, ≤2,000 words total. No engineering/architecture/security-implementation questions.
+>
+> **When done**: Report back the question count by audience (CSM, PS, Support, New Customer, Existing Customer) and the number of items in "Open Questions for PM".
 
-### Dispatch: Agentic API Designer Agent (Phase 3b)
+### Dispatch: AI Agent Scenarios Designer Agent (Phase 3b)
 
-**Task**: Design the agent-first API surface and workflow scenarios from upstream artifacts.
+**Task**: Define agent use cases, jobs-to-be-done scenarios, and capability requirements for engineering — NOT to prescribe API shape.
 
-> You are the Agentic API Designer agent. Your job is to design a complete agent-consumable API from the product vision artifacts.
+> You are the AI Agent Scenarios Designer agent. Your job is to define the jobs an AI agent must accomplish with this feature and the capability requirements for engineering. You do NOT design the API shape.
 >
 > **Skill to follow**: Read and execute `.claude/skills/workflows/agentic-api-designer/SKILL.md`
 >
@@ -131,34 +133,34 @@ After the sub-agent completes:
 > - `{package}/press-release-internal.md`
 > - `{package}/one-pager.md`
 >
-> **Templates to use**:
-> - `datasets/product/templates/agentic-api-design.md`
-> - `datasets/product/templates/api-agent-scenarios.md`
+> **Template to use**:
+> - `datasets/product/templates/ai-agent-scenarios.md`
 >
 > **Write to disk**:
-> - `{package}/agentic-api-design.md`
-> - `{package}/api-agent-scenarios.md`
+> - `{package}/ai-agent-scenarios.md`
 >
 > **PM interaction**: NO — generate autonomously.
 >
-> **When done**: Report back confirmation that both artifacts were created, and list the core resources identified in the resource model.
+> **Hard rule**: No HTTP methods/paths, no JSON schemas, no resource-model tables, no state machines. Scenarios in prose. Capability requirements as bullets.
+>
+> **When done**: Report back confirmation that the artifact was created and list the top use cases from the Use Case Inventory.
 
 ### Gate 3: Knowledge Base Quality Check
 
 After BOTH sub-agents complete:
 
 1. **Living FAQ check**: Read `{package}/living-faq.md`
-   - Count `blocking` questions that are `UNANSWERED`
-   - If any blocking questions remain unanswered, present them to the PM and wait for answers
-   - Update the FAQ with PM's answers (mark as FINAL, not DRAFT)
-   - Update the status counts in the FAQ header
+   - Verify it stays under the hard caps (≤20 questions, ≤50 words per answer, ≤2,000 total words)
+   - If the "Open Questions for PM" section has items, present them to the PM and collect answers
+   - Update the FAQ with the PM's answers
 
-2. **API Design check**: Read `{package}/agentic-api-design.md`
-   - Verify it has a Resource Model section with at least one resource defined
-   - Verify it has a Capability Inventory section
-   - If either is missing, flag to the PM
+2. **AI Agent Scenarios check**: Read `{package}/ai-agent-scenarios.md`
+   - Verify it has a Use Case Inventory section
+   - Verify it has at least 3 scenarios in prose (no HTTP verbs, no JSON blocks, no schemas)
+   - Verify it has an API Requirements bullet list
+   - If any of the above is missing or the doc strayed into API prescription, flag to the PM
 
-3. **Cross-reference**: Do any blocking FAQ questions directly challenge assumptions in the API design? If so, flag for PM review.
+3. **Cross-reference**: Do any open FAQ items directly challenge the scenarios or capability requirements? If so, flag for PM review.
 
 ---
 
@@ -172,8 +174,7 @@ Present all artifacts to the PM for review:
    - `{package}/press-release-internal.md`
    - `{package}/one-pager.md`
    - `{package}/living-faq.md`
-   - `{package}/agentic-api-design.md`
-   - `{package}/api-agent-scenarios.md`
+   - `{package}/ai-agent-scenarios.md`
 
 2. **Highlight** any open questions or incomplete sections
 3. **Remind PM** of the package folder location
@@ -188,8 +189,7 @@ datasets/product/packages/{YYYY}/{slug}/
 ├── press-release-internal.md
 ├── one-pager.md
 ├── living-faq.md
-├── agentic-api-design.md
-└── api-agent-scenarios.md
+└── ai-agent-scenarios.md
 ```
 
 ## When to Use

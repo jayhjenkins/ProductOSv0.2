@@ -35,9 +35,8 @@ Before starting, verify these artifacts exist in the package folder:
 - `{package}/press-release-external.md` — External Press Release
 - `{package}/press-release-internal.md` — Internal Press Release
 - `{package}/one-pager.md` — One-Pager
-- `{package}/living-faq.md` — Living FAQ
-- `{package}/agentic-api-design.md` — Agentic API Design
-- `{package}/api-agent-scenarios.md` — Agent Workflow Scenarios
+- `{package}/living-faq.md` — Living FAQ (business-user and customer Q&A)
+- `{package}/ai-agent-scenarios.md` — AI Agent Scenarios (use cases + capability requirements)
 
 **If any are missing**: Warn the PM and suggest running `/project:prep` first. Do not proceed without at minimum the Context Brief and Press Releases.
 
@@ -59,8 +58,7 @@ Before starting, verify these artifacts exist in the package folder:
 > - `{package}/press-release-internal.md`
 > - `{package}/one-pager.md`
 > - `{package}/living-faq.md`
-> - `{package}/agentic-api-design.md`
-> - `{package}/api-agent-scenarios.md`
+> - `{package}/ai-agent-scenarios.md`
 >
 > **Templates and quality gates**:
 > - `datasets/product/templates/prd-template.md`
@@ -72,7 +70,7 @@ Before starting, verify these artifacts exist in the package folder:
 >
 > **PM interaction**: YES — confirm pre-populated sections are accurate, fill genuinely missing sections (DACE ownership, timeline, links). Do NOT re-ask for information already in upstream artifacts.
 >
-> **Important**: Inherit all `important` and `tracked` UNANSWERED items from Living FAQ into the Open Questions section.
+> **Important**: Inherit every item from the Living FAQ's "Open Questions for PM" section that remains UNANSWERED into the PRD Open Questions.
 >
 > **When done**: Report back the PRD status (Drafting/Actionable), which sections were pre-populated vs. PM-provided, and any prd-validation warnings.
 
@@ -102,7 +100,7 @@ After the sub-agent completes:
 > - `{package}/press-release-external.md`
 > - `{package}/press-release-internal.md`
 > - `{package}/living-faq.md`
-> - `{package}/agentic-api-design.md`
+> - `{package}/ai-agent-scenarios.md`
 >
 > **Template to use**:
 > - `datasets/product/templates/expansion-proposals.md`
@@ -149,17 +147,15 @@ After the sub-agent completes:
 > - `{package}/press-release-external.md`
 > - `{package}/press-release-internal.md`
 > - `{package}/one-pager.md`
-> - `{package}/living-faq.md`
-> - `{package}/agentic-api-design.md`
-> - `{package}/api-agent-scenarios.md`
+> - `{package}/living-faq.md` (read-only reference)
+> - `{package}/ai-agent-scenarios.md`
 > - `{package}/expansion-proposals.md` (if exists)
 >
 > **Template to use**:
 > - `datasets/product/templates/red-team-report.md`
 >
 > **Write to disk**:
-> - `{package}/red-team-report.md`
-> - `{package}/living-faq.md` (append new questions surfaced during review, marked "DRAFT — PM review needed")
+> - `{package}/red-team-report.md` (ONLY file written; do NOT append to the Living FAQ — abuse/misuse and harm scenarios go in the red team report's Harm Scenarios section)
 >
 > **PM interaction**: NO — conduct the full review autonomously. Critical findings will be reviewed in the orchestrator.
 >
@@ -178,7 +174,6 @@ After the sub-agent completes:
    - Apply the confirmed fixes
    - Write to both PRD locations
 5. Track `major` findings but do not block on them
-6. Read updated `{package}/living-faq.md` — present any new blocking questions to PM
 
 **Gate**: All `critical` findings addressed. PRD updated. Major findings tracked.
 
@@ -223,9 +218,8 @@ Present the complete product package to the PM:
    - `press-release-external.md` — Market-facing vision (Phase 2)
    - `press-release-internal.md` — Team operationalization (Phase 2)
    - `one-pager.md` — 10-minute pitch (Phase 2)
-   - `living-faq.md` — Knowledge base and edge cases (Phase 3, updated throughout)
-   - `agentic-api-design.md` — Agent-first API surface (Phase 3)
-   - `api-agent-scenarios.md` — End-to-end agent workflows (Phase 3)
+   - `living-faq.md` — Business-user and customer Q&A (Phase 3)
+   - `ai-agent-scenarios.md` — Agent use cases and capability requirements (Phase 3)
    - `PRD_{slug}.md` — Ambitious product requirements (Phase 4)
    - `expansion-proposals.md` — Ambition expansion with PM decisions (Phase 4)
    - `red-team-report.md` — Adversarial validation findings (Phase 5)
@@ -242,9 +236,8 @@ datasets/product/packages/{YYYY}/{slug}/
 ├── press-release-external.md     (Phase 2)
 ├── press-release-internal.md     (Phase 2)
 ├── one-pager.md                  (Phase 2)
-├── living-faq.md                 (Phase 3, updated throughout)
-├── agentic-api-design.md         (Phase 3)
-├── api-agent-scenarios.md        (Phase 3)
+├── living-faq.md                 (Phase 3)
+├── ai-agent-scenarios.md         (Phase 3)
 ├── PRD_{slug}.md                 (Phase 4)
 ├── expansion-proposals.md        (Phase 4)
 ├── red-team-report.md            (Phase 5)

@@ -78,7 +78,7 @@ Derive the slug from `--topic` if provided, or ask the PM for the initiative nam
 
 #### Dispatch: Devils Advocate Agent (3a)
 
-> You are the Devils Advocate agent. Your job is to interrogate this product vision from every skeptical angle and produce a comprehensive Living FAQ.
+> You are the Devils Advocate agent. Your job is to stress-test this product vision from business-user and customer perspectives and produce a short, audience-focused Living FAQ.
 >
 > **Skill to follow**: Read and execute `.claude/skills/workflows/devils-advocate/SKILL.md`
 >
@@ -92,13 +92,15 @@ Derive the slug from `--topic` if provided, or ask the PM for the initiative nam
 >
 > **Write to disk**: `{package}/living-faq.md`
 >
-> **PM interaction**: NO — generate autonomously. Mark answers as "DRAFT — PM review needed".
+> **PM interaction**: NO — generate autonomously. Mark any draft answers clearly; pure-PM-input items belong in the "Open Questions for PM" section.
 >
-> **When done**: Report question counts by priority and count of blocking/unanswered items.
+> **Hard caps**: ≤20 questions total, ≤50 words per answer, ≤2,000 words total. No engineering/architecture/security-implementation questions.
+>
+> **When done**: Report question counts by audience (CSM, PS, Support, New Customer, Existing Customer) and the number of items in "Open Questions for PM".
 
-#### Dispatch: Agentic API Designer Agent (3b)
+#### Dispatch: AI Agent Scenarios Designer Agent (3b)
 
-> You are the Agentic API Designer agent. Your job is to design a complete agent-consumable API from the product vision artifacts.
+> You are the AI Agent Scenarios Designer agent. Your job is to define the jobs an AI agent must accomplish with this feature and the capability requirements for engineering — NOT to design the API shape.
 >
 > **Skill to follow**: Read and execute `.claude/skills/workflows/agentic-api-designer/SKILL.md`
 >
@@ -108,18 +110,20 @@ Derive the slug from `--topic` if provided, or ask the PM for the initiative nam
 > - `{package}/press-release-internal.md`
 > - `{package}/one-pager.md`
 >
-> **Templates**: `datasets/product/templates/agentic-api-design.md`, `datasets/product/templates/api-agent-scenarios.md`
+> **Template**: `datasets/product/templates/ai-agent-scenarios.md`
 >
-> **Write to disk**: `{package}/agentic-api-design.md`, `{package}/api-agent-scenarios.md`
+> **Write to disk**: `{package}/ai-agent-scenarios.md`
 >
 > **PM interaction**: NO — generate autonomously.
 >
-> **When done**: Report confirmation and list core resources in the resource model.
+> **Hard rule**: No HTTP methods/paths, no JSON schemas, no resource-model tables, no state machines. Scenarios in prose. Capability requirements as bullets.
+>
+> **When done**: Report confirmation and list the top use cases in the Use Case Inventory.
 
 **Gate 3**:
-1. Read `living-faq.md` — if any `blocking` questions are `UNANSWERED`, present them to the PM and collect answers. Update FAQ with PM answers marked FINAL. Update status counts.
-2. Read `agentic-api-design.md` — verify Resource Model and Capability Inventory sections exist.
-3. Cross-reference: do blocking FAQ items challenge API design assumptions? Flag if so.
+1. Read `living-faq.md` — if the "Open Questions for PM" section has any items, present them to the PM and collect answers. Update the FAQ with the PM's answers.
+2. Read `ai-agent-scenarios.md` — verify the Use Case Inventory and at least 3 scenarios exist in prose form (no HTTP/JSON).
+3. Cross-reference: do any open FAQ items challenge the scenarios? Flag if so.
 
 ---
 
@@ -148,8 +152,7 @@ Briefly summarize what was produced in Phases 1–3:
 > - `{package}/press-release-internal.md`
 > - `{package}/one-pager.md`
 > - `{package}/living-faq.md`
-> - `{package}/agentic-api-design.md`
-> - `{package}/api-agent-scenarios.md`
+> - `{package}/ai-agent-scenarios.md`
 >
 > **Templates and quality gates**:
 > - `datasets/product/templates/prd-template.md`
@@ -161,7 +164,7 @@ Briefly summarize what was produced in Phases 1–3:
 >
 > **PM interaction**: YES — confirm pre-populated sections, fill genuinely missing sections. Do NOT re-ask for info already in upstream artifacts.
 >
-> **Important**: Inherit all `important` and `tracked` UNANSWERED items from Living FAQ into Open Questions.
+> **Important**: Inherit every item from the Living FAQ's "Open Questions for PM" section that remains UNANSWERED into the PRD Open Questions.
 >
 > **When done**: Report PRD status, which sections were pre-populated vs. PM-provided, and any validation warnings.
 
@@ -183,7 +186,7 @@ Briefly summarize what was produced in Phases 1–3:
 > - `{package}/press-release-external.md`
 > - `{package}/press-release-internal.md`
 > - `{package}/living-faq.md`
-> - `{package}/agentic-api-design.md`
+> - `{package}/ai-agent-scenarios.md`
 >
 > **Template**: `datasets/product/templates/expansion-proposals.md`
 >
@@ -219,16 +222,14 @@ Briefly summarize what was produced in Phases 1–3:
 > - `{package}/press-release-external.md`
 > - `{package}/press-release-internal.md`
 > - `{package}/one-pager.md`
-> - `{package}/living-faq.md`
-> - `{package}/agentic-api-design.md`
-> - `{package}/api-agent-scenarios.md`
+> - `{package}/living-faq.md` (read-only reference)
+> - `{package}/ai-agent-scenarios.md`
 > - `{package}/expansion-proposals.md` (if exists)
 >
 > **Template**: `datasets/product/templates/red-team-report.md`
 >
 > **Write to disk**:
-> - `{package}/red-team-report.md`
-> - `{package}/living-faq.md` (append new questions, marked "DRAFT — PM review needed")
+> - `{package}/red-team-report.md` (ONLY file written; do NOT append to the Living FAQ — abuse/misuse and harm scenarios go in the red team report's Harm Scenarios section)
 >
 > **PM interaction**: NO — conduct full review autonomously.
 >
@@ -243,7 +244,6 @@ Briefly summarize what was produced in Phases 1–3:
 3. PM confirms fixes are adequate
 4. Update PRD with critical fixes (both locations)
 5. Track major findings (don't block)
-6. Check updated `living-faq.md` for new blocking questions
 
 ---
 
@@ -279,7 +279,7 @@ Present the complete product package:
 1. **Package folder**: `datasets/product/packages/{YYYY}/{slug}/`
 2. **List every artifact** with one-line summaries
 3. **Highlight the 3 most important decisions/findings**
-4. **Call out any remaining UNANSWERED questions** in the Living FAQ
+4. **Call out any remaining UNANSWERED items** in the Living FAQ's "Open Questions for PM" section
 5. **Note critical findings** that were addressed and how
 6. **Summarize the business case** executive summary
 
@@ -291,9 +291,8 @@ datasets/product/packages/{YYYY}/{slug}/
 ├── press-release-external.md     (Phase 2)
 ├── press-release-internal.md     (Phase 2)
 ├── one-pager.md                  (Phase 2)
-├── living-faq.md                 (Phase 3, updated throughout)
-├── agentic-api-design.md         (Phase 3)
-├── api-agent-scenarios.md        (Phase 3)
+├── living-faq.md                 (Phase 3, PM-edited after Phase 3)
+├── ai-agent-scenarios.md         (Phase 3)
 ├── PRD_{slug}.md                 (Phase 4)
 ├── expansion-proposals.md        (Phase 4)
 ├── red-team-report.md            (Phase 5)

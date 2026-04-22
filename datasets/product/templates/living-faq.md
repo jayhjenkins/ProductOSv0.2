@@ -2,70 +2,76 @@
 
 **Last Updated:** {YYYY-MM-DD}
 
-> This is a living document. Questions are added throughout the workflow by any agent or the PM. Only the PM can mark answers as final.
+<!--
+Audience: internal business users (CSM, Professional Services, Support) and end customers.
+NOT engineering. Engineers surface their own questions during tech spec.
 
-## Status Summary
+Hard limits:
+  - ≤ 20 questions total
+  - ≤ 50 words per answer
+  - ≤ 2,000 words total
+  - No HTTP, JSON, architecture, security-implementation, or performance-scaling questions
+-->
 
-| Category | Count |
-|----------|-------|
-| Blocking (must answer before PRD) | {N} |
-| Important (answer before engineering) | {N} |
-| Tracked (answer during development) | {N} |
-| Deferred (v2 / future) | {N} |
-| Answered | {N} |
+## TL;DR
 
----
-
-## Blocking Questions
-
-*These must be answered before the PRD can be written.*
-
-| ID | Question | Source Perspective | Answer |
-|----|----------|-------------------|--------|
-| B-1 | {Question text} | {Persona who raised it} | {Answer or **UNANSWERED**} |
-| B-2 | | | |
+- **What it is:** {one sentence}
+- **Who it's for:** {internal teams and customer segments}
+- **When it ships:** {target launch window or TBD}
 
 ---
 
-## Important Questions
+## For Internal Teams
 
-*These should be answered before engineering begins.*
+### CSM / Account Management
 
-| ID | Question | Source Perspective | Answer |
-|----|----------|-------------------|--------|
-| I-1 | {Question text} | {Persona who raised it} | {Answer or **UNANSWERED**} |
-| I-2 | | | |
+| ID | Question | Answer |
+|----|----------|--------|
+| CSM-1 | {Question — how do I position this, what's the pitch, what objections should I expect?} | {≤50 words} |
+| CSM-2 | | |
 
----
+### Professional Services / Implementation
 
-## Tracked Questions
+| ID | Question | Answer |
+|----|----------|--------|
+| PS-1 | {Question — how does this change setup, what training is needed, what are rollout edge cases?} | {≤50 words} |
+| PS-2 | | |
 
-*Good questions that can be answered during development.*
+### Support
 
-| ID | Question | Source Perspective | Answer |
-|----|----------|-------------------|--------|
-| T-1 | {Question text} | {Persona who raised it} | {Answer or **UNANSWERED**} |
-| T-2 | | | |
-
----
-
-## Deferred Questions
-
-*Relevant for v2 or future iterations.*
-
-| ID | Question | Source Perspective | Answer |
-|----|----------|-------------------|--------|
-| D-1 | {Question text} | {Persona who raised it} | {Answer or **UNANSWERED**} |
-| D-2 | | | |
+| ID | Question | Answer |
+|----|----------|--------|
+| SUP-1 | {Question — what issues will come in, how do we self-serve, what's the escalation path?} | {≤50 words} |
+| SUP-2 | | |
 
 ---
 
-## Abuse & Misuse Scenarios
+## For Customers
 
-| ID | Scenario | Severity | Mitigation |
-|----|----------|----------|------------|
-| A-1 | {How could this be misused or produce unintended harm?} | {Critical/Major/Minor} | {Proposed mitigation} |
-| A-2 | | | |
+### New Users
+
+| ID | Question | Answer |
+|----|----------|--------|
+| NEW-1 | {Question — what can I do with this, how do I start, where do I get help?} | {≤50 words} |
+| NEW-2 | | |
+
+### Existing Users
+
+| ID | Question | Answer |
+|----|----------|--------|
+| EXIST-1 | {Question — does this replace X, is my data still here, is there a price change?} | {≤50 words} |
+| EXIST-2 | | |
+
+---
+
+## Open Questions for PM
+
+*These items need a PM answer before the PRD can be finalized or before engineering begins. This section replaces the old blocking/important/tracked/deferred taxonomy.*
+
+| ID | Question | Why It Matters | Status |
+|----|----------|----------------|--------|
+| OPEN-1 | {Question} | {1 sentence — what decision depends on this} | UNANSWERED |
+| OPEN-2 | | | |
 
 ---
 

@@ -42,8 +42,8 @@ datasets/product/packages/{YYYY}/{slug}/
 - **Complete PRD** — from `prd-creation` skill (in `{package}/` and `datasets/product/prds/{YYYY}/`)
 - **Context Brief** (`{package}/context-brief.md`) — customer evidence
 - **Press Releases** (`{package}/press-release-*.md`) — product vision and value prop
-- **Living FAQ** (`{package}/living-faq.md`) — edge cases and concerns
-- **API Design** (`{package}/agentic-api-design.md`) — technical capabilities
+- **Living FAQ** (`{package}/living-faq.md`) — business-user and customer concerns
+- **AI Agent Scenarios** (`{package}/ai-agent-scenarios.md`) — agent use cases and capability requirements
 - Minimum: Complete PRD must exist
 
 ## Outputs Produced

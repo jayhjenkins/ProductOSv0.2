@@ -1,34 +1,50 @@
 # /project:update-faq
 
-## Add Entry to Living FAQ
+## Add or Update an Entry in the Living FAQ
 
-Add a new question, answer, or update to the Living FAQ document. This can be triggered from any phase of the workflow.
+Add a new question, answer, or edit in the Living FAQ document. The Living FAQ is audience-first (internal business users + customers). It is NOT the place for engineering, architecture, or security-implementation questions.
 
 ## What to Do
 
 1. **Locate the Living FAQ** in the initiative's package folder at `datasets/product/packages/{YYYY}/{slug}/living-faq.md`
    - List available package folders if the initiative is ambiguous
    - If no package folder or FAQ exists, inform the user and suggest running `/project:prep` first
-3. **Ask the user** what they want to add or update:
-   - New question? → Ask for: question text, source perspective, priority tag (blocking/important/tracked/deferred)
-   - Answer to existing question? → Ask which question ID, then the answer
+2. **Ask the user** what they want to add or update:
+   - New question? → Ask for: question text, audience tag, draft answer (≤50 words)
+   - Answer to an existing question? → Ask which question ID, then the answer
    - Update existing entry? → Ask which entry and what to change
-4. **Write the update** to the Living FAQ
-5. **Update the status counts** in the FAQ header
-6. **Add a changelog entry** with the date and change description
+   - New PM-only open item? → Add to the "Open Questions for PM" section
+3. **Respect the hard caps** — ≤20 total questions, ≤50 words per answer, ≤2,000 words total. If adding the new question would exceed a cap, ask the user which existing question to retire.
+4. **Write the update** to the Living FAQ in the correct audience section
+5. **Add a changelog entry** with the date and change description
 
-## Priority Tags
+## Audience Tags
 
-| Tag | Meaning |
-|-----|---------|
-| `blocking` | Must be answered before PRD can be written |
-| `important` | Should be answered before engineering begins |
-| `tracked` | Good question, can be answered during development |
-| `deferred` | Relevant for v2 or future iterations |
+Every question in the main FAQ sections is tagged with its audience:
+
+| Tag | Audience | Section |
+|-----|----------|---------|
+| `internal-csm` | CSM / Account Management | For Internal Teams |
+| `internal-ps` | Professional Services / Implementation | For Internal Teams |
+| `internal-support` | Support | For Internal Teams |
+| `customer-new` | End Customer — New User | For Customers |
+| `customer-existing` | End Customer — Existing User | For Customers |
+
+The "Open Questions for PM" section holds items the PM still needs to answer before the PRD can be finalized or engineering can start. Items here do not need an audience tag.
+
+## Scope Rules
+
+**Do NOT add to the Living FAQ:**
+- Engineering implementation questions (architecture, scaling, data model, tech stack choice)
+- Security-implementation questions (XSS, CSRF, tenant isolation, auth mechanics)
+- Compliance-implementation questions (GDPR/SOC2/HIPAA technical controls)
+- Performance or capacity-planning questions
+- Abuse/misuse scenarios (those go in `red-team-report.md` under Harm Scenarios)
+
+If you catch one of these, redirect it to the appropriate artifact or drop it. The FAQ is for non-engineers.
 
 ## Rules
 
-- Any agent or the PM can ADD questions
-- Only the PM can mark answers as FINAL
-- Answers added by agents are marked as "DRAFT — PM review needed"
-- Questions are organized by topic, not by when they were added
+- The PM owns the Living FAQ after its initial generation — other agents do not write to it
+- The `red-team-reviewer` skill does NOT append to this file
+- Keep each answer ≤50 words — if you need more, the question is probably too broad

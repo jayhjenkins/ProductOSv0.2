@@ -42,8 +42,7 @@ For the selected package folder, list every file with:
 
 ### Phase 3: Knowledge Base
 - `{package}/living-faq.md` — {one-line summary} — Last modified: {date}
-- `{package}/agentic-api-design.md` — {one-line summary} — Last modified: {date}
-- `{package}/api-agent-scenarios.md` — {one-line summary} — Last modified: {date}
+- `{package}/ai-agent-scenarios.md` — {one-line summary} — Last modified: {date}
 
 ### Phase 4: PRD
 - `{package}/PRD_{slug}.md` — {one-line summary} — Last modified: {date}

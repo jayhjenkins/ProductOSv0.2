@@ -27,8 +27,7 @@ For each package folder, check for these files:
 | 2 | Internal Press Release | `{package}/press-release-internal.md` |
 | 2 | One-Pager | `{package}/one-pager.md` |
 | 3 | Living FAQ | `{package}/living-faq.md` |
-| 3 | Agentic API Design | `{package}/agentic-api-design.md` |
-| 3 | Agent Workflow Scenarios | `{package}/api-agent-scenarios.md` |
+| 3 | AI Agent Scenarios | `{package}/ai-agent-scenarios.md` |
 | 4 | PRD | `{package}/PRD_{slug}.md` |
 | 4 | Expansion Proposals | `{package}/expansion-proposals.md` |
 | 5 | Red Team Report | `{package}/red-team-report.md` |
@@ -43,7 +42,7 @@ For each artifact:
 
 ## Step 4: Check Blockers
 
-- **Living FAQ**: Count UNANSWERED blocking questions
+- **Living FAQ**: Count UNANSWERED items in the "Open Questions for PM" section
 - **Red Team Report**: Count unresolved critical findings
 
 ## Step 5: Suggest Next Action
@@ -69,7 +68,7 @@ For each artifact:
 - Phase 6 (Business Case): {✅/⚠️/❌}
 
 ### Blockers
-- {count} UNANSWERED blocking questions in Living FAQ
+- {count} UNANSWERED items in Living FAQ "Open Questions for PM"
 - {count} unresolved critical findings in Red Team Report
 
 ### Suggested Next Action

@@ -1,6 +1,6 @@
 ---
 name: prd-creation
-description: Use when creating standalone PRD from user input or upstream artifacts - gathers requirements through interactive session, ingests Shipping Greatness artifacts (context brief, press releases, FAQ, API design), validates with prd-validation, and writes PRD file using template
+description: Use when creating standalone PRD from user input or upstream artifacts - gathers requirements through interactive session, ingests Shipping Greatness artifacts (context brief, press releases, FAQ, AI agent scenarios), validates with prd-validation, and writes PRD file using template
 ---
 
 # PRD Creation
@@ -55,9 +55,8 @@ Before starting the interactive session, check the package folder for these arti
 | External Press Release | `{package}/press-release-external.md` | Product vision, customer outcome, key benefits, emotional hook |
 | Internal Press Release | `{package}/press-release-internal.md` | Stakeholder impact, implementation considerations, support implications |
 | One-Pager | `{package}/one-pager.md` | Tagline, target audience, differentiators, success metrics, timeline |
-| Living FAQ | `{package}/living-faq.md` | Import `important` and `tracked` items into Open Questions section. Use answered items to inform requirements |
-| API Design | `{package}/agentic-api-design.md` | Resource model, capability inventory → populate Agent/API Scenarios section |
-| Agent Scenarios | `{package}/api-agent-scenarios.md` | End-to-end agent workflows → populate Agent/API Scenarios section |
+| Living FAQ | `{package}/living-faq.md` | Import all items in the "Open Questions for PM" section that are still UNANSWERED into the PRD Open Questions. Use answered items to inform requirements and customer-facing positioning. |
+| AI Agent Scenarios | `{package}/ai-agent-scenarios.md` | Use Case Inventory, scenarios, and API Requirements → populate Agent/API Scenarios section. Do NOT prescribe endpoint shape in the PRD — engineering owns that. |
 
 If upstream artifacts exist, announce what was imported and which sections were pre-populated. Only ask the PM to confirm or refine pre-populated content, not re-enter it.
 
@@ -102,7 +101,7 @@ If upstream artifacts exist, announce what was imported and which sections were 
 
 **Ask user:**
 - **Use Cases In Scope**: What specific use cases will be supported? Include descriptions.
-- **Agent/API Scenarios**: For each human use case, what is the equivalent agent/API scenario? Does it have full API coverage per the Agentic API Design? (Pre-populate from `agentic-api-design.md` and `api-agent-scenarios.md` if available.)
+- **Agent/API Scenarios**: For each human use case, what is the equivalent agent scenario? Reference the use cases and scenarios in `ai-agent-scenarios.md`. (Pre-populate from `ai-agent-scenarios.md` if available. The PRD references the scenarios; it does NOT duplicate endpoint-level API design.)
 - **Out of Scope**: What are we explicitly NOT doing? Include reasons.
 - **Non-Goals**: What does this product explicitly NOT aim to do? (Distinct from out-of-scope — non-goals define philosophical boundaries, not just "not in this release.")
 
@@ -161,14 +160,14 @@ All phases ship. This is sequencing, not cutting. Include dependency tracking be
 ### Phase 9: Open Questions / Tracked Assumptions
 
 **Populate from Living FAQ:**
-- Import all `important` and `tracked` items from `living-faq.md` that remain UNANSWERED
+- Import every item from the "Open Questions for PM" section of `living-faq.md` that is still UNANSWERED
 - Add any new questions surfaced during PRD creation
 - Track assumptions the PRD is built on — what happens if they're wrong?
 
 ### Phase 10: Appendix / Upstream Artifact Links
 
 **Link to all upstream artifacts** for traceability:
-- Context Brief, Press Releases, One-Pager, Living FAQ, API Design, Agent Scenarios
+- Context Brief, Press Releases, One-Pager, Living FAQ, AI Agent Scenarios
 - Any expansion proposals or red team reports (if they exist from a previous `/build` run)
 
 *Only link artifacts that actually exist. Don't create placeholder links.*
@@ -235,7 +234,7 @@ If yes: Prepend to `datasets/product/backlog.md`
 - `meeting-synthesis`: Gathers evidence from meeting transcripts
 - `vision-clarifier`: Produces press releases and one-pager (upstream)
 - `devils-advocate`: Produces Living FAQ (upstream)
-- `agentic-api-designer`: Produces API design (upstream)
+- `agentic-api-designer`: Produces AI Agent Scenarios (upstream)
 - `ambition-expander`: Reviews PRD and proposes scope expansion (downstream)
 - `red-team-reviewer`: Adversarial PRD validation (downstream)
 

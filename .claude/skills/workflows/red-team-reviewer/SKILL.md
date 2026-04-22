@@ -40,15 +40,14 @@ datasets/product/packages/{YYYY}/{slug}/
 - **Complete PRD** — in `{package}/` and `datasets/product/prds/{YYYY}/`
 - **Context Brief** (`{package}/context-brief.md`)
 - **Press Releases** (`{package}/press-release-external.md`, `{package}/press-release-internal.md`)
-- **Living FAQ** (`{package}/living-faq.md`)
-- **Agentic API Design** (`{package}/agentic-api-design.md`)
-- **Agent Workflow Scenarios** (`{package}/api-agent-scenarios.md`)
+- **Living FAQ** (`{package}/living-faq.md`) — for reference only; this skill does NOT write back to it
+- **AI Agent Scenarios** (`{package}/ai-agent-scenarios.md`)
 - **Expansion Proposals** (`{package}/expansion-proposals.md`) — if accepted items were folded in
-- Minimum: Complete PRD and API Design must exist
+- Minimum: Complete PRD and AI Agent Scenarios must exist
 
 ## Outputs Produced
 
-- `{package}/red-team-report.md` — Severity-classified findings with recommended fixes
+- `{package}/red-team-report.md` — Severity-classified findings with recommended fixes. This is the ONLY file this skill writes to. It does NOT update the Living FAQ — any abuse/misuse, security, or harm-scenario concerns go in the red team report's Harm Scenarios section.
 
 ## Workflow
 
@@ -75,14 +74,16 @@ Review the technical architecture for:
 - **Security vulnerabilities**: At system boundaries, at data handoff points
 - **Third-party dependency risks**: What if [vendor] has an outage or changes their API?
 
-### Task 3: Agentic API Review
+### Task 3: AI Agent Scenarios Review
 
-Review the API design for agent completeness:
-- Can an agent complete **every** user scenario end-to-end via API alone?
-- Are error responses actionable enough for an agent to self-correct?
-- Are there any UI-only capabilities that lack API coverage?
-- Are the agent workflow scenarios realistic and complete?
-- Do the API endpoints match the capabilities described in the PRD?
+Review `ai-agent-scenarios.md` for coverage and realism:
+- Does every user scenario in the PRD have a corresponding agent scenario or use case?
+- Are the scenarios realistic — does the prose describe something an agent could actually do?
+- Are failure modes described for each scenario with the agent's intended response?
+- Do the API Requirements cover every capability implied by the PRD and press releases?
+- Are there UI-only capabilities in the PRD that lack an agent use case?
+
+Do NOT review HTTP shape, endpoint naming, payload schemas, or state machines — those are engineering's responsibility, not this doc's scope.
 
 ### Task 4: Persona-Lens Review (when `--personas` flag used)
 
@@ -102,7 +103,7 @@ Check for contradictions across the full artifact set:
 - Do user scenarios match capability specifications?
 - Do success metrics align with stated goals?
 - Do non-goals conflict with any proposed features?
-- Does the API design support ALL described user flows?
+- Do the AI Agent Scenarios cover ALL described user flows?
 - Do the press releases promise anything the PRD doesn't deliver?
 - Does the Living FAQ contain answered questions that contradict the PRD?
 
@@ -133,7 +134,7 @@ Produce structured report using template `datasets/product/templates/red-team-re
 - `--full` — Complete review, all tasks (default)
 - `--scenario "name"` — Review a specific user scenario
 - `--architecture` — Focus on architecture stress test
-- `--api` — Focus on agentic API review
+- `--agent-scenarios` — Focus on AI Agent Scenarios coverage review
 - `--personas` — Run persona-lens review
 - `--consistency` — Focus on cross-document consistency
 
@@ -149,7 +150,7 @@ The goal is to make the ambitious plan robust. If something is broken, fix it. I
 - [ ] Findings classified by severity with accurate counts
 - [ ] Each finding has specific PRD section reference and recommended fix
 - [ ] Architecture stress test covers 10x/100x/1000x dimensions
-- [ ] API review confirms agent can complete all scenarios via API
+- [ ] AI Agent Scenarios review confirms every user scenario has agent coverage
 - [ ] No finding recommends cutting a feature — all recommend fixes
 - [ ] Consistency audit covers all artifact cross-references
 - [ ] Summary statistics present
@@ -170,7 +171,7 @@ The goal is to make the ambitious plan robust. If something is broken, fix it. I
 - **PM reviews findings** — confirms severity, approves recommended fixes
 - **Critical findings block progression** — PM must address before Phase 6
 - **Major findings are tracked** — do not block, but are recorded
-- **Agent updates Living FAQ** — new questions surfaced during review are added
+- **Agent does NOT write to the Living FAQ** — all red team concerns (including abuse/misuse and harm scenarios) go into `red-team-report.md` only. The Living FAQ stays focused on business-user and customer questions.
 
 ## Gate
 
@@ -180,6 +181,6 @@ All `critical` findings must be addressed (fixes incorporated into PRD). `Major`
 
 - `prd-creation`: Produces the PRD being reviewed
 - `ambition-expander`: Proposals that were accepted are now in the PRD
-- `agentic-api-designer`: API design being reviewed for completeness
-- `devils-advocate`: Living FAQ may get new questions from this review
+- `agentic-api-designer`: Produces the AI Agent Scenarios reviewed for coverage
+- `devils-advocate`: Produces the Living FAQ (read-only for this skill)
 - `swag-modeler`: Next phase — business case built from validated PRD

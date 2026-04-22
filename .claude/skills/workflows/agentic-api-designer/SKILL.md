@@ -1,30 +1,43 @@
 ---
 name: agentic-api-designer
-description: Use when designing API interfaces for a feature - creates agent-first API design with Stripe-level quality optimized for machine callers, including resource models, endpoint specs, discoverability layers, and agent workflow scenarios
+description: Use when defining what AI agents must be able to do with a feature - produces a single ai-agent-scenarios.md artifact with use cases, jobs-to-be-done, and capability requirements for engineering. Does NOT prescribe API shape, HTTP verbs, endpoints, or schemas - engineering owns those.
 ---
 
-# Agentic API Designer
+# AI Agent Scenarios Designer
 
 ## Purpose
 
-Design API interfaces where agents are the primary consumer:
-- Stripe-level quality, optimized for machine callers
-- Self-describing schemas that agents can read and understand
-- Composable operations for agent chaining
-- 100% feature coverage — no UI-only capabilities
-- Actionable error responses for agent self-correction
+Define the jobs an AI agent must be able to accomplish with this feature, and the capabilities the API must expose to make those jobs possible. Stop short of prescribing the API itself.
+
+- Capture agent use cases as jobs-to-be-done
+- Write 3–5 end-to-end scenarios in prose — no HTTP, no JSON
+- Enumerate the capabilities engineering must expose, without telling engineering how
+- Surface discoverability and error-handling principles at a high level
 
 ## Governing Principle
 
-> Agents are the primary consumer, not human developers. Every design decision should ask: "Can an agent figure this out and use it without human intervention?"
+> The PM defines what agents must be able to do. Engineering decides how. This doc is about use cases and capabilities — not endpoints, payloads, or resource models.
+
+## Non-Goals
+
+This skill does NOT produce:
+- HTTP method and path specifications
+- JSON request/response schemas
+- Resource model tables with attribute types and constraints
+- State machines or state-transition tables
+- OpenAPI or JSON Schema specs
+- Pagination, filtering, idempotency, or rate-limiting specs
+- Anti-patterns lists targeting engineering choices
+
+If you catch yourself writing `POST /api/v1/...`, a JSON block, or a schema table — stop. Rewrite as a capability requirement in plain language.
 
 ## When to Use
 
 Activate when:
 - User invokes `/project:api-design`
 - Phase 3 of `/project:prep` or `/project:ship-it`
-- Designing API surface for any new feature
-- Reviewing existing API for agent-friendliness
+- Defining what an agent needs from any new feature
+- Reviewing an existing feature's agent coverage
 
 ## Product Package Folder
 
@@ -39,139 +52,100 @@ datasets/product/packages/{YYYY}/{slug}/
 - **Context Brief** (`{package}/context-brief.md`) — customer problems and use cases
 - **External Press Release** (`{package}/press-release-external.md`) — product capabilities and outcomes
 - **Internal Press Release** (`{package}/press-release-internal.md`) — operational requirements
-- **Living FAQ** (`{package}/living-faq.md`) — edge cases and concerns (if available)
 - **One-Pager** (`{package}/one-pager.md`) — scope and differentiators
+- **Living FAQ** (`{package}/living-faq.md`) — if available, for audience context (use cases may reference CSM/PS/customer needs)
 - Minimum: Context Brief and at least one press release
 
 ## Outputs Produced
 
-- `{package}/agentic-api-design.md` — Full API design document
-- `{package}/api-agent-scenarios.md` — End-to-end agent workflow examples
+- `{package}/ai-agent-scenarios.md` — single artifact covering use cases, scenarios, capability requirements, and discoverability principles
 
 ## Workflow
 
-### Task 1: Capability Inventory
+### Task 1: Use Case Inventory
 
-From the press releases, FAQ, and Context Brief, enumerate **every discrete action** a user can take with this feature. This becomes the exhaustive list of things the API must support.
+Enumerate every job an agent should be able to accomplish with this feature. Write each as a plain-language sentence:
 
-Group by domain:
-- **Configuration**: Setup, settings, preferences
-- **Execution**: Core operations, transactions, workflows
-- **Reporting**: Queries, analytics, exports
-- **Admin**: User management, permissions, audit
+> Agent can **{verb}** **{object}** to **{outcome}**.
 
-Output: Table of capabilities with domain grouping.
+Example: "Agent can apply a form template to an association to onboard a new customer in one step."
 
-### Task 2: Resource Model Design
+Group by purpose (configuration, execution, reporting, admin) if it helps readability, but do NOT group by HTTP verb.
 
-Define the core resources (nouns) the API exposes:
+### Task 2: Agent Scenarios (Jobs-to-be-Done)
 
-For each resource:
-- **Name and description**
-- **Attributes** (fields with types, descriptions, constraints)
-- **Relationships** to other resources
-- **Lifecycle**: Created → Active → [domain-specific states] → Archived/Deleted
-- **State transitions**: What triggers each transition? Who/what can trigger it?
+Write 3–5 end-to-end scenarios. Each in prose. No HTTP. No JSON.
 
-Produce a clear entity-relationship summary.
+For each scenario:
 
-### Task 3: Endpoint Specification
+- **Job to be done:** the outcome in one sentence
+- **Trigger:** what causes the agent to initiate this (user request, scheduled event, system trigger, etc.)
+- **Inputs needed:** what the agent must know or have — in plain language (e.g., "the association ID, the current action type, and the customer's preferred language"). Do NOT use JSON or schema notation.
+- **Steps:** 3–7 numbered prose steps describing what the agent does. Example: "retrieves the association's current form configuration", "confirms the template is compatible with the association's action types", "applies the template and reports the result back to the user". Do NOT write HTTP calls or code.
+- **Success criteria:** what state exists when done
+- **Failure modes:** 2–4 things that can go wrong, each with how the agent should respond (retry, fall back, escalate, abort)
 
-For each capability from the inventory, define:
+### Task 3: API Requirements for Engineering
 
-- **HTTP method and path** (RESTful, predictable, consistent naming)
-- **Request payload schema** with field-level descriptions, types, constraints, and examples
-- **Response payload schema** with field-level descriptions
-- **Error response schemas** with:
-  - Machine-readable error code (e.g., `INVALID_STATE_TRANSITION`)
-  - Human-readable message
-  - Remediation instruction (what the agent should do to fix it)
-  - Related documentation link
-- **Idempotency behavior**: Which operations are safe to retry? How? (idempotency keys?)
-- **Pagination strategy** for list endpoints (cursor-based preferred)
-- **Filtering and sorting** capabilities
+Bullet list of what the API MUST be able to do to support the scenarios above. Capabilities only. No verbs, paths, payloads, or schemas.
 
-### Task 4: Agent Discoverability Layer
+Example entries:
+- "list all associations accessible to the authenticated agent, with filters for status and management company"
+- "retrieve the full current configuration of a single association"
+- "apply a form template to an association in a single operation that either fully succeeds or fully rolls back"
+- "enumerate the actions available for an association given its current state"
+- "subscribe to events when an association's configuration changes"
 
-Design the meta-API that helps agents understand what's available:
+Engineering uses this list to design the actual endpoints. The PM is not prescribing the shape.
 
-- **OpenAPI/JSON Schema spec**: Complete and accurate — agents will read this to plan calls
-- **Capability discovery**: Endpoint that answers "what can I do with this feature?"
-- **State inspection**: Endpoints that answer "what is the current state of X and what actions are available from here?"
-- **Webhook/event contracts**: What events does this feature emit? What do payloads look like? How to subscribe/unsubscribe?
+### Task 4: Discoverability Principles
 
-### Task 5: Agent Workflow Scenarios
+High-level requirements for how agents discover and navigate the API. Plain language. No endpoint specs.
 
-Write 3–5 end-to-end scenarios using template `datasets/product/templates/api-agent-scenarios.md`:
-
-Each scenario includes:
-- **Goal**: What the agent is trying to accomplish
-- **Preconditions**: What state must exist before starting
-- **Step-by-step API call sequence** with request/response examples
-- **Decision points**: "If the response contains X, call Y; otherwise call Z"
-- **Error handling**: "If this call fails with error code A, retry; if error code B, escalate to human"
-- **Expected outcome**: What state exists when done
-
-### Task 6: Anti-Patterns Document
-
-Explicitly list what the API must NOT do:
-
-- No endpoints that require multi-step UI-style wizards
-- No "confirm" steps that assume a human is watching (use idempotency keys instead)
-- No ambiguous enums or magic strings — every value is documented
-- No endpoints that return different shapes based on context (predictable contracts always)
-- No undocumented side effects
-- No endpoints that require knowledge not in the schema to use correctly
+Standard set (adapt to this feature):
+- Agents must be able to enumerate the actions available on any resource from the resource itself — no out-of-band documentation required.
+- Errors must include a remediation hint that tells the agent what to do next (retry, call another capability, or escalate to a human).
+- Responses must be predictable — the same request returns the same shape regardless of context.
+- Every write operation must be safely retryable.
+- Every capability exposed to humans in the UI must also be available to agents.
 
 ## Arguments
 
-- `--generate` — Full API design from current artifacts (default)
-- `--resources` — Generate just the resource model
-- `--scenarios` — Generate agent workflow scenarios only
-- `--review` — Critique existing API design for agent-friendliness
+- `--generate` — Full scenarios artifact from current upstream artifacts (default)
+- `--scenarios` — Regenerate just the scenarios section against updated upstream artifacts
+- `--review` — Critique an existing scenarios doc for use-case coverage and prose discipline (flag any HTTP/JSON/schema creep)
 
 ## Quality Criteria
 
-- [ ] Every capability from press releases has API coverage
-- [ ] All endpoints have complete request/response schemas with field descriptions
-- [ ] Error responses include machine-readable codes AND remediation instructions
-- [ ] At least 3 end-to-end agent scenarios with decision points
-- [ ] Anti-patterns document present
-- [ ] Resource model has clear lifecycle definitions for every entity
-- [ ] Pagination, filtering, and sorting defined for all list endpoints
-- [ ] Idempotency behavior documented for every write operation
-- [ ] No UI-only capabilities — 100% API coverage
+- [ ] 3–5 scenarios written in prose — no HTTP, no JSON, no code blocks
+- [ ] Use Case Inventory covers every capability implied by the press releases
+- [ ] API Requirements section is bullet-list capabilities only — no verbs, paths, or schemas
+- [ ] Each scenario has: job, trigger, inputs, steps, success criteria, failure modes
+- [ ] Failure modes include the agent's intended response for each
+- [ ] Discoverability Principles present and stated at a high level
+- [ ] No resource model, state machine, or endpoint specification anywhere in the doc
 
 ## Failure Modes
 
 | Failure | Detection | Fix |
 |---------|-----------|-----|
-| UI-first thinking | Endpoints that assume human interaction flow | Redesign for agent callers |
-| Generic error responses | "400 Bad Request" without details | Add structured error objects with remediation |
-| Incomplete coverage | Capabilities in press release without API endpoints | Add missing endpoints |
-| Simple scenarios | Agent scenarios without decision points or error handling | Add branching and error cases |
-| Missing lifecycle | Resources without state transitions | Define full lifecycle |
-| Ambiguous contracts | Response shape varies by context | Standardize to predictable contracts |
+| API prescription creep | Any `GET/POST/PUT/DELETE`, `/api/...`, or JSON block | Delete the offending section; rewrite as prose capability |
+| Resource-model thinking | Attribute tables with types and constraints | Delete; scope is use cases, not data modeling |
+| State-machine creep | State transition tables with triggers | Delete; describe state changes in prose within scenarios |
+| Call-sequence docs | Scenarios written as numbered API calls | Rewrite as plain-language "agent does X, then Y" |
+| Incomplete failure modes | Scenarios that only describe the happy path | Add 2–4 failure modes per scenario with agent response |
+| Vague capabilities | "Agent needs the right data" | Rewrite specifically: "list active associations for the authenticated agent" |
 
 ## Interaction Model
 
-- **Agent generates the API design autonomously** from upstream artifacts
-- **PM reviews for business logic accuracy** — are the capabilities right?
-- **Agent decides**: Endpoint structure, naming conventions, error codes, pagination strategy
-- **PM decides**: Business rules, state transition permissions, which capabilities are required vs. optional
-
-## Design Principles (Non-Negotiable)
-
-1. **Self-describing**: An agent reading the schema understands everything
-2. **Composable**: Each endpoint does one thing cleanly, returns everything needed for next call
-3. **Idempotent**: Safe to retry any operation
-4. **100% coverage**: If a human can do it in the UI, an agent can do it via API
-5. **Actionable errors**: Every error tells the agent how to fix it
-6. **Predictable**: Same input always produces same response shape
+- **Agent generates the scenarios doc autonomously** from upstream artifacts
+- **PM reviews for business logic accuracy** — are the use cases right? Are the scenarios realistic?
+- **PM decides**: which use cases are required vs. aspirational, what business rules apply, which failure modes matter
+- **Engineering owns**: endpoint shape, HTTP verbs, payload schemas, authentication/authorization mechanics, pagination, idempotency implementation
 
 ## Related Skills
 
 - `vision-clarifier`: Produces press releases that define capabilities
-- `devils-advocate`: Runs in parallel, surfaces edge cases that inform error handling
-- `prd-creation`: API design feeds into Agent/API Scenarios section of PRD
-- `red-team-reviewer`: Reviews API design for completeness in Phase 5
+- `devils-advocate`: Runs in parallel — produces audience-focused FAQ (separate concern)
+- `prd-creation`: Inherits scenarios into the PRD's Agent/API Scenarios section
+- `red-team-reviewer`: Reviews scenarios for completeness and validates that all press release capabilities map to at least one scenario

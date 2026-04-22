@@ -6,34 +6,51 @@
 
 ## Before Starting
 
-1. **Announce**: "I'm using agentic-api-designer to design agent-first API interfaces"
+1. **Announce**: "I'm using agentic-api-designer to define agent use cases and capability requirements — not to design the API shape"
 2. **Read the skill**: Load `.claude/skills/workflows/agentic-api-designer/SKILL.md`
 3. **Follow exactly**: Execute the skill as written
 
 ## Purpose
 
-Design API interfaces with agents as the primary consumer. Stripe-level quality, optimized for machine callers — AI agents that need to discover, understand, and execute every capability without touching a UI.
+Define the jobs an AI agent must be able to accomplish with this feature, as jobs-to-be-done scenarios, plus a capability list engineering uses to design the actual API. This command does NOT produce an API specification — engineering owns endpoint naming, HTTP shape, payload schemas, and resource models.
+
+## What You Produce
+
+A single artifact: `{package}/ai-agent-scenarios.md` containing:
+- TL;DR
+- Agent Use Case Inventory (what jobs the agent can do)
+- 3–5 scenarios written in prose (no HTTP, no JSON, no code)
+- API Requirements for Engineering (bullet list of capabilities, not endpoints)
+- Discoverability Principles (high-level)
+
+## What You Do NOT Produce
+
+- HTTP methods, paths, or endpoint specifications
+- JSON request/response schemas
+- Resource models with attribute types or state machines
+- OpenAPI specs
+- Pagination, filter, idempotency implementation details
+
+If the output contains any of the above, you've gone too far. Rewrite as plain-language use cases or capability requirements.
 
 ## Prerequisites
 
 - Context Brief must exist
 - Press Releases should exist
-- Living FAQ should exist (from `/devils-advocate`)
+- Living FAQ should exist (from `/project:devils-advocate`) — optional, provides audience context
 
 ## Arguments
 
-- `--generate` — Full API design from current artifacts (default)
-- `--resources` — Generate just the resource model
-- `--scenarios` — Generate agent workflow scenarios only
-- `--review` — Critique existing API design for agent-friendliness
+- `--generate` — Full scenarios artifact from current upstream artifacts (default)
+- `--scenarios` — Regenerate just the scenarios section against updated upstream artifacts
+- `--review` — Critique an existing scenarios doc for use-case coverage and prose discipline (flag any HTTP/JSON/schema creep)
 
 ## Output
 
 Written to the initiative's package folder: `datasets/product/packages/{YYYY}/{slug}/`
 
-- `{package}/agentic-api-design.md` — Full API design document
-- `{package}/api-agent-scenarios.md` — End-to-end agent workflow examples
+- `{package}/ai-agent-scenarios.md` — single artifact
 
-## Design Principle
+## Guiding Principle
 
-If a human can do it in the UI, an agent must be able to do it via API. No UI-only capabilities.
+The PM defines what agents must be able to do. Engineering decides how. Every capability a human can do in the UI should also be possible for an agent — stated in use cases, not endpoint specs.

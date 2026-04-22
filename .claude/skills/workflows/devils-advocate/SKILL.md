@@ -1,30 +1,41 @@
 ---
 name: devils-advocate
-description: Use when stress-testing product vision - adopts adversarial perspectives (skeptical engineer, confused user, compliance officer, competitor analyst, support rep, executive) to generate Living FAQ with prioritized objections and edge cases
+description: Use when stress-testing product vision from business-user and customer perspectives - adopts CSM, Professional Services, Support, and end-customer lenses to generate a short, audience-focused Living FAQ. Does NOT generate engineering, security, or architecture questions - engineers run their own tech-spec process.
 ---
 
 # Devil's Advocate
 
 ## Purpose
 
-Stress-test the product vision through adversarial interrogation:
-- Adopt multiple distinct critical perspectives
-- Surface questions the PM hasn't thought of
-- Generate the Living FAQ — a continuously updating document
-- Identify abuse/misuse scenarios
-- Classify questions by urgency and blocking status
+Stress-test the product vision from the perspectives of the people who will have to sell it, implement it, support it, and use it:
+
+- Adopt business-user and customer lenses (CSM, Professional Services, Support, New Customer, Existing Customer)
+- Surface the questions those audiences will actually ask
+- Generate a short, usable Living FAQ — not a comprehensive objection dump
+- Flag unanswered items the PM must resolve before the PRD is finalized
 
 ## Governing Principle
 
-> As product ideas become specific, unaddressed questions and assumptions emerge. You must expose edge cases, capture objections, and surface hard questions — all before engineering begins.
+> The Living FAQ is for non-engineers. Its job is to help internal business teams sell, implement, and support the feature, and to help customers understand what's changing. Engineering questions belong in tech spec, security review, and the red team report — not here.
+
+## Non-Goals
+
+This skill does NOT produce:
+- Scaling, performance, or architecture questions
+- Security or compliance implementation details (XSS, auth tenancy, CSRF, CDN caching, etc.)
+- Technology selection debates (vendor comparisons, framework trade-offs)
+- API design concerns
+- Abuse and misuse scenarios (those live in the red-team-report under harm scenarios)
+
+If a question can only be answered by an engineer looking at code or architecture, drop it. Engineers surface those questions themselves downstream.
 
 ## When to Use
 
 Activate when:
 - User invokes `/project:devils-advocate`
 - Phase 3 of `/project:prep` or `/project:ship-it`
-- PM wants to stress-test a product concept
-- Before writing a PRD to surface gaps
+- PM wants to stress-test a product concept from business-user angles
+- Before writing a PRD to surface audience-level gaps
 
 ## Product Package Folder
 
@@ -44,138 +55,143 @@ datasets/product/packages/{YYYY}/{slug}/
 
 ## Outputs Produced
 
-- `{package}/living-faq.md` — Prioritized FAQ organized by topic with perspective tags
+- `{package}/living-faq.md` — audience-first FAQ with ≤20 total questions, ≤50 words per answer, ≤2,000 words total
+
+## Hard Caps (Non-Negotiable)
+
+| Cap | Limit |
+|-----|-------|
+| Total questions | ≤ 20 |
+| Words per answer | ≤ 50 |
+| Total words in the FAQ | ≤ 2,000 |
+| Engineering-only questions | 0 |
+| Abuse/misuse scenarios in FAQ | 0 (route to red-team-report) |
+
+If a section would exceed its share, cut the lowest-value questions. The FAQ is useful only if it's short.
 
 ## Workflow
 
-### Task 1: Perspective-Based Interrogation
+### Task 1: Audience-Based Interrogation
 
-For each persona, generate 5–10 pointed, specific questions. These must be SPECIFIC to this product — not generic questions that apply to anything.
+For each audience below, generate 2–4 specific questions that audience will actually ask about THIS product. Skip any question an engineer would ask.
 
-**Skeptical Engineer:**
-- How does this scale? What happens at 10x, 100x current load?
-- What happens when [specific component] fails? What's the blast radius?
-- What are the performance implications of [specific design choice]?
-- What's the data model? Where are the consistency risks?
-- What third-party dependencies are we taking on and what's the fallback?
+**CSM / Account Manager:**
+- How do I position this to customers? What's the 30-second pitch?
+- Which customers are best suited for this? Which aren't?
+- What objections should I expect, and how do I answer them?
+- What should I tell customers this does NOT do yet?
+- When can I start mentioning it on calls?
 
-**Confused First-Time User:**
-- What happens if I don't understand [specific concept]? Where do I go for help?
-- What if I want to undo [specific action]? Is it reversible?
-- What's the minimum I need to know to get value from this?
-- How do I know if it's working correctly vs. silently failing?
-- What happens if I make a mistake during [specific workflow]?
+**Professional Services / Implementation:**
+- How does this change the implementation or setup process?
+- What training or documentation will internal teams need?
+- Are there rollout edge cases (multi-entity customers, legacy data, special configs)?
+- How does this interact with existing customer workflows?
+- Who handles configuration changes — us, the customer, or the agent?
 
-**Compliance Officer:**
-- What data are we collecting? Where is it stored? Who has access?
-- What regulations apply (GDPR, SOC2, HIPAA, etc.)?
-- What happens to user data if they churn?
-- Are there data residency requirements?
-- What audit trail exists for [specific actions]?
+**Support:**
+- What will customers most commonly get stuck on?
+- What self-service resources need to exist at launch?
+- What's the escalation path for bugs or confusion?
+- What known limitations should support expect to explain?
+- How will customers discover this feature exists?
 
-**Competitor Analyst:**
-- [Specific competitor] already does this. Why is our approach better?
-- What stops them from copying this in 6 months?
-- Where is our approach weaker than existing solutions?
-- What would a customer switching FROM [competitor] expect that we don't have?
+**End Customer — New User:**
+- What can I actually do with this?
+- How do I get started? What's the first step?
+- Where do I go if I need help?
+- How will I know it's working?
 
-**Support Representative:**
-- What are the top 5 things users will complain about?
-- What's the most common failure mode and how do we diagnose it?
-- What's the escalation path when [specific thing] breaks?
-- What self-service resources do users need?
-- What's the expected support ticket volume increase?
+**End Customer — Existing User:**
+- Does this replace anything I'm using today?
+- What stays the same? What changes for me?
+- Is there a price change or new requirement?
+- What happens to my existing data or setup?
 
-**Executive Sponsor:**
-- What's the ROI? How does this align with company strategy?
-- What's the opportunity cost of doing this instead of [alternative]?
-- What's the worst case scenario if this fails?
-- How do we know when to kill this if it's not working?
-- What does success look like at 30, 60, 90 days?
+### Task 2: Tag Each Question by Audience
 
-### Task 2: Classify & Prioritize Questions
+Tag every question with its audience:
 
-Tag each question with a priority:
+| Tag | Audience |
+|-----|----------|
+| `internal-csm` | CSM / Account Management |
+| `internal-ps` | Professional Services / Implementation |
+| `internal-support` | Support |
+| `customer-new` | End Customer — New User |
+| `customer-existing` | End Customer — Existing User |
 
-| Tag | Meaning | Action |
-|-----|---------|--------|
-| `blocking` | Must be answered before PRD can be written | PM must answer now |
-| `important` | Should be answered before engineering begins | Carried into PRD Open Questions |
-| `tracked` | Good question, can be answered during development | Carried into PRD Open Questions |
-| `deferred` | Relevant for v2 or future iterations | Logged for future reference |
+Do NOT use priority tags (blocking/important/tracked/deferred) — those are retired.
 
-### Task 3: Draft Living FAQ
+### Task 3: Draft the Living FAQ
 
-Structure the FAQ using template `datasets/product/templates/living-faq.md`:
+Use template `datasets/product/templates/living-faq.md`. Structure:
 
-- Organize by **topic area** (not by persona)
-- Each entry contains:
-  - The question
-  - The source perspective (which persona raised it)
-  - The priority tag
-  - The current best answer (or **"UNANSWERED"** if PM hasn't addressed it)
-- Include status counts in the header
+1. **TL;DR** — 3 lines: what it is, who it's for, when it ships
+2. **For Internal Teams** — CSM / PS / Support subsections
+3. **For Customers** — New Users / Existing Users subsections
+4. **Open Questions for PM** — items the PM must answer before the PRD can be finalized or engineering can start. This section replaces the old blocking/important/tracked/deferred lists. Each item has: question, why it matters (one sentence), status (UNANSWERED / ANSWERED).
 
-### Task 4: Abuse & Misuse Scenario Generation
+Answer what you can from the upstream artifacts. Mark the rest UNANSWERED and move it to "Open Questions for PM."
 
-Specifically brainstorm how the product could be:
-- **Misused**: Used in ways that harm the user's own interests
-- **Abused**: Used to harm others
-- **Unintended consequences**: Produces negative outcomes nobody planned for
+Every answer must be ≤50 words. If an answer needs more, the question is probably too broad — split or drop it.
 
-This is distinct from feature edge cases. It's about real-world harm scenarios.
+### Task 4: Self-Check Against Hard Caps
 
-For each scenario:
-- Describe the scenario
-- Rate severity (critical / major / minor)
-- Propose mitigation
+Before writing the file, verify:
+- Total questions ≤ 20
+- Every answer ≤ 50 words
+- Total word count ≤ 2,000
+- Zero engineering/architecture/security-implementation questions
+- Zero abuse/misuse scenarios (route to red-team-report if applicable)
+- Every question has a clear audience tag
+
+If any cap is exceeded, cut the lowest-value items until compliant.
 
 ## Arguments
 
-- `--full` — Run all perspectives (default)
-- `--persona "name"` — Run a single perspective (e.g., "skeptical engineer")
-- `--update` — Re-run against updated artifacts (incremental)
-- `--unanswered` — Surface all questions still marked UNANSWERED
+- `--full` — Run all audience perspectives (default)
+- `--audience "name"` — Run a single audience (e.g., "csm", "support", "new-customer")
+- `--update` — Re-run against updated upstream artifacts (incremental)
+- `--unanswered` — Surface the "Open Questions for PM" section only
 
 ## Quality Criteria
 
-- [ ] At least 5 questions per persona perspective
-- [ ] All `blocking` questions clearly identified
-- [ ] FAQ organized by topic, not by persona
-- [ ] Abuse/misuse section present with at least 3 scenarios
-- [ ] No softball questions — every question challenges assumptions
-- [ ] Questions are specific to THIS product, not generic
-- [ ] Priority distribution is realistic (not everything is `blocking`)
+- [ ] ≤ 20 total questions across all audiences
+- [ ] Every answer ≤ 50 words
+- [ ] Total FAQ ≤ 2,000 words
+- [ ] All 5 audiences represented (CSM, PS, Support, New Customer, Existing Customer)
+- [ ] No engineering-only questions (scaling, architecture, security implementation, tech selection)
+- [ ] No abuse/misuse scenarios (routed to red-team-report instead)
+- [ ] Open Questions for PM section populated with items the PM must answer
+- [ ] Every question references THIS product, not generic product questions
 
 ## Failure Modes
 
 | Failure | Detection | Fix |
 |---------|-----------|-----|
-| Generic questions | Could apply to any product | Rewrite with specific references to this product's design |
-| All same priority | No differentiation between blocking and tracked | Re-evaluate: what truly blocks PRD writing? |
-| Missing perspectives | Fewer than 6 personas represented | Add missing perspective sections |
-| FAQ restates Context Brief | Questions have obvious answers from existing docs | Push deeper — ask what the docs DON'T cover |
-| No abuse/misuse section | Section missing or trivial | Dedicated brainstorm on harm scenarios |
+| Engineering drift | Questions about scaling, XSS, auth, CDN, performance, etc. | Delete — not the FAQ's job |
+| Over-granular questions | Answers longer than 50 words, too much assumed detail | Cut or split the question |
+| Compliance/security creep | "How do we handle GDPR / SOC2 / HIPAA?" | Route to red-team-report; drop from FAQ |
+| Persona restatement | Questions that mirror the press release | Push deeper — what does this audience actually worry about? |
+| Generic questions | Could apply to any product | Rewrite with specifics from this product |
+| Over-volume | More than 20 questions total | Cut lowest-value items until ≤ 20 |
 
 ## Interaction Model
 
-- **Agent generates questions autonomously** — does not ask PM for permission to be critical
-- **PM answers questions** — agent presents questions, PM provides answers or marks as "will answer later"
-- **Blocking questions require answers** — agent should push the PM to answer these before proceeding
-- **Agent never marks its own answers as final** — only PM can finalize answers
-- **Living FAQ is updated by multiple agents** — later phases may add questions
+- **Agent generates questions and draft answers autonomously** — no PM permission needed
+- **PM answers the Open Questions for PM section** — these are the only items that block PRD progress
+- **Agent never marks its own answers as FINAL** — only PM can
+- **Living FAQ may be updated by the PM in later phases** — red-team-reviewer does NOT write to this file
 
 ## Living Document Rules
 
-The FAQ is not frozen after this phase:
-- Any agent in later phases can ADD questions
-- Only the PM can mark answers as FINAL
-- Answers added by agents are marked "DRAFT — PM review needed"
-- The FAQ gets updated in Phase 4 (PRD), Phase 5 (Red Team), and beyond
+- Only the PM edits the FAQ after initial generation (to add answers, refine wording, or retire stale questions)
+- The `red-team-reviewer` skill does NOT append to this file — its findings go in `red-team-report.md` only
+- Abuse/misuse scenarios live in `red-team-report.md`, not here
 
 ## Related Skills
 
 - `vision-clarifier`: Produces the press releases this skill interrogates
-- `agentic-api-designer`: Runs in parallel during Phase 3
-- `prd-creation`: Inherits unanswered items into Open Questions
-- `red-team-reviewer`: May add questions during Phase 5
+- `agentic-api-designer`: Runs in parallel during Phase 3 (separate concern — agent use cases)
+- `prd-creation`: Inherits the "Open Questions for PM" section into PRD Open Questions
+- `red-team-reviewer`: Produces the adversarial/engineering/abuse review (separate artifact, does not touch this FAQ)
