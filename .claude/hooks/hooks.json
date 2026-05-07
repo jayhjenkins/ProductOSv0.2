@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "/Users/jay/superpowers-llm/.claude/hooks/session-start.sh"
+            "command": "/Users/jayjenkins/pm-os/.claude/hooks/session-start.sh"
           }
         ]
       }

@@ -2,12 +2,12 @@
 
 ## MANDATORY: Use the agentic-api-designer Skill
 
-**You MUST use the `agentic-api-designer` skill located at `.claude/skills/workflows/agentic-api-designer/SKILL.md`**
+**You MUST use the `agentic-api-designer` skill located at `.claude/skills/workflow-agentic-api-designer/SKILL.md`**
 
 ## Before Starting
 
 1. **Announce**: "I'm using agentic-api-designer to define agent use cases and capability requirements — not to design the API shape"
-2. **Read the skill**: Load `.claude/skills/workflows/agentic-api-designer/SKILL.md`
+2. **Read the skill**: Load `.claude/skills/workflow-agentic-api-designer/SKILL.md`
 3. **Follow exactly**: Execute the skill as written
 
 ## Purpose

@@ -2,12 +2,12 @@
 
 ## MANDATORY: Use the prd-creation Skill
 
-**You MUST use the `prd-creation` skill located at `.claude/skills/workflows/prd-creation/SKILL.md`**
+**You MUST use the `prd-creation` skill located at `.claude/skills/workflow-prd-creation/SKILL.md`**
 
 ## Before Starting
 
 1. **Announce**: "I'm using prd-creation to create a Product Requirements Document"
-2. **Read the skill**: Load `.claude/skills/workflows/prd-creation/SKILL.md`
+2. **Read the skill**: Load `.claude/skills/workflow-prd-creation/SKILL.md`
 3. **Follow exactly**: Execute the skill as written
 
 ## Purpose

@@ -2,12 +2,12 @@
 
 ## MANDATORY: Use the devils-advocate Skill
 
-**You MUST use the `devils-advocate` skill located at `.claude/skills/workflows/devils-advocate/SKILL.md`**
+**You MUST use the `devils-advocate` skill located at `.claude/skills/workflow-devils-advocate/SKILL.md`**
 
 ## Before Starting
 
 1. **Announce**: "I'm using devils-advocate to stress-test the product vision from business-user and customer perspectives"
-2. **Read the skill**: Load `.claude/skills/workflows/devils-advocate/SKILL.md`
+2. **Read the skill**: Load `.claude/skills/workflow-devils-advocate/SKILL.md`
 3. **Follow exactly**: Execute the skill as written
 
 ## Purpose

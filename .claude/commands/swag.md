@@ -2,12 +2,12 @@
 
 ## MANDATORY: Use the swag-modeler Skill
 
-**You MUST use the `swag-modeler` skill located at `.claude/skills/workflows/swag-modeler/SKILL.md`**
+**You MUST use the `swag-modeler` skill located at `.claude/skills/workflow-swag-modeler/SKILL.md`**
 
 ## Before Starting
 
 1. **Announce**: "I'm using swag-modeler to build the business case"
-2. **Read the skill**: Load `.claude/skills/workflows/swag-modeler/SKILL.md`
+2. **Read the skill**: Load `.claude/skills/workflow-swag-modeler/SKILL.md`
 3. **Follow exactly**: Execute the skill as written
 
 ## Purpose

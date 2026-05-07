@@ -2,12 +2,12 @@
 
 ## MANDATORY: Use the launch-announcement Skill
 
-**You MUST use the `launch-announcement` skill located at `.claude/skills/workflows/launch-announcement/SKILL.md`**
+**You MUST use the `launch-announcement` skill located at `.claude/skills/workflow-launch-announcement/SKILL.md`**
 
 ## Before Starting
 
 1. **Announce**: "I'm using launch-announcement to create an internal product launch announcement"
-2. **Read the skill**: Load `.claude/skills/workflows/launch-announcement/SKILL.md`
+2. **Read the skill**: Load `.claude/skills/workflow-launch-announcement/SKILL.md`
 3. **Follow exactly**: Execute the skill as written
 
 ## Purpose

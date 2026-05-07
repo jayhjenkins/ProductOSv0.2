@@ -1,203 +1,71 @@
-# ./CLAUDE.md  (TOP-LEVEL, REPLACEMENT)
+# .claude/ Configuration Reference
 
-# Project CLAUDE.md (Top-Level)
-You are working inside a local LLM workspace that powers:
-- Meeting-driven automations (roadmap updates, CS prep, case studies from transcripts)
-- Study/flashcards
-- Content creation (blogs, case studies, docs) with strict sourcing
+Tooling reference for the `.claude/` directory. For project-level guidance, see `/pm-os/CLAUDE.md`.
 
-Keep responses concise, reproducible, and **file-first** (write to disk). Default to **interactive prompts** when required inputs are missing.
+## Modes
 
+Two operational modes routed by working directory or invoked command:
+
+1. **Product Mode** (default outside `datasets/marketing/`)
+   - Outputs: backlog/roadmap, customer briefs, internal docs, PRDs
+   - Sources: `datasets/meetings/**`, `datasets/product/**`
+   - Commands: `/project:*`, `/metrics:*`, `/task:*`, `/strategy:*`, `/recruiting:*`
+
+2. **Content Mode** (inside `datasets/marketing/**` or when `/content:*` runs)
+   - Outputs: briefs, outlines, drafts, verification reports, snippets
+   - Non-negotiables: intent-first, footnote+verbatim quote per factual sentence, grade 8 readability, no em dashes, "(source needed)" stops processing
+   - Sources: `datasets/marketing/content/**/inputs/**`, `datasets/learning/**`, verified meeting files
+
+If both could apply and the user invokes `/content:*`, prefer Content Mode.
+
+## Skills (`.claude/skills/`)
+
+Skills auto-discover from `.claude/skills/<name>/SKILL.md` (flat — one level deep). They appear in the available-skills system reminder at session start with their `description` as the trigger. Drop a new SKILL.md into a new directory and it just works — no manifest, no registration step.
+
+### Naming convention
+
+Category prefix, then skill name:
+
+| Prefix | Category |
+|---|---|
+| `meta-` | System / skill management |
+| `quality-` | Validation gates |
+| `context-` | Reusable context assembly |
+| `workflow-` | End-to-end workflows |
+| `metric-` | Metrics analysis |
+| `hiring-` | PM hiring |
+| `recruiting-` | Recruiting workflows |
+| `task-` | Task management |
+
+### SKILL.md format
+
+```yaml
+---
+name: workflow-cs-prep
+description: Use when [trigger condition] — [what the skill does]
+allowed-tools: Read, Grep, Glob, Bash
 ---
 
-## Modes & Routing
-You operate in two main modes; choose based on the current working directory, invoked command, or explicit user request.
+# Skill body
+```
 
-1) **Product Mode** (default outside `datasets/marketing/`)
-   - Target outputs: backlog/roadmap updates, customer briefs, internal docs.
-   - Preferred sources: `/datasets/meetings/**`, `/datasets/product/**`.
-   - Commands: `/project:*`, `/content:*` (allowed but content rules may be relaxed unless inside marketing path).
+Keep `description` action-oriented and trigger-led ("Use when…") so the skill matches against user intent.
 
-2) **Content Mode** (inside `datasets/marketing/**` or when `/content:*` commands run)
-   - Target outputs: briefs, outlines, drafts, verification reports, snippets.
-   - **Non-negotiables:** Intent-first; zero-hallucination; footnote+quote per factual sentence; grade-8; no em dashes.
-   - Preferred sources: `/datasets/marketing/content/**/inputs/**`, `/datasets/learning/**`, verified meeting files, and (if enabled) fetched URLs.
+## Slash Commands (`.claude/commands/`)
 
-> If both could apply, prefer **Content Mode** when the user invokes `/content:*`.
+Command files (`.claude/commands/<name>.md`) are thin wrappers that point at a skill. Auto-registered by Claude Code; appear as `/<namespace>:<name>` in the available-skills list. Adding a new command means dropping a new file — no registration.
 
----
+Most commands say "MANDATORY: use the X skill" and reference the path. Auto-discovery means Claude can also invoke the underlying skill directly via the `Skill` tool when description matches.
 
-## Context Map (read/write targets)
-- `datasets/meetings/` — Canonical meeting notes & transcripts (markdown + YAML front-matter).
-  - `Customers/{Account}/{YYYY}/...`
-  - `Internal/{Function}/{YYYY}/...`
-- `datasets/product/` — Product artifacts (`backlog.md`, `roadmap.md`, `customer-briefs/`, etc.).
-- `datasets/marketing/` — Marketing content pipeline (briefs/outlines/drafts/verify/snippets) and templates/presets.
-- `datasets/learning/` — Study notes and flashcards (`cards/`, `decks/`, `sources/`, `templates/`).
-- `datasets/research/` — Competitive/market notes (freeform).
-- `.claude/commands/` — Reusable commands exposed as slash-commands.
+## Hooks (`.claude/hooks/`)
 
----
+`hooks.json` registers a SessionStart hook (fires on `startup|resume|clear|compact`) that runs `session-start.sh`. The script reads `.claude/skills/meta-using-skills/SKILL.md` and injects it as `additionalContext` wrapped in `<EXTREMELY_IMPORTANT>` tags. This is the bootstrap that establishes the mandatory skill-usage protocol every session.
 
-## Meeting File Schema (YAML front-matter)
-Every meeting markdown begins with:
----
-date: "YYYY-MM-DD"
-type: "sales" | "product" | "customersuccess" | "onboarding" | "strategy" | "ops" | "marketing" | "general"
-customer: "Company Name"
-companies: ["Company A","Company B"]
-participants: ["Person Name"]
-granola_folder: "Sales"
-granola_url: "https://…"
-meeting_note_id: "uuid"
-tags: ["2025Q3","keyword"]
----
-**Naming:** `YYYY-MM-DD_{type}_{titleSlug}_{companyOrFunctionSlug}_{participantsSlug}.md`
+## Settings
 
-**Sections**
-- ## ⬇️ AI Summary — executive summary
-- ## ⬇️ Action Items — bullets or checkboxes
-- ## ⬇️ Full Transcript — raw text
-- ## ⬇️ Links — source links
-
----
-
-## Skills System (MANDATORY)
-
-**You have a sophisticated skills-based system. Skills give you superpowers.**
-
-### Core Mandate
-
-**IF A RELEVANT SKILL EXISTS, YOU MUST USE IT.**
-
-This is not optional. Finding a relevant skill = mandatory usage.
-
-### Skill Categories
-
-**`.claude/skills/` contains:**
-
-**Meta Skills** (`meta/`):
-- `using-skills` - Mandatory skill usage protocol (loaded at session start)
-- `skill-discovery` - Find available skills
-- `create-skill` - Generate new skills (test-driven)
-- `refine-workflow` - Identify skill extraction opportunities
-
-**Quality Gates** (`quality-gates/`):
-- `citation-compliance` - Zero "(source needed)" tolerance
-- `prd-validation` - 6-point PRD rubric enforcement
-- `content-style` - Grade-8, no em dashes, word count bands
-- `source-integrity` - Checksum validation, expiry management
-- `link-verification` - URL accessibility, verbatim quote checking
-- `meeting-schema-validation` - YAML frontmatter validation
-- `documentation-sync` - Maintains consistency across 6 documentation files
-
-**Context Assembly** (`context-assembly/`):
-- `meeting-synthesis` - Extract signals from transcripts
-- `research-gathering` - Topic-based research collection
-- `priority-scoring` - Standardized ranking formula for roadmap sequencing
-- `source-normalization` - Normalize files/URLs/text to citations
-
-**Metrics Analysis** (`metrics-analysis/`):
-- `north-star-alignment` - Connect metrics to company mission and business model
-- `proxy-metric-selection` - Design measurable proxies for hard-to-measure outcomes
-- `funnel-metric-mapping` - Structure metrics along user lifecycle stages
-- `root-cause-diagnosis` - Investigate metric changes with 4D segmentation
-- `tradeoff-evaluation` - Evaluate conflicting metrics and explore mitigation
-
-**Workflows** (`workflows/`):
-- `content-pipeline` - Complete content creation (Intent → Snippets)
-- `product-planning` - Meetings → validated PRDs
-- `prd-creation` - Interactive PRD creation
-- `launch-announcement` - Internal feature launch communications
-- `strategy-session` - Research-backed decision framework
-- `metrics-definition` - Define what to measure for new features
-- `metric-diagnosis` - Investigate unexpected metric changes
-- `tradeoff-decision` - Evaluate mixed A/B test results
-- `dashboard-design` - Design product health dashboards
-- `goal-setting` - Set targets for defined metrics
-- `mochi-sync` - Flashcard synchronization
-- [more workflow skills...]
-
-### How Skills Work
-
-**1. Bootstrap Hook**: On session start, `using-skills` is loaded automatically
-**2. Discovery**: Skills auto-activate based on description matching task
-**3. Announcement**: "I'm using [Skill Name] to [purpose]"
-**4. Execution**: Follow skill exactly, no shortcuts
-**5. Sub-Skills**: Workflows invoke quality gates and context assembly skills
-
-### Slash Commands Are Thin Wrappers
-
-**All `/content:*` and `/project:*` commands now invoke skills.**
-
-Example: `/content:run` → Loads and executes `content-pipeline` skill
-
-Commands tell you which skill to use. You MUST follow that instruction.
-
----
-
-## Commands (Index & Expectations)
-Keep commands idempotent and time-bounded by default (e.g., last 14 days) unless overridden.
-
-**All commands now delegate to skills. See `.claude/commands/*.md` for skill references.**
-
-**Project / Product**
-- `/project:meetings-to-roadmap` → `product-planning` skill
-- `/project:cs-prep` → `cs-prep` skill
-- `/launch-announcement` → `launch-announcement` skill
-
-**Metrics Analysis**
-- `/metrics:definition` → `metrics-definition` workflow (define what to measure)
-- `/metrics:diagnosis` → `metric-diagnosis` workflow (investigate metric changes)
-- `/metrics:tradeoff` → `tradeoff-decision` workflow (evaluate mixed results)
-- `/metrics:dashboard` → `dashboard-design` workflow (design health dashboards)
-- `/metrics:goals` → `goal-setting` workflow (set metric targets)
-
-**Content (Agentic pipeline; interactive by default)**
-- `/content:run` → `content-pipeline` skill (full pipeline)
-- Modular steps → Individual content skills (intent-gathering, brief-creation, outlining, drafting, verification, snippet-generation)
-
-**Learning**
-- `/project:create-notes` → `learning-notes-creation` skill
-- `/project:notes-to-cards` → `learning-cards-creation` skill
-
----
-
-## Content Mode — Global Guardrails (apply anywhere `/content:*` runs)
-- **Intent-first:** If no `intent/intent.yaml` or inline `INTENT:` is provided, ask interactively and write it.
-- **Citations:** Every **factual sentence** ends with a footnote `[^\s#]`. Each footnote must include a **5–25 word verbatim quote** in “Sources” and map to a concrete file or URL.
-- **Verification:** `/content:verify` must open the referenced source and confirm the quoted fragment is present **verbatim**. Any missing/mismatched quote or `(source needed)` → **fail** the run and set `step="NEEDS_FIX"`.
-- **Style:** Grade-8 readability; short sentences; skimmable sub-heads; **no em dashes**; single-line soft Raleon nudge; keep marketing claims measured.
-- **Audit trail:** Every phase writes an artifact (`brief/*.md`, `outline/*.md`, `drafts/*.md`, `verify/*.md`, `snippets/*.md`) and maintains `status.json` + `progress.md`.
-
----
+- `settings.local.json` — project-scoped settings (permissions, env vars, hooks)
+- `~/.claude/settings.json` — global settings (enabled plugins, e.g. `superpowers@superpowers-marketplace`)
 
 ## Tools & Permissions
-- Allowed by default: file read/write, directory listing, diffs, local shell ops (safe paths).
-- Ask before: invoking MCP tools that modify external systems (Asana, HubSpot); deleting files.
-- Prefer: create/append; keep diffs minimal and idempotent.
 
-
-
----
-
-## Safety Rails
-- Operate only within `~/Workspace/llm/`, unless explicitly instructed.
-- Never overwrite large files without confirmation—prefer append or create `*-draft.md`.
-- When unsure of a path, list directories first; do not guess.
-- For batch operations, show a plan first and await approval.
-
----
-
-## Style & Output
-- Default to markdown files with clear headings.
-- When summarizing, include skim-friendly bullets and dates.
-- When generating artifacts, write to the path, then return a short confirmation with the file path.
-
----
-
-## Command Index (Quick Links)
-- Product: `/project:meetings-to-roadmap`, `/project:cs-prep`, `/launch-announcement`
-- Metrics: `/metrics:definition`, `/metrics:diagnosis`, `/metrics:tradeoff`, `/metrics:dashboard`, `/metrics:goals`
-- Content: `/content:run`, `/content:resume`, `/content:verify` (see `datasets/marketing/CLAUDE.md` for stricter local rules)
-- Learning: `/project:create-notes`, `/project:notes-to-cards`
+Default-allow: file read/write, dir listing, diffs, local shell in safe paths. Ask before: MCP tools that modify external systems (Asana, HubSpot, Jira publish), deleting files. Prefer create/append; minimal idempotent diffs.

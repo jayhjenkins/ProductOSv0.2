@@ -1,0 +1,3019 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PM-OS Task Board</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --surface-hover: #1c2333;
+    --border: #30363d;
+    --text: #e6edf3;
+    --text-muted: #8b949e;
+    --text-dim: #6e7681;
+    --accent: #58a6ff;
+    --success: #3fb950;
+    --warning: #d29922;
+    --danger: #f85149;
+    --critical-bg: rgba(248,81,73,0.15);
+    --high-bg: rgba(210,153,34,0.15);
+    --medium-bg: rgba(88,166,255,0.15);
+    --low-bg: rgba(110,118,129,0.15);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+    overflow-x: auto;
+  }
+
+  /* ─── Top Bar ──────────────────────────────────────────────────────── */
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 20px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .topbar h1 {
+    font-size: 16px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .topbar-stats {
+    display: flex;
+    gap: 16px;
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+  .stat-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border-radius: 12px;
+    background: var(--surface-hover);
+    border: 1px solid var(--border);
+  }
+  .stat-badge.attention {
+    background: rgba(248,81,73,0.15);
+    border-color: var(--danger);
+    color: var(--danger);
+  }
+
+  /* ─── Board ────────────────────────────────────────────────────────── */
+  .board {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(280px, 1fr));
+    gap: 16px;
+    padding: 20px;
+    min-height: calc(100vh - 60px);
+    align-items: start;
+  }
+
+  /* ─── Lane (Column) ────────────────────────────────────────────────── */
+  .lane {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .lane-header {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-weight: 600;
+    font-size: 14px;
+  }
+  .lane-header .count {
+    background: var(--surface-hover);
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+  .lane-body {
+    padding: 8px;
+    min-height: 100px;
+  }
+
+  /* Status group within a lane */
+  .status-group {
+    margin-bottom: 8px;
+  }
+  .status-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-dim);
+    padding: 4px 8px;
+    margin-bottom: 4px;
+  }
+
+  /* ─── Card ─────────────────────────────────────────────────────────── */
+  .card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px 12px;
+    margin-bottom: 6px;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .card:hover {
+    border-color: var(--accent);
+    background: var(--surface-hover);
+  }
+  .card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 4px;
+  }
+  .card-id {
+    font-size: 11px;
+    color: var(--text-dim);
+    font-family: monospace;
+  }
+  .card-icons {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+  }
+  .card-title {
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 6px;
+    line-height: 1.4;
+  }
+  .card-meta {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  /* Badges */
+  .badge {
+    font-size: 11px;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-weight: 500;
+  }
+  .badge-critical { background: var(--critical-bg); color: var(--danger); }
+  .badge-high { background: var(--high-bg); color: var(--warning); }
+  .badge-medium { background: var(--medium-bg); color: var(--accent); }
+  .badge-low { background: var(--low-bg); color: var(--text-dim); }
+  .badge-domain {
+    background: rgba(139,148,158,0.15);
+    color: var(--text-muted);
+  }
+  .badge-due {
+    background: rgba(88,166,255,0.1);
+    color: var(--accent);
+    font-size: 11px;
+  }
+  .badge-overdue {
+    background: var(--critical-bg);
+    color: var(--danger);
+  }
+  .badge-waiting {
+    background: rgba(210,153,34,0.1);
+    color: var(--warning);
+    font-size: 11px;
+  }
+  .badge-meeting {
+    background: rgba(63,185,80,0.1);
+    color: var(--success);
+    font-size: 11px;
+  }
+
+  /* Agent status icons */
+  .agent-icon { font-size: 12px; }
+
+  /* ─── Modal ────────────────────────────────────────────────────────── */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 200;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 20px 20px;
+    overflow-y: auto;
+  }
+  .modal-overlay.active { display: flex; }
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    width: 100%;
+    max-width: 800px;
+    max-height: 92vh;
+    display: flex;
+    flex-direction: column;
+  }
+  .modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .modal-header h2 {
+    font-size: 16px;
+    font-weight: 600;
+  }
+  .modal-close {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 20px;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 4px;
+  }
+  .modal-close:hover { background: var(--surface-hover); color: var(--text); }
+  .modal-body {
+    padding: 20px;
+    overflow-y: auto;
+    flex: 1;
+    min-height: 0;
+  }
+
+  /* Modal field rows */
+  .field-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px 16px;
+    margin-bottom: 16px;
+  }
+  .field-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .field-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-dim);
+  }
+  .field-value {
+    font-size: 13px;
+  }
+  .field-input {
+    font-size: 13px;
+    font-family: inherit;
+    padding: 4px 8px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: var(--bg);
+    color: var(--text);
+    width: 100%;
+    box-sizing: border-box;
+    resize: vertical;
+  }
+  .field-input:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+  .btn-edit-meeting {
+    font-size: 11px;
+    padding: 2px 10px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: var(--bg);
+    color: var(--text-muted);
+    cursor: pointer;
+    text-transform: none;
+    letter-spacing: 0;
+    font-weight: 400;
+  }
+  .btn-edit-meeting:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  /* Description and acceptance criteria */
+  .section-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 16px 0 8px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+  }
+  .section-content {
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--text);
+    white-space: pre-wrap;
+  }
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .btn-edit {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    background: var(--surface-hover);
+    color: var(--text-muted);
+    cursor: pointer;
+  }
+  .btn-edit:hover { background: var(--border); color: var(--text); }
+  .desc-textarea {
+    width: 100%;
+    min-height: 120px;
+    padding: 10px 12px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--text);
+    font-size: 13px;
+    font-family: inherit;
+    line-height: 1.6;
+    resize: vertical;
+  }
+  .desc-textarea:focus { outline: none; border-color: var(--accent); }
+  .desc-actions {
+    display: flex;
+    gap: 6px;
+    margin-top: 6px;
+  }
+
+  /* Activity log */
+  .activity-log {
+    margin-top: 12px;
+  }
+  .log-entry {
+    padding: 8px 12px;
+    margin-bottom: 6px;
+    background: var(--bg);
+    border-radius: 6px;
+    border-left: 3px solid var(--border);
+  }
+  .log-entry.question { border-left-color: var(--warning); }
+  .log-entry.error { border-left-color: var(--danger); }
+  .log-entry.output { border-left-color: var(--success); }
+  .log-entry.status-change { border-left-color: var(--accent); }
+  .log-meta {
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-bottom: 4px;
+  }
+  .log-content {
+    font-size: 13px;
+    white-space: pre-wrap;
+  }
+
+  /* Modal actions */
+  .modal-actions {
+    display: flex;
+    gap: 8px;
+    padding: 16px 20px;
+    border-top: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .btn {
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    background: var(--surface-hover);
+    color: var(--text);
+    transition: background 0.15s;
+  }
+  .btn:hover { background: var(--border); }
+  .btn-success {
+    background: var(--success);
+    border-color: var(--success);
+    color: #000;
+  }
+  .btn-success:hover { opacity: 0.9; }
+  .btn-primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #000;
+  }
+  .btn-primary:hover { opacity: 0.9; }
+  .btn-danger {
+    background: #dc3545;
+    border-color: #dc3545;
+    color: #fff;
+  }
+  .btn-danger:hover { opacity: 0.9; }
+  .btn-warning {
+    background: var(--warning);
+    border-color: var(--warning);
+    color: #000;
+  }
+  .btn-warning:hover { opacity: 0.9; }
+
+  /* Comment input */
+  .comment-box {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+  }
+  .comment-input {
+    flex: 1;
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--text);
+    font-size: 13px;
+    font-family: inherit;
+    resize: none;
+    min-height: 60px;
+  }
+  .comment-input:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+
+  /* Slot picker for schedule-meeting tasks */
+  .slot-picker {
+    margin-top: 12px;
+  }
+  .slot-picker-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+  }
+  .slot-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    margin-bottom: 6px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .slot-option:hover {
+    border-color: var(--accent);
+    background: var(--surface-hover);
+  }
+  .slot-option.selected {
+    border-color: var(--accent);
+    background: rgba(88,166,255,0.1);
+  }
+  .slot-option input[type="radio"] {
+    accent-color: var(--accent);
+  }
+  .slot-option label {
+    cursor: pointer;
+    font-size: 13px;
+    flex: 1;
+  }
+  .btn-schedule {
+    background: #0078d4;
+    border-color: #0078d4;
+    color: #fff;
+  }
+  .btn-schedule:hover { opacity: 0.9; }
+  .btn-schedule:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  /* Attendee chips */
+  .attendee-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+  }
+  .attendee-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 8px;
+    border-radius: 12px;
+    background: var(--surface-hover);
+    border: 1px solid var(--border);
+    font-size: 12px;
+    color: var(--text);
+  }
+  .attendee-chip .chip-remove {
+    cursor: pointer;
+    color: var(--text-dim);
+    font-size: 14px;
+    line-height: 1;
+    margin-left: 2px;
+  }
+  .attendee-chip .chip-remove:hover { color: var(--danger); }
+  .attendee-add-wrap {
+    position: relative;
+    margin-top: 6px;
+  }
+  .attendee-add-input {
+    width: 100%;
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--text);
+    font-size: 12px;
+  }
+  .attendee-add-input:focus { outline: none; border-color: var(--accent); }
+  .attendee-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    margin-top: 2px;
+    max-height: 160px;
+    overflow-y: auto;
+    z-index: 10;
+    display: none;
+  }
+  .attendee-dropdown.visible { display: block; }
+  .attendee-dropdown-item {
+    padding: 6px 10px;
+    font-size: 12px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+  }
+  .attendee-dropdown-item:hover { background: var(--surface-hover); }
+  .attendee-dropdown-item .email-hint {
+    color: var(--text-dim);
+    font-size: 11px;
+  }
+
+  /* Recurring toggle */
+  .recurring-toggle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 4px;
+  }
+  .recurring-toggle label {
+    font-size: 13px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .recurring-toggle input[type="checkbox"] {
+    accent-color: var(--accent);
+  }
+  .recurring-select {
+    padding: 4px 8px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--text);
+    font-size: 12px;
+  }
+
+  /* Loading & empty states */
+  .loading {
+    text-align: center;
+    padding: 40px;
+    color: var(--text-dim);
+  }
+  .empty-lane {
+    text-align: center;
+    padding: 20px;
+    color: var(--text-dim);
+    font-size: 13px;
+  }
+
+  /* Responsive */
+  @media (max-width: 1000px) {
+    .board {
+      grid-template-columns: repeat(2, minmax(260px, 1fr));
+    }
+  }
+  @media (max-width: 600px) {
+    .board {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* ─── Tab Navigation ───────────────────────────────────────────── */
+  .topbar-tabs {
+    display: flex;
+    gap: 4px;
+    margin: 0 16px;
+  }
+  .topbar-tab {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    font-family: inherit;
+  }
+  .topbar-tab:hover { background: var(--surface-hover); color: var(--text); }
+  .topbar-tab.active { background: var(--surface-hover); color: var(--accent); font-weight: 600; }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  /* ─── LangFuse Status Dot ──────────────────────────────────────── */
+  .lf-status {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+  .lf-status.ok { background: var(--success); }
+  .lf-status.error { background: var(--danger); }
+  .lf-status.unknown { background: var(--text-dim); }
+
+  /* ─── Prompts View ─────────────────────────────────────────────── */
+  .prompts-view {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .prompts-section-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 20px 0 12px 0;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+  }
+  .prompt-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .prompt-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px;
+  }
+  .prompt-card:hover { border-color: var(--accent); }
+  .prompt-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .prompt-card-name {
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--text);
+  }
+  .prompt-card-version {
+    font-size: 11px;
+    background: var(--medium-bg);
+    color: var(--accent);
+    padding: 2px 8px;
+    border-radius: 10px;
+  }
+  .prompt-card-desc {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+  }
+  .prompt-card-stats {
+    display: flex;
+    gap: 12px;
+    font-size: 11px;
+    color: var(--text-dim);
+  }
+  .prompt-card-stats .stat-good { color: var(--success); }
+  .prompt-card-stats .stat-bad { color: var(--danger); }
+  .prompt-card-link {
+    display: inline-block;
+    margin-top: 8px;
+    font-size: 12px;
+    color: var(--accent);
+    text-decoration: none;
+  }
+  .prompt-card-link:hover { text-decoration: underline; }
+
+  /* ─── Pipeline (Per-Step Scoring) ──────────────────────────────── */
+  .pipeline-section {
+    margin-top: 16px;
+    border-top: 1px solid var(--border);
+    padding-top: 12px;
+  }
+  .pipeline-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 10px;
+  }
+  .pipeline-step {
+    background: var(--surface-hover);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+  }
+  .pipeline-step-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+  }
+  .pipeline-step-name {
+    font-weight: 600;
+    font-size: 13px;
+  }
+  .pipeline-step-detail {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+    word-break: break-all;
+  }
+  .pipeline-step-actions {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+  .btn-score {
+    font-size: 16px;
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    cursor: pointer;
+    padding: 2px 8px;
+    color: var(--text-muted);
+  }
+  .btn-score:hover { background: var(--surface); }
+  .btn-score.scored-up { background: rgba(63,185,80,0.2); border-color: var(--success); color: var(--success); }
+  .btn-score.scored-down { background: rgba(248,81,73,0.2); border-color: var(--danger); color: var(--danger); }
+  .btn-annotate {
+    font-size: 12px;
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    cursor: pointer;
+    padding: 2px 8px;
+    color: var(--text-muted);
+  }
+  .btn-annotate:hover { background: var(--surface); }
+  .annotation-box {
+    margin-top: 6px;
+    display: none;
+  }
+  .annotation-box.visible { display: block; }
+  .annotation-input {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 4px;
+    padding: 6px 8px;
+    font-size: 12px;
+    font-family: inherit;
+    resize: vertical;
+    min-height: 40px;
+  }
+  .annotation-submit {
+    margin-top: 4px;
+    font-size: 11px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 4px 10px;
+    cursor: pointer;
+  }
+  .pipeline-link {
+    display: block;
+    text-align: center;
+    margin-top: 8px;
+    font-size: 12px;
+    color: var(--accent);
+    text-decoration: none;
+  }
+  .pipeline-link:hover { text-decoration: underline; }
+  .pipeline-scores {
+    display: flex;
+    gap: 6px;
+    margin-top: 4px;
+  }
+  .pipeline-score-badge {
+    font-size: 10px;
+    padding: 1px 6px;
+    border-radius: 8px;
+  }
+  .pipeline-score-badge.good { background: rgba(63,185,80,0.2); color: var(--success); }
+  .pipeline-score-badge.bad { background: rgba(248,81,73,0.2); color: var(--danger); }
+
+  /* ─── Worker Detail Modal ────────────────────────────────────── */
+  .worker-detail-section {
+    margin-bottom: 16px;
+  }
+  .worker-detail-section-title {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+  }
+  .worker-tool-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .worker-tool-badge {
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    background: var(--surface-hover);
+    color: var(--text-dim);
+    font-family: monospace;
+  }
+  .worker-tool-badge.mcp {
+    background: rgba(88,166,255,0.15);
+    color: var(--accent);
+  }
+  .worker-skill-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .worker-skill-chip {
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    background: rgba(63,185,80,0.12);
+    color: var(--success);
+  }
+  .worker-match-rules {
+    font-size: 12px;
+    color: var(--text-dim);
+  }
+  .worker-match-rules code {
+    background: var(--surface-hover);
+    padding: 1px 4px;
+    border-radius: 3px;
+    font-size: 11px;
+  }
+  .worker-prompt-view {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 12px;
+    font-family: monospace;
+    font-size: 11px;
+    color: var(--text-dim);
+    max-height: 300px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    line-height: 1.5;
+  }
+
+  /* ─── Cron Tab ──────────────────────────────────────────────── */
+  .cron-view {
+    padding: 20px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  .cron-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  .cron-header h2 {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text);
+    margin: 0;
+  }
+  .cron-btn {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    font-family: inherit;
+    font-weight: 500;
+  }
+  .cron-btn:hover { opacity: 0.9; }
+  .cron-btn.secondary {
+    background: var(--surface-hover);
+    color: var(--text);
+  }
+  .cron-btn.secondary:hover { background: var(--border); }
+  .cron-btn.danger {
+    background: var(--danger);
+    color: #fff;
+  }
+  .cron-btn.small {
+    padding: 4px 10px;
+    font-size: 12px;
+  }
+  .cron-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .cron-empty {
+    text-align: center;
+    color: var(--text-muted);
+    padding: 60px 20px;
+    font-size: 14px;
+  }
+  .cron-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--success);
+    border-radius: 8px;
+    padding: 16px;
+  }
+  .cron-card.disabled {
+    border-left-color: var(--text-dim);
+    opacity: 0.6;
+  }
+  .cron-card.expiring {
+    border-left-color: #d29922;
+  }
+  .cron-card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 8px;
+  }
+  .cron-card-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .cron-card-id {
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-right: 8px;
+  }
+  .cron-card-schedule {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+  }
+  .cron-card-schedule code {
+    background: var(--surface-hover);
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-left: 6px;
+  }
+  .cron-card-expires {
+    font-size: 11px;
+    color: #d29922;
+    margin-left: 10px;
+  }
+  .cron-card-meta {
+    display: flex;
+    gap: 20px;
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-bottom: 10px;
+  }
+  .cron-card-meta span { white-space: nowrap; }
+  .cron-card-meta a { color: var(--accent); text-decoration: none; }
+  .cron-card-meta a:hover { text-decoration: underline; }
+  .cron-card-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  /* Toggle switch */
+  .cron-toggle {
+    position: relative;
+    width: 36px;
+    height: 20px;
+    display: inline-block;
+  }
+  .cron-toggle input { opacity: 0; width: 0; height: 0; }
+  .cron-toggle-slider {
+    position: absolute;
+    inset: 0;
+    background: var(--surface-hover);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .cron-toggle-slider::before {
+    content: "";
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    left: 2px;
+    bottom: 2px;
+    background: #fff;
+    border-radius: 50%;
+    transition: transform 0.2s;
+  }
+  .cron-toggle input:checked + .cron-toggle-slider { background: var(--success); }
+  .cron-toggle input:checked + .cron-toggle-slider::before { transform: translateX(16px); }
+
+  /* Create/Edit forms */
+  .cron-create {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+  }
+  .cron-create h3 {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+    margin: 0 0 16px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .cron-textarea {
+    width: 100%;
+    min-height: 180px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 13px;
+    padding: 12px;
+    resize: vertical;
+    box-sizing: border-box;
+  }
+  .cron-textarea:focus { outline: none; border-color: var(--accent); }
+  .cron-textarea::placeholder { color: var(--text-dim); }
+  .cron-examples {
+    margin-top: 12px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .cron-example-chip {
+    background: var(--surface-hover);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 4px 10px;
+    font-size: 11px;
+    color: var(--text-muted);
+    cursor: pointer;
+  }
+  .cron-example-chip:hover { border-color: var(--accent); color: var(--text); }
+  .cron-parse-actions {
+    margin-top: 14px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+  .cron-spinner {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Review form */
+  .cron-review { margin-top: 0; }
+  .cron-field {
+    margin-bottom: 14px;
+  }
+  .cron-field label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+  .cron-field input,
+  .cron-field select {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 13px;
+    padding: 8px 10px;
+    box-sizing: border-box;
+  }
+  .cron-field input:focus,
+  .cron-field select:focus { outline: none; border-color: var(--accent); }
+  .cron-field-row {
+    display: flex;
+    gap: 12px;
+  }
+  .cron-field-row .cron-field { flex: 1; }
+  .cron-preview-runs {
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-top: 4px;
+  }
+  .cron-preview-runs.error { color: var(--danger); }
+  .cron-review-actions {
+    margin-top: 18px;
+    display: flex;
+    gap: 10px;
+  }
+
+  /* History expansion */
+  .cron-history {
+    margin-top: 8px;
+    font-size: 12px;
+    color: var(--text-dim);
+  }
+  .cron-history a { color: var(--accent); text-decoration: none; }
+  .cron-history a:hover { text-decoration: underline; }
+
+  /* ─── Toast notifications ─────────────────────────────────────────── */
+  .toast-container {
+    position: fixed; top: 16px; right: 16px; z-index: 10000;
+    display: flex; flex-direction: column; gap: 8px;
+    pointer-events: none;
+  }
+  .toast {
+    pointer-events: auto;
+    padding: 10px 16px; border-radius: 6px;
+    font-size: 13px; max-width: 380px;
+    color: var(--text); background: var(--surface); border: 1px solid var(--border);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    animation: toast-in 0.25s ease-out;
+    cursor: pointer;
+  }
+  .toast.toast-error { border-color: var(--danger); background: rgba(248,81,73,0.12); }
+  .toast.toast-success { border-color: var(--success); background: rgba(63,185,80,0.12); }
+  .toast.toast-warn { border-color: var(--warning); background: rgba(210,153,34,0.12); }
+  .toast.toast-out { animation: toast-out 0.2s ease-in forwards; }
+  @keyframes toast-in { from { opacity: 0; transform: translateX(40px); } to { opacity: 1; transform: translateX(0); } }
+  @keyframes toast-out { from { opacity: 1; } to { opacity: 0; transform: translateX(40px); } }
+</style>
+</head>
+<body>
+<div class="toast-container" id="toast-container"></div>
+
+<div class="topbar">
+  <h1>PM-OS Task Board</h1>
+  <div class="topbar-tabs">
+    <button class="topbar-tab active" data-tab="board" onclick="switchTab('board')">Board</button>
+    <button class="topbar-tab" data-tab="cron" onclick="switchTab('cron')">Cron</button>
+    <button class="topbar-tab" data-tab="prompts" onclick="switchTab('prompts')">Agents <span class="lf-status unknown" id="lf-status-dot" title="LangFuse status"></span></button>
+  </div>
+  <div class="topbar-stats" id="stats"></div>
+</div>
+
+<div id="tab-board" class="tab-content active">
+  <div class="board" id="board">
+    <div class="loading">Loading tasks...</div>
+  </div>
+</div>
+
+<div id="tab-prompts" class="tab-content">
+  <div class="prompts-view" id="prompts-view">
+    <div class="loading">Loading prompts...</div>
+  </div>
+</div>
+
+<div id="tab-cron" class="tab-content">
+  <div class="cron-view" id="cron-view">
+    <div class="loading">Loading cron jobs...</div>
+  </div>
+</div>
+
+<!-- Task Detail Modal -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="modal-title"></h2>
+      <button class="modal-close" onclick="closeModal()">&times;</button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+    <div class="modal-actions" id="modal-actions"></div>
+  </div>
+</div>
+
+<script>
+const API = '/api';
+const LANGFUSE_HOST = 'http://localhost:3000';
+let allTasks = [];
+let currentTaskId = null;
+
+// ─── Toast Notifications ─────────────────────────────────────────────
+function toast(msg, type = 'error', duration = 4000) {
+  const container = document.getElementById('toast-container');
+  const el = document.createElement('div');
+  el.className = `toast toast-${type}`;
+  el.textContent = msg;
+  el.onclick = () => dismiss(el);
+  container.appendChild(el);
+  function dismiss(t) { t.classList.add('toast-out'); setTimeout(() => t.remove(), 200); }
+  setTimeout(() => { if (el.parentNode) dismiss(el); }, duration);
+}
+
+// ─── Tab Navigation ─────────────────────────────────────────────────
+
+function switchTab(tabName) {
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.topbar-tab').forEach(el => el.classList.remove('active'));
+  document.getElementById(`tab-${tabName}`).classList.add('active');
+  document.querySelector(`.topbar-tab[data-tab="${tabName}"]`).classList.add('active');
+  if (tabName === 'prompts') fetchPrompts();
+  if (tabName === 'cron') fetchCronJobs();
+}
+
+// ─── LangFuse Health ────────────────────────────────────────────────
+
+async function checkLangfuseHealth() {
+  const dot = document.getElementById('lf-status-dot');
+  try {
+    const res = await fetch(`${API}/langfuse/health`);
+    const data = await res.json();
+    dot.className = 'lf-status ' + (data.status === 'ok' ? 'ok' : 'error');
+    dot.title = data.status === 'ok' ? 'LangFuse connected' : `LangFuse: ${data.message || data.status}`;
+  } catch {
+    dot.className = 'lf-status error';
+    dot.title = 'LangFuse unreachable';
+  }
+}
+
+// ─── Prompts View ───────────────────────────────────────────────────
+
+async function fetchPrompts() {
+  const view = document.getElementById('prompts-view');
+  try {
+    const [promptsRes, statsRes] = await Promise.all([
+      fetch(`${API}/langfuse/prompts`),
+      fetch(`${API}/langfuse/traces/stats`),
+    ]);
+    const promptsData = await promptsRes.json();
+    const statsData = await statsRes.json();
+    renderPrompts(promptsData.prompts || [], statsData.stats || {});
+  } catch (err) {
+    view.innerHTML = `<div class="loading" style="color:var(--danger)">LangFuse unavailable: ${err.message}</div>`;
+  }
+}
+
+function renderPrompts(prompts, stats) {
+  const view = document.getElementById('prompts-view');
+  const workers = prompts.filter(p => p.name.startsWith('worker-') && p.name !== 'worker-router');
+  const workerRouter = prompts.find(p => p.name === 'worker-router');
+  const taskParser = prompts.filter(p => p.name === 'task-parser');
+  const cronParser = prompts.find(p => p.name === 'cron-parser');
+  const skills = prompts.filter(p => p.name.startsWith('skill-'));
+  const STEP_ICONS = {'task-parser': '📝', 'worker-match': '🔀', 'worker-execution': '🤖'};
+
+  let html = '';
+
+  // Workers section
+  html += '<div class="prompts-section-title">Workers</div>';
+  html += '<div class="prompt-cards">';
+  if (workers.length === 0) {
+    html += '<div style="color:var(--text-muted);font-size:13px;">No worker prompts registered. Run: python3 scripts/langfuse_setup.py</div>';
+  }
+  for (const p of workers) {
+    const s = stats[`worker-execution`] || {};
+    const workerName = p.name.replace('worker-', '');
+    html += `<div class="prompt-card" onclick="openWorkerDetail('${workerName}')" style="cursor:pointer">
+      <div class="prompt-card-header">
+        <span class="prompt-card-name">${workerName}</span>
+        <span class="prompt-card-version">v${p.version || '?'}</span>
+      </div>
+      <div class="prompt-card-desc">${(p.labels || []).join(', ') || 'no labels'}</div>
+      <div class="prompt-card-stats">
+        <span>Traces: ${s.count || 0}</span>
+        <span class="${(s.success_rate||0) >= 80 ? 'stat-good' : 'stat-bad'}">Success: ${s.success_rate || 0}%</span>
+      </div>
+      <div style="font-size:11px;color:var(--text-dim);margin-top:6px;">Click for details</div>
+    </div>`;
+  }
+  html += '</div>';
+
+  // Infrastructure Prompts section
+  html += '<div class="prompts-section-title">Infrastructure Prompts</div>';
+  html += '<div class="prompt-cards">';
+
+  // Task Parser
+  for (const p of taskParser) {
+    const s = stats['task-parser'] || {};
+    html += `<div class="prompt-card">
+      <div class="prompt-card-header">
+        <span class="prompt-card-name">task-parser</span>
+        <span class="prompt-card-version">v${p.version || '?'}</span>
+      </div>
+      <div class="prompt-card-desc">Classifies voice/text input into structured task fields (Ollama)</div>
+      <div class="prompt-card-stats">
+        <span>Traces: ${s.count || 0}</span>
+        <span class="${(s.success_rate||0) >= 80 ? 'stat-good' : 'stat-bad'}">Success: ${s.success_rate || 0}%</span>
+      </div>
+      <a class="prompt-card-link" href="${LANGFUSE_HOST}/project/pm-os/prompts/${p.name}" target="_blank">View in LangFuse ↗</a>
+    </div>`;
+  }
+
+  // Worker Router
+  if (workerRouter) {
+    const s = stats['worker-match'] || {};
+    html += `<div class="prompt-card">
+      <div class="prompt-card-header">
+        <span class="prompt-card-name">worker-router</span>
+        <span class="prompt-card-version">v${workerRouter.version || '?'}</span>
+      </div>
+      <div class="prompt-card-desc">Routes tasks to the best worker using LLM matching (Ollama)</div>
+      <div class="prompt-card-stats">
+        <span>Traces: ${s.count || 0}</span>
+        <span class="${(s.success_rate||0) >= 80 ? 'stat-good' : 'stat-bad'}">Success: ${s.success_rate || 0}%</span>
+      </div>
+      <a class="prompt-card-link" href="${LANGFUSE_HOST}/project/pm-os/prompts/${workerRouter.name}" target="_blank">View in LangFuse ↗</a>
+    </div>`;
+  }
+
+  // Cron Parser
+  if (cronParser) {
+    html += `<div class="prompt-card">
+      <div class="prompt-card-header">
+        <span class="prompt-card-name">cron-parser</span>
+        <span class="prompt-card-version">v${cronParser.version || '?'}</span>
+      </div>
+      <div class="prompt-card-desc">Parses free-form text into structured cron job definitions (Ollama)</div>
+      <a class="prompt-card-link" href="${LANGFUSE_HOST}/project/pm-os/prompts/${cronParser.name}" target="_blank">View in LangFuse ↗</a>
+    </div>`;
+  }
+
+  if (taskParser.length === 0 && !workerRouter && !cronParser) {
+    html += '<div style="color:var(--text-muted);font-size:13px;">Not registered yet. Run: python3 scripts/langfuse_setup.py</div>';
+  }
+  html += '</div>';
+
+  // Skills section (collapsible)
+  const skillsCollapsedDefault = skills.length > 12;
+  html += `<div class="prompts-section-title" style="cursor:pointer;" onclick="toggleSkillsList()">
+    Skills (${skills.length} registered) <span id="skills-toggle-icon">${skillsCollapsedDefault ? '▸' : '▾'}</span>
+  </div>`;
+  html += `<div class="prompt-cards" id="skills-grid" style="${skillsCollapsedDefault ? 'display:none;' : ''}">`;
+  for (const p of skills) {
+    html += `<a class="prompt-card" style="padding:10px;text-decoration:none;cursor:pointer;" href="${LANGFUSE_HOST}/project/pm-os/prompts/${p.name}" target="_blank">
+      <div class="prompt-card-header">
+        <span class="prompt-card-name" style="font-size:12px;">${p.name.replace('skill-', '')}</span>
+        <span class="prompt-card-version">v${p.version || '?'}</span>
+      </div>
+    </a>`;
+  }
+  html += '</div>';
+
+  // Link to full LangFuse UI
+  html += `<div style="text-align:center;margin-top:20px;">
+    <a href="${LANGFUSE_HOST}/project/pm-os" target="_blank" style="color:var(--accent);font-size:13px;text-decoration:none;">Open LangFuse Dashboard ↗</a>
+  </div>`;
+
+  view.innerHTML = html;
+}
+
+function toggleSkillsList() {
+  const grid = document.getElementById('skills-grid');
+  const icon = document.getElementById('skills-toggle-icon');
+  if (grid.style.display === 'none') {
+    grid.style.display = '';
+    icon.textContent = '▾';
+  } else {
+    grid.style.display = 'none';
+    icon.textContent = '▸';
+  }
+}
+
+// ─── Pipeline (Per-Step Scoring) ────────────────────────────────────
+
+async function loadPipelineTraces(taskId) {
+  try {
+    const res = await fetch(`${API}/tasks/${taskId}/traces`);
+    const data = await res.json();
+    return data.traces || [];
+  } catch {
+    return [];
+  }
+}
+
+function renderPipeline(traces, taskId) {
+  if (!traces || traces.length === 0) return '';
+
+  let html = '<div class="pipeline-section">';
+  html += '<div class="pipeline-title">Pipeline</div>';
+
+  traces.forEach((t, i) => {
+    // Determine icon from trace name
+    const name = t.name || '';
+    let icon = '⚙️';
+    if (name.includes('task-parser')) icon = '📝';
+    else if (name.includes('worker-match')) icon = '🔀';
+    else if (name.includes('worker-execution')) icon = '🤖';
+
+    const hasScores = t.scores && t.scores.length > 0;
+    const thumbUp = t.scores?.find(s => s.name === 'human-feedback' && s.value === 1);
+    const thumbDown = t.scores?.find(s => s.name === 'human-feedback' && s.value === 0);
+
+    // Format timestamp
+    const ts = t.timestamp ? new Date(t.timestamp).toLocaleTimeString() : '';
+
+    html += `<div class="pipeline-step">
+      <div class="pipeline-step-header">
+        <span class="pipeline-step-name">${icon} ${t.name} <span style="color:var(--text-dim);font-weight:normal;font-size:11px;">${ts}</span></span>
+        <div class="pipeline-step-actions">
+          <button class="btn-score ${thumbUp ? 'scored-up' : ''}" onclick="scoreStep('${taskId}','${t.trace_id}',1,this)" title="Good">👍</button>
+          <button class="btn-score ${thumbDown ? 'scored-down' : ''}" onclick="scoreStep('${taskId}','${t.trace_id}',0,this)" title="Bad">👎</button>
+          <button class="btn-annotate" onclick="toggleAnnotation('annot-${i}')" title="Add note">💬</button>
+        </div>
+      </div>`;
+
+    // Show output first (the result) — this is the most useful info
+    if (t.output_summary && t.output_summary !== 'null') {
+      html += `<div class="pipeline-step-detail" style="color:var(--text);">→ ${t.output_summary}</div>`;
+    }
+    // Show input as secondary context
+    if (t.input_summary && t.input_summary !== 'null') {
+      html += `<div class="pipeline-step-detail">In: ${t.input_summary}</div>`;
+    }
+
+    // Show existing scores
+    if (hasScores) {
+      html += '<div class="pipeline-scores">';
+      for (const s of t.scores) {
+        const cls = s.value === 1 || s.value === 'good' ? 'good' : 'bad';
+        const label = s.comment || (s.value === 1 ? '👍' : s.value === 0 ? '👎' : s.value);
+        html += `<span class="pipeline-score-badge ${cls}">${label}</span>`;
+      }
+      html += '</div>';
+    }
+
+    // Annotation box
+    html += `<div class="annotation-box" id="annot-${i}">
+      <textarea class="annotation-input" id="annot-input-${i}" placeholder="What went wrong or right?"></textarea>
+      <button class="annotation-submit" onclick="submitAnnotation('${taskId}','${t.trace_id}','annot-input-${i}')">Submit</button>
+    </div>`;
+
+    html += '</div>';
+  });
+
+  html += `<a class="pipeline-link" href="${LANGFUSE_HOST}/project/pm-os/sessions/${taskId}" target="_blank">View full traces in LangFuse ↗</a>`;
+  html += '</div>';
+  return html;
+}
+
+async function scoreStep(taskId, traceId, score, btn) {
+  try {
+    await fetch(`${API}/tasks/${taskId}/traces/${traceId}/score`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ score }),
+    });
+    // Visual feedback
+    const parent = btn.parentElement;
+    parent.querySelectorAll('.btn-score').forEach(b => b.classList.remove('scored-up', 'scored-down'));
+    btn.classList.add(score === 1 ? 'scored-up' : 'scored-down');
+  } catch (err) {
+    console.error('Score failed:', err);
+  }
+}
+
+function toggleAnnotation(id) {
+  const box = document.getElementById(id);
+  box.classList.toggle('visible');
+}
+
+async function submitAnnotation(taskId, traceId, inputId) {
+  const input = document.getElementById(inputId);
+  const comment = input.value.trim();
+  if (!comment) return;
+  try {
+    await fetch(`${API}/tasks/${taskId}/traces/${traceId}/annotation`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ comment }),
+    });
+    input.value = '';
+    input.parentElement.classList.remove('visible');
+    // Refresh pipeline to show new annotation
+    if (currentTaskId) openTask(currentTaskId);
+  } catch (err) {
+    console.error('Annotation failed:', err);
+  }
+}
+
+// ─── Fetch & Render ─────────────────────────────────────────────────
+
+async function fetchTasks() {
+  try {
+    const res = await fetch(`${API}/tasks`);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    allTasks = await res.json();
+    renderBoard();
+    renderStats();
+  } catch (err) {
+    document.getElementById('board').innerHTML =
+      `<div class="loading">Error loading tasks: ${err.message}</div>`;
+  }
+}
+
+function renderStats() {
+  const stats = document.getElementById('stats');
+  const byQueue = {};
+  let needsAttention = 0;
+
+  allTasks.forEach(t => {
+    byQueue[t.queue] = (byQueue[t.queue] || 0) + 1;
+    if (t.agent_status === 'needs-human' || t.agent_status === 'complete') {
+      needsAttention++;
+    }
+  });
+
+  let html = '';
+  const queueLabels = { human: 'human', collab: 'supervised', agent: 'agent', waiting: 'waiting' };
+  for (const q of ['human', 'collab', 'agent', 'waiting']) {
+    html += `<span class="stat-badge">${queueLabels[q]}: ${byQueue[q] || 0}</span>`;
+  }
+  if (needsAttention > 0) {
+    html += `<span class="stat-badge attention">${needsAttention} need attention</span>`;
+  }
+  html += `<span class="stat-badge">total: ${allTasks.length}</span>`;
+  stats.innerHTML = html;
+}
+
+function renderBoard() {
+  const board = document.getElementById('board');
+  const lanes = {
+    human: { label: 'Human', icon: '', tasks: [] },
+    collab: { label: 'Supervised', icon: '', tasks: [] },
+    agent: { label: 'Agent', icon: '', tasks: [] },
+    waiting: { label: 'Waiting', icon: '', tasks: [] },
+  };
+
+  allTasks.forEach(t => {
+    if (lanes[t.queue]) lanes[t.queue].tasks.push(t);
+  });
+
+  let html = '';
+  for (const [queueName, lane] of Object.entries(lanes)) {
+    html += `<div class="lane">`;
+    html += `<div class="lane-header">`;
+    html += `<span>${lane.icon} ${lane.label}</span>`;
+    html += `<span class="count">${lane.tasks.length}</span>`;
+    html += `</div>`;
+    html += `<div class="lane-body">`;
+
+    if (lane.tasks.length === 0) {
+      html += `<div class="empty-lane">No tasks</div>`;
+    } else {
+      // Group by status — include 'done' for agent and collab lanes (awaiting review/action)
+      const statusOrder = (queueName === 'agent' || queueName === 'collab')
+        ? ['done', 'in-progress', 'open', 'blocked']
+        : ['open', 'in-progress', 'blocked'];
+      const grouped = {};
+      lane.tasks.forEach(t => {
+        const s = t.status || 'open';
+        if (!grouped[s]) grouped[s] = [];
+        grouped[s].push(t);
+      });
+
+      for (const status of statusOrder) {
+        if (!grouped[status] || grouped[status].length === 0) continue;
+        html += `<div class="status-group">`;
+        let label = status;
+        if (status === 'done' && queueName === 'agent') label = 'Ready for Review';
+        if (status === 'done' && queueName === 'collab') label = 'Needs Your Action';
+        html += `<div class="status-label">${label}</div>`;
+        grouped[status].forEach(t => {
+          html += renderCard(t, queueName);
+        });
+        html += `</div>`;
+      }
+    }
+
+    html += `</div></div>`;
+  }
+  board.innerHTML = html;
+}
+
+function renderCard(task, queueName) {
+  const priClass = `badge-${task.priority}`;
+  let icons = '';
+
+  // Agent status icons
+  if (task.agent_status === 'running') icons += '<span class="agent-icon" title="Agent running">&#129302;</span>';
+  else if (task.agent_status === 'needs-human') icons += '<span class="agent-icon" title="Needs human input">&#10067;</span>';
+  else if (task.agent_status === 'complete') icons += '<span class="agent-icon" title="Agent complete">&#9989;</span>';
+  else if (task.agent_status === 'failed') icons += '<span class="agent-icon" title="Agent failed">&#10060;</span>';
+
+  // Schedule-meeting indicator
+  if (task.task_type === 'schedule-meeting') icons += '<span class="agent-icon" title="Schedule meeting" style="font-size:12px;">&#128197;</span>';
+  // Jira draft indicator
+  if (task.body && task.body.includes('<!-- JIRA_DRAFT -->')) icons += '<span class="agent-icon" title="Jira draft ready" style="font-size:12px;">&#127915;</span>';
+
+  // Word doc sync indicator
+  if (task.sharepoint_url || task.sharepoint_path) icons += '<span class="agent-icon" title="Synced to Word/SharePoint" style="font-size:11px;font-weight:700;color:var(--accent);">W</span>';
+
+  let meta = `<span class="badge ${priClass}">${task.priority}</span>`;
+  if (task.domain) meta += `<span class="badge badge-domain">${task.domain}</span>`;
+  const mtg = meetingName(task.source_meeting);
+  if (mtg) meta += `<span class="badge badge-meeting" title="${escapeHtml(task.source_meeting)}">${escapeHtml(mtg)}</span>`;
+
+  if (queueName === 'waiting') {
+    if (task.waiting_on) meta += `<span class="badge badge-waiting">${task.waiting_on}</span>`;
+    if (task.waiting_expected) {
+      const today = new Date().toISOString().slice(0, 10);
+      const isOverdue = String(task.waiting_expected) < today;
+      const cls = isOverdue ? 'badge-overdue' : 'badge-due';
+      const label = isOverdue ? `OVERDUE (${task.waiting_expected})` : `exp: ${task.waiting_expected}`;
+      meta += `<span class="badge ${cls}">${label}</span>`;
+    }
+  } else if (task.due) {
+    const today = new Date().toISOString().slice(0, 10);
+    const isOverdue = String(task.due) < today;
+    const cls = isOverdue ? 'badge-overdue' : 'badge-due';
+    const label = isOverdue ? `OVERDUE (${task.due})` : `due: ${task.due}`;
+    meta += `<span class="badge ${cls}">${label}</span>`;
+  }
+
+  return `
+    <div class="card" onclick="openTask('${task.id}')">
+      <div class="card-top">
+        <span class="card-id">${task.id}</span>
+        <span class="card-icons">${icons}</span>
+      </div>
+      <div class="card-title">${escapeHtml(task.title)}</div>
+      <div class="card-meta">${meta}</div>
+    </div>
+  `;
+}
+
+// ─── Modal ──────────────────────────────────────────────────────────
+
+async function openTask(taskId) {
+  currentTaskId = taskId;
+  const overlay = document.getElementById('modal-overlay');
+  const modalBody = document.getElementById('modal-body');
+  const modalTitle = document.getElementById('modal-title');
+  const modalActions = document.getElementById('modal-actions');
+
+  overlay.classList.add('active');
+  modalBody.innerHTML = '<div class="loading">Loading...</div>';
+  modalTitle.textContent = taskId;
+  modalActions.innerHTML = '';
+
+  try {
+    const res = await fetch(`${API}/tasks/${taskId}`);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const task = await res.json();
+
+    modalTitle.textContent = `${task.id} — ${escapeHtml(task.title)}`;
+
+    // Fields grid
+    let html = '<div class="field-grid">';
+    const fields = [
+      ['Status', task.status],
+      ['Queue', task.queue],
+      ['Priority', task.priority],
+      ['Domain', task.domain || '—'],
+      ['Creator', task.creator],
+      ['Assignee', task.assignee || '—'],
+      ['Due', task.due || '—'],
+      ['Project', task.project || '—'],
+      ['Created', formatDate(task.created)],
+      ['Updated', formatDate(task.updated)],
+    ];
+    if (task.source_meeting) {
+      fields.push(['Source Meeting', meetingName(task.source_meeting)]);
+    }
+    if (task.agent_status) {
+      fields.push(['Agent Status', task.agent_status]);
+    }
+    if (task.agent_output) {
+      fields.push(['Agent Output', renderAgentOutput(task.agent_output), true]);
+    }
+    if (task.sharepoint_url) {
+      const docName = task.sharepoint_path ? task.sharepoint_path.split('/').pop() : 'Open in Word Online';
+      fields.push(['Word Doc', `<a href="${escapeHtml(task.sharepoint_url)}" target="_blank" rel="noopener" style="color:var(--accent);text-decoration:none;" title="Open in Word Online">${escapeHtml(docName)}</a>`, true]);
+    } else if (task.sharepoint_path) {
+      fields.push(['Word Doc', `<a href="/open?file=${encodeURIComponent(task.sharepoint_path)}" style="color:var(--accent);text-decoration:none;" title="Open in Word">${escapeHtml(task.sharepoint_path.split('/').pop())}</a>`, true]);
+    }
+    if (task.waiting_on) {
+      fields.push(['Waiting On', task.waiting_on]);
+      fields.push(['Expected', task.waiting_expected || '—']);
+    }
+    if (task.tags && task.tags.length > 0) {
+      fields.push(['Tags', task.tags.join(', ')]);
+    }
+
+    fields.forEach(([label, value, raw]) => {
+      const rendered = raw ? value : escapeHtml(String(value));
+      html += `<div class="field-item"><span class="field-label">${label}</span><span class="field-value">${rendered}</span></div>`;
+    });
+    html += '</div>';
+
+    // Determine task type flags early so all sections can use them
+    const isScheduleMeeting = task.task_type === 'schedule-meeting';
+    const isAgentComplete = task.agent_status === 'complete' && task.status === 'done';
+
+    // Schedule-meeting info panel (above description and activity log)
+    if (isScheduleMeeting) {
+      // Pre-load email cache so we can resolve names → emails for chips
+      await loadEmailCache();
+
+      html += '<div class="section-title" style="display:flex;align-items:center;justify-content:space-between;">Meeting Details<button class="btn-edit-meeting" id="btn-edit-meeting" onclick="editMeetingDetails()">Edit</button></div>';
+      html += '<div class="field-grid" style="margin-bottom:12px;">';
+      if (task.meeting_title) {
+        html += `<div class="field-item"><span class="field-label">Event Title</span><span class="field-value" id="meeting-title-display">${escapeHtml(task.meeting_title)}</span></div>`;
+      }
+      if (task.meeting_duration) {
+        html += `<div class="field-item"><span class="field-label">Duration</span><span class="field-value">${task.meeting_duration} min</span></div>`;
+      }
+      // Editable attendees as chips — resolve names to emails via cache
+      const attendees = task.meeting_attendees || [];
+      html += `<div class="field-item" style="grid-column:1/-1;">`;
+      html += `<span class="field-label">Attendees</span>`;
+      html += `<div class="attendee-chips" id="attendee-chips">`;
+      attendees.forEach(a => {
+        const name = String(a);
+        const email = (emailCache && emailCache[name]) || name;
+        html += `<span class="attendee-chip" data-email="${escapeHtml(email)}">${escapeHtml(name)}<span class="chip-remove" onclick="removeAttendee(this)">&times;</span></span>`;
+      });
+      html += `</div>`;
+      html += `<div class="attendee-add-wrap">`;
+      html += `<input type="text" class="attendee-add-input" id="attendee-input" placeholder="Add attendee (name or email)..." autocomplete="off">`;
+      html += `<div class="attendee-dropdown" id="attendee-dropdown"></div>`;
+      html += `</div>`;
+      html += `</div>`;
+      if (task.meeting_description) {
+        html += `<div class="field-item" style="grid-column:1/-1;"><span class="field-label">Description</span><span class="field-value" id="meeting-desc-display" style="white-space:pre-wrap;">${escapeHtml(task.meeting_description)}</span></div>`;
+      }
+      // Recurring meeting toggle
+      const isRecurring = task.meeting_recurring || false;
+      const recurrencePattern = task.meeting_recurrence_pattern || 'weekly';
+      html += `<div class="field-item" style="grid-column:1/-1;">`;
+      html += `<div class="recurring-toggle">`;
+      html += `<label><input type="checkbox" id="recurring-check" ${isRecurring ? 'checked' : ''} onchange="toggleRecurring()"> Recurring meeting</label>`;
+      html += `<select class="recurring-select" id="recurring-pattern" ${isRecurring ? '' : 'style="display:none;"'} onchange="updateRecurrencePattern()">`;
+      html += `<option value="weekly" ${recurrencePattern === 'weekly' ? 'selected' : ''}>Weekly</option>`;
+      html += `<option value="biweekly" ${recurrencePattern === 'biweekly' ? 'selected' : ''}>Biweekly</option>`;
+      html += `<option value="monthly" ${recurrencePattern === 'monthly' ? 'selected' : ''}>Monthly</option>`;
+      html += `</select>`;
+      html += `</div>`;
+      html += `</div>`;
+      html += '</div>';
+    }
+
+    // Schedule-meeting slot picker (render whenever SLOT markers exist —
+    // independent of agent_status so the picker shows even if the agent
+    // ended in needs-human / open / blocked).
+    if (isScheduleMeeting && task.body) {
+      const slots = parseSlots(task.body);
+      if (slots.length > 0) {
+        html += '<div class="slot-picker">';
+        html += '<div class="slot-picker-title">Select a Time Slot</div>';
+        slots.forEach((slot, i) => {
+          html += `<div class="slot-option" onclick="selectSlot(this, ${i})">`;
+          html += `<input type="radio" name="slot" id="slot-${i}" value="${i}" data-start="${escapeHtml(slot.start)}" data-end="${escapeHtml(slot.end)}">`;
+          html += `<label for="slot-${i}">${escapeHtml(slot.display)}</label>`;
+          html += `</div>`;
+        });
+        html += '</div>';
+      }
+    }
+
+    // Jira draft panel (when agent has drafted a ticket)
+    const hasJiraDraft = task.body && task.body.includes('<!-- JIRA_DRAFT -->');
+    if (hasJiraDraft) {
+      const jiraDraft = parseJiraDraft(task.body);
+      if (jiraDraft) {
+        const typeBadgeColor = {'Bug': 'var(--danger)', 'Story': 'var(--success)', 'Epic': '#9f8fef'}[jiraDraft.type] || 'var(--text-muted)';
+        html += '<div style="background:var(--surface);border:1px solid var(--border);border-left:3px solid ' + typeBadgeColor + ';border-radius:8px;padding:14px;margin:12px 0;">';
+        html += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">';
+        html += `<span style="background:${typeBadgeColor};color:#fff;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;">${escapeHtml(jiraDraft.type)}</span>`;
+        html += `<span style="font-weight:600;font-size:14px;">${escapeHtml(jiraDraft.summary)}</span>`;
+        html += '</div>';
+        if (jiraDraft.description) {
+          html += `<div style="font-size:13px;color:var(--text-muted);white-space:pre-wrap;margin-bottom:10px;max-height:200px;overflow-y:auto;">${escapeHtml(jiraDraft.description)}</div>`;
+        }
+        html += '<div style="display:flex;gap:8px;flex-wrap:wrap;font-size:11px;">';
+        if (jiraDraft.priority) html += `<span style="background:var(--surface-hover);padding:2px 6px;border-radius:3px;">Priority: ${escapeHtml(jiraDraft.priority)}</span>`;
+        if (jiraDraft.labels.length) html += `<span style="background:var(--surface-hover);padding:2px 6px;border-radius:3px;">Labels: ${escapeHtml(jiraDraft.labels.join(', '))}</span>`;
+        if (jiraDraft.release_notes) html += `<span style="background:var(--surface-hover);padding:2px 6px;border-radius:3px;">Release: ${escapeHtml(jiraDraft.release_notes)}</span>`;
+        if (jiraDraft.epic_name) html += `<span style="background:var(--surface-hover);padding:2px 6px;border-radius:3px;">Epic: ${escapeHtml(jiraDraft.epic_name)}</span>`;
+        html += '</div>';
+        html += '<div style="margin-top:6px;font-size:11px;color:var(--text-dim);">Project: VNT &middot; Component: Vantaca HXP &middot; Status: Refinement</div>';
+        html += '</div>';
+      }
+    }
+
+    // Body sections (description, acceptance criteria)
+    if (task.body) {
+      const bodyText = task.body.trim();
+      const sections = bodyText.split(/^## /m).filter(s => s.trim());
+      sections.forEach(section => {
+        const lines = section.split('\n');
+        const title = lines[0].trim();
+        const content = lines.slice(1).join('\n').trim();
+        if (title.toLowerCase() === 'activity log') return;
+        if (title.toLowerCase() === 'suggested times') return;
+        if (title.toLowerCase() === 'jira draft') return;
+        if (title.toLowerCase() === 'description') {
+          html += `<div class="section-header"><span class="section-title" style="border:none;margin:0;padding-top:12px;">Description</span><button class="btn-edit" onclick="toggleDescEdit()" id="desc-edit-btn">Edit</button></div>`;
+          html += `<div id="desc-display" class="section-content">${escapeHtml(content)}</div>`;
+          html += `<div id="desc-editor" style="display:none;margin-top:8px;">`;
+          html += `<textarea class="desc-textarea" id="desc-input">${escapeHtml(content)}</textarea>`;
+          html += `<div class="desc-actions"><button class="btn btn-primary" onclick="saveDescription()">Save</button><button class="btn" onclick="toggleDescEdit()">Cancel</button></div>`;
+          html += `</div>`;
+        } else if (content) {
+          html += `<div class="section-title">${escapeHtml(title)}</div>`;
+          html += `<div class="section-content">${escapeHtml(content)}</div>`;
+        }
+      });
+    }
+
+    // Activity log
+    if (task.activity_log && task.activity_log.length > 0) {
+      html += '<div class="section-title">Activity Log</div>';
+      html += '<div class="activity-log">';
+      task.activity_log.forEach(entry => {
+        const typeClass = entry.type || '';
+        html += `<div class="log-entry ${typeClass}">`;
+        html += `<div class="log-meta">${formatDate(entry.timestamp)} — ${entry.actor}${entry.type ? ` [${entry.type}]` : ''}</div>`;
+        html += `<div class="log-content">${escapeHtml(entry.content)}</div>`;
+        html += `</div>`;
+      });
+      html += '</div>';
+    }
+
+    // Comment box
+    html += `
+      <div class="comment-box">
+        <textarea class="comment-input" id="comment-input" placeholder="Add a comment..."></textarea>
+      </div>
+    `;
+
+    modalBody.innerHTML = html;
+
+    // Load pipeline traces (async, appends to modal)
+    // Show for all tasks — task-creation traces exist for every task,
+    // not just agent-dispatched ones
+    loadPipelineTraces(task.id).then(traces => {
+      if (traces.length > 0) {
+        const pipelineHtml = renderPipeline(traces, task.id);
+        const pipelineDiv = document.createElement('div');
+        pipelineDiv.innerHTML = pipelineHtml;
+        modalBody.appendChild(pipelineDiv);
+      }
+    });
+
+    // Set up attendee typeahead if this is a schedule-meeting task
+    // (emailCache already loaded above during chip rendering)
+    if (isScheduleMeeting) {
+      setupAttendeeTypeahead();
+    }
+
+    // Actions — context-sensitive buttons
+    const doneLabel = isAgentComplete ? 'Approve & Archive' : 'Mark Done';
+    const canDispatch = (task.status === 'open' || (task.status === 'blocked' && task.agent_status === 'failed'))
+                        && (task.queue === 'collab' || task.queue === 'agent');
+    const canRerun = (task.queue === 'agent' || task.queue === 'collab')
+                     && (task.agent_status === 'failed' || task.agent_status === 'complete' || task.status === 'blocked');
+    let actionsHtml = '';
+    if (canDispatch) {
+      actionsHtml += `<button class="btn btn-schedule" id="btn-start-agent" onclick="startAgent('${task.id}')">Start Agent</button>`;
+    }
+    if (canRerun) {
+      actionsHtml += `<button class="btn btn-warning" id="btn-rerun-agent" onclick="rerunAgent('${task.id}')">Rerun Agent</button>`;
+    }
+    actionsHtml += `<button class="btn btn-primary" onclick="addComment()">Add Comment</button>`;
+    // Show "Create Meeting" whenever the picker is shown (i.e., SLOT markers exist).
+    // Picker visibility is gated only on parsed slot count, not agent_status.
+    const hasSlots = isScheduleMeeting && task.body && parseSlots(task.body).length > 0;
+    if (hasSlots) {
+      actionsHtml += `<button class="btn btn-schedule" id="btn-create-meeting" onclick="scheduleMeeting('${task.id}')" disabled>Create Meeting</button>`;
+    }
+    if (hasJiraDraft && (task.agent_status === 'complete' || task.agent_status === 'needs-human')) {
+      actionsHtml += `<button class="btn btn-schedule" id="btn-publish-jira" onclick="publishToJira('${task.id}')">Publish to Jira</button>`;
+    }
+    if (isAgentComplete && task.agent_output) {
+      const out = task.agent_output.trim();
+      if (out.endsWith('.md')) {
+        actionsHtml += `<a href="${obsidianUri(out)}" class="btn" title="Open in Obsidian">Open Output</a>`;
+      } else {
+        const urlMatch = out.match(/https?:\/\/[^\s)]+/);
+        if (urlMatch) {
+          actionsHtml += `<a href="${escapeHtml(urlMatch[0])}" target="_blank" rel="noopener" class="btn">Open Link</a>`;
+        }
+      }
+    }
+    if (task.sharepoint_url) {
+      actionsHtml += `<a href="${escapeHtml(task.sharepoint_url)}" target="_blank" rel="noopener" class="btn" title="Open in Word Online">Open in Word</a>`;
+    } else if (task.sharepoint_path) {
+      actionsHtml += `<a href="/open?file=${encodeURIComponent(task.sharepoint_path)}" class="btn" title="Open in Microsoft Word">Open in Word</a>`;
+    }
+    actionsHtml += `<button class="btn btn-success" onclick="markDone()">${doneLabel}</button>`;
+    if (isAgentComplete && task.agent_output) {
+      actionsHtml += `<button class="btn btn-danger" id="btn-done-delete" onclick="markDoneAndDelete()">Approve & Delete</button>`;
+    }
+    actionsHtml += `<button class="btn" onclick="closeModal()">Close</button>`;
+    modalActions.innerHTML = actionsHtml;
+  } catch (err) {
+    modalBody.innerHTML = `<div class="loading">Error: ${err.message}</div>`;
+  }
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('active');
+  currentTaskId = null;
+}
+
+async function markDone() {
+  if (!currentTaskId) return;
+
+  try {
+    const res = await fetch(`${API}/tasks/${currentTaskId}/done`, { method: 'POST' });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    closeModal();
+    fetchTasks();
+  } catch (err) {
+    toast(`Error: ${err.message}`);
+  }
+}
+
+async function markDoneAndDelete() {
+  if (!currentTaskId) return;
+  const btn = document.getElementById('btn-done-delete');
+  if (btn && !btn.dataset.armed) {
+    btn.dataset.armed = 'true';
+    btn.textContent = 'Click again to confirm delete';
+    btn.classList.add('btn-danger');
+    setTimeout(() => { if (btn && btn.dataset.armed) { delete btn.dataset.armed; btn.textContent = 'Done & Delete'; btn.classList.remove('btn-danger'); } }, 3000);
+    return;
+  }
+  if (btn) delete btn.dataset.armed;
+  try {
+    const res = await fetch(`${API}/tasks/${currentTaskId}/done-and-delete`, { method: 'POST' });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    closeModal();
+    fetchTasks();
+  } catch (err) {
+    toast(`Error: ${err.message}`);
+  }
+}
+
+async function addComment() {
+  if (!currentTaskId) return;
+  const input = document.getElementById('comment-input');
+  const content = input.value.trim();
+  if (!content) return;
+
+  try {
+    const res = await fetch(`${API}/tasks/${currentTaskId}/comment`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ content }),
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    openTask(currentTaskId); // refresh modal
+  } catch (err) {
+    toast(`Error: ${err.message}`);
+  }
+}
+
+// ─── Start Agent ─────────────────────────────────────────────────────
+
+async function startAgent(taskId) {
+  const btn = document.getElementById('btn-start-agent');
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = 'Dispatching...';
+  }
+
+  try {
+    const res = await fetch(`${API}/tasks/${taskId}/dispatch`, { method: 'POST' });
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      throw new Error(data.error || `HTTP ${res.status}`);
+    }
+    // Refresh modal to show in-progress state
+    if (btn) btn.textContent = 'Agent Started';
+    setTimeout(() => { if (currentTaskId === taskId) openTask(taskId); fetchTasks(); }, 2000);
+  } catch (err) {
+    toast(`Error dispatching agent: ${err.message}`);
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = 'Start Agent';
+    }
+  }
+}
+
+// ─── Rerun Agent ─────────────────────────────────────────────────────
+
+async function rerunAgent(taskId) {
+  const btn = document.getElementById('btn-rerun-agent');
+  // Two-click confirm: first click arms, second click fires
+  if (btn && !btn.dataset.armed) {
+    btn.dataset.armed = 'true';
+    btn.textContent = 'Click again to confirm';
+    btn.classList.add('btn-danger');
+    setTimeout(() => { if (btn.dataset.armed) { delete btn.dataset.armed; btn.textContent = 'Rerun Agent'; btn.classList.remove('btn-danger'); } }, 3000);
+    return;
+  }
+  if (btn) {
+    delete btn.dataset.armed;
+    btn.disabled = true;
+    btn.textContent = 'Rerunning...';
+  }
+
+  try {
+    const res = await fetch(`${API}/tasks/${taskId}/rerun`, { method: 'POST' });
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      throw new Error(data.error || `HTTP ${res.status}`);
+    }
+    if (btn) btn.textContent = 'Agent Restarted';
+    setTimeout(() => { if (currentTaskId === taskId) openTask(taskId); fetchTasks(); }, 2000);
+  } catch (err) {
+    toast(`Error rerunning agent: ${err.message}`);
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = 'Rerun Agent';
+    }
+  }
+}
+
+// ─── Schedule Meeting ────────────────────────────────────────────────
+
+function parseSlots(body) {
+  // Extract <!-- SLOT:N|startISO|endISO --> comments + the display line that follows
+  const slotRegex = /<!--\s*SLOT:(\d+)\|([^|]+)\|([^>]+?)\s*-->\s*\n(.+)/g;
+  const slots = [];
+  let match;
+  while ((match = slotRegex.exec(body)) !== null) {
+    slots.push({
+      num: parseInt(match[1]),
+      start: match[2].trim(),
+      end: match[3].trim(),
+      display: match[4].replace(/\*\*/g, '').replace(/_/g, '').trim(),
+    });
+  }
+  return slots;
+}
+
+function selectSlot(el, index) {
+  // Deselect all
+  document.querySelectorAll('.slot-option').forEach(s => s.classList.remove('selected'));
+  // Select this one
+  el.classList.add('selected');
+  el.querySelector('input[type="radio"]').checked = true;
+  // Enable the create meeting button
+  const btn = document.getElementById('btn-create-meeting');
+  if (btn) btn.disabled = false;
+}
+
+async function scheduleMeeting(taskId) {
+  const selected = document.querySelector('.slot-option.selected input[type="radio"]');
+  if (!selected) {
+    toast('Please select a time slot first.', 'warn');
+    return;
+  }
+
+  const slotStart = selected.dataset.start;
+  const slotEnd = selected.dataset.end;
+
+  const btn = document.getElementById('btn-create-meeting');
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = 'Creating...';
+  }
+
+  // Gather current attendees from chips
+  const attendeeEmails = getCurrentAttendees();
+  // Gather recurrence setting
+  const recurringCheck = document.getElementById('recurring-check');
+  const recurringPattern = document.getElementById('recurring-pattern');
+  const postBody = { slot_start: slotStart, slot_end: slotEnd };
+  if (attendeeEmails.length > 0) {
+    postBody.attendees = attendeeEmails;
+  }
+  if (recurringCheck && recurringCheck.checked && recurringPattern) {
+    postBody.recurring = recurringPattern.value;
+  }
+  // Include meeting title and description (from edit input if active, else display span)
+  const titleInput = document.getElementById('meeting-title-input');
+  const titleDisplay = document.getElementById('meeting-title-display');
+  const titleVal = titleInput ? titleInput.value.trim() : (titleDisplay ? titleDisplay.textContent.trim() : '');
+  if (titleVal) postBody.meeting_title = titleVal;
+
+  const descInput = document.getElementById('meeting-desc-input');
+  const descDisplay = document.getElementById('meeting-desc-display');
+  const descVal = descInput ? descInput.value.trim() : (descDisplay ? descDisplay.textContent.trim() : '');
+  if (descVal) postBody.meeting_description = descVal;
+
+  try {
+    const res = await fetch(`${API}/tasks/${taskId}/schedule-meeting`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(postBody),
+    });
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      throw new Error(data.error || `HTTP ${res.status}`);
+    }
+    closeModal();
+    fetchTasks();
+  } catch (err) {
+    toast(`Error creating meeting: ${err.message}`);
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = 'Create Meeting';
+    }
+  }
+}
+
+// ─── Meeting Details Edit/Save ───────────────────────────────────────
+
+function editMeetingDetails() {
+  const btn = document.getElementById('btn-edit-meeting');
+  const titleEl = document.getElementById('meeting-title-display');
+  const descEl = document.getElementById('meeting-desc-display');
+
+  if (titleEl) {
+    const val = titleEl.textContent;
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.className = 'field-input';
+    input.id = 'meeting-title-input';
+    input.value = val;
+    titleEl.replaceWith(input);
+  }
+  if (descEl) {
+    const val = descEl.textContent;
+    const textarea = document.createElement('textarea');
+    textarea.className = 'field-input';
+    textarea.id = 'meeting-desc-input';
+    textarea.rows = 3;
+    textarea.value = val;
+    descEl.replaceWith(textarea);
+  }
+  btn.textContent = 'Save';
+  btn.onclick = () => saveMeetingDetails(currentTaskId);
+}
+
+async function saveMeetingDetails(taskId) {
+  const btn = document.getElementById('btn-edit-meeting');
+  const titleInput = document.getElementById('meeting-title-input');
+  const descInput = document.getElementById('meeting-desc-input');
+
+  const body = {};
+  if (titleInput) body.meeting_title = titleInput.value.trim();
+  if (descInput) body.meeting_description = descInput.value.trim();
+
+  btn.textContent = 'Saving...';
+  btn.disabled = true;
+
+  try {
+    const res = await fetch(`${API}/tasks/${taskId}/meeting-details`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      throw new Error(data.error || `HTTP ${res.status}`);
+    }
+
+    // Swap back to read-only spans
+    if (titleInput) {
+      const span = document.createElement('span');
+      span.className = 'field-value';
+      span.id = 'meeting-title-display';
+      span.textContent = body.meeting_title;
+      titleInput.replaceWith(span);
+    }
+    if (descInput) {
+      const span = document.createElement('span');
+      span.className = 'field-value';
+      span.id = 'meeting-desc-display';
+      span.style.whiteSpace = 'pre-wrap';
+      span.textContent = body.meeting_description;
+      descInput.replaceWith(span);
+    }
+    btn.textContent = 'Edit';
+    btn.onclick = editMeetingDetails;
+  } catch (err) {
+    toast(`Failed to save: ${err.message}`);
+    btn.textContent = 'Save';
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+// ─── Attendee Management ─────────────────────────────────────────────
+
+let emailCache = null; // { "Name": "email@co.com", ... }
+
+async function loadEmailCache() {
+  if (emailCache !== null) return;
+  try {
+    const res = await fetch(`${API}/people/emails`);
+    if (res.ok) emailCache = await res.json();
+    else emailCache = {};
+  } catch { emailCache = {}; }
+}
+
+function getCurrentAttendees() {
+  const chips = document.querySelectorAll('#attendee-chips .attendee-chip');
+  return Array.from(chips).map(c => c.dataset.email).filter(Boolean);
+}
+
+function removeAttendee(el) {
+  el.closest('.attendee-chip').remove();
+}
+
+function addAttendeeChip(email) {
+  if (!email) return;
+  // Prevent duplicates
+  const existing = getCurrentAttendees();
+  if (existing.includes(email)) return;
+  const container = document.getElementById('attendee-chips');
+  const chip = document.createElement('span');
+  chip.className = 'attendee-chip';
+  chip.dataset.email = email;
+  chip.innerHTML = `${escapeHtml(email)}<span class="chip-remove" onclick="removeAttendee(this)">&times;</span>`;
+  container.appendChild(chip);
+}
+
+function setupAttendeeTypeahead() {
+  const input = document.getElementById('attendee-input');
+  const dropdown = document.getElementById('attendee-dropdown');
+  if (!input || !dropdown) return;
+
+  input.addEventListener('input', () => {
+    const query = input.value.trim().toLowerCase();
+    if (query.length < 1 || !emailCache) {
+      dropdown.classList.remove('visible');
+      return;
+    }
+    const matches = Object.entries(emailCache)
+      .filter(([name, email]) => email && (name.toLowerCase().includes(query) || email.toLowerCase().includes(query)))
+      // Deduplicate by email
+      .reduce((acc, [name, email]) => {
+        if (!acc.some(m => m[1] === email)) acc.push([name, email]);
+        return acc;
+      }, [])
+      .slice(0, 8);
+
+    if (matches.length === 0) {
+      dropdown.classList.remove('visible');
+      return;
+    }
+    dropdown.innerHTML = matches.map(([name, email]) =>
+      `<div class="attendee-dropdown-item" onclick="selectAttendee('${escapeHtml(email)}')">${escapeHtml(name)}<span class="email-hint">${escapeHtml(email)}</span></div>`
+    ).join('');
+    dropdown.classList.add('visible');
+  });
+
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      const val = input.value.trim();
+      if (val.includes('@')) {
+        addAttendeeChip(val);
+        input.value = '';
+        dropdown.classList.remove('visible');
+      } else if (emailCache && emailCache[val]) {
+        addAttendeeChip(emailCache[val]);
+        input.value = '';
+        dropdown.classList.remove('visible');
+      }
+    }
+  });
+
+  // Close dropdown when clicking outside
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.attendee-add-wrap')) {
+      dropdown.classList.remove('visible');
+    }
+  });
+}
+
+function selectAttendee(email) {
+  addAttendeeChip(email);
+  const input = document.getElementById('attendee-input');
+  const dropdown = document.getElementById('attendee-dropdown');
+  if (input) input.value = '';
+  if (dropdown) dropdown.classList.remove('visible');
+}
+
+// ─── Recurring Toggle ────────────────────────────────────────────────
+
+function toggleRecurring() {
+  const check = document.getElementById('recurring-check');
+  const select = document.getElementById('recurring-pattern');
+  if (select) select.style.display = check.checked ? '' : 'none';
+}
+
+function updateRecurrencePattern() {
+  // Value is read directly from the select when scheduling
+}
+
+// ─── Description Editing ─────────────────────────────────────────────
+
+function toggleDescEdit() {
+  const display = document.getElementById('desc-display');
+  const editor = document.getElementById('desc-editor');
+  const btn = document.getElementById('desc-edit-btn');
+  if (editor.style.display === 'none') {
+    editor.style.display = 'block';
+    display.style.display = 'none';
+    btn.style.display = 'none';
+    document.getElementById('desc-input').focus();
+  } else {
+    editor.style.display = 'none';
+    display.style.display = 'block';
+    btn.style.display = '';
+  }
+}
+
+async function saveDescription() {
+  if (!currentTaskId) return;
+  const input = document.getElementById('desc-input');
+  const description = input.value.trim();
+  if (!description) return;
+
+  try {
+    const res = await fetch(`${API}/tasks/${currentTaskId}/description`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ description }),
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    openTask(currentTaskId); // refresh modal
+    fetchTasks(); // refresh board in background
+  } catch (err) {
+    toast(`Error saving description: ${err.message}`);
+  }
+}
+
+// ─── Helpers ────────────────────────────────────────────────────────
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+function obsidianUri(filePath) {
+  // Convert to vault-relative path (strip absolute prefix if present)
+  let rel = filePath.startsWith('/') ? filePath.replace(/^\/Users\/jayjenkins\/pm-os\//, '') : filePath;
+  // Strip .md extension (Obsidian doesn't need it)
+  rel = rel.replace(/\.md$/, '');
+  return `obsidian://open?vault=pm-os&file=${encodeURIComponent(rel)}`;
+}
+
+function renderAgentOutput(value) {
+  if (!value) return '';
+  const v = value.trim();
+  // Local markdown file → Obsidian link
+  if (v.endsWith('.md')) {
+    return `<a href="${obsidianUri(v)}" style="color:var(--accent);text-decoration:none;" title="Open in Obsidian">${escapeHtml(value)}</a>`;
+  }
+  // Contains URL(s) → linkify them inline, keep surrounding text
+  if (/https?:\/\//.test(v)) {
+    return escapeHtml(value).replace(/https?:\/\/[^\s)&lt;]+/g, url => {
+      const href = url.replace(/&amp;/g, '&');
+      return `<a href="${href}" target="_blank" rel="noopener" style="color:var(--accent);text-decoration:none;">${url}</a>`;
+    });
+  }
+  // Plain text fallback
+  return escapeHtml(value);
+}
+
+function meetingName(sourcePath) {
+  if (!sourcePath) return null;
+  // Extract filename, strip date prefix and extension
+  const fname = sourcePath.split('/').pop().replace(/\.[^.]+$/, '');
+  // Remove leading date/time pattern like "2026-02-25_15-30_"
+  return fname.replace(/^\d{4}-\d{2}-\d{2}_\d{2}-\d{2}_/, '');
+}
+
+function formatDate(dateStr) {
+  if (!dateStr) return '—';
+  try {
+    const d = new Date(dateStr);
+    return d.toLocaleString('en-US', {
+      month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+    });
+  } catch {
+    return dateStr;
+  }
+}
+
+// Close modal on overlay click
+document.getElementById('modal-overlay').addEventListener('click', (e) => {
+  if (e.target === e.currentTarget) closeModal();
+});
+
+// Close modal on Escape
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeModal();
+});
+
+// ─── Open file links (Word docs via /open endpoint) ─────────────────
+
+document.addEventListener('click', (e) => {
+  const link = e.target.closest('a[href^="/open"]');
+  if (link) {
+    e.preventDefault();
+    fetch(link.href);
+  }
+});
+
+// ─── Worker Detail Modal ───────────────────────────────────────────
+
+let _workerCache = null;
+
+async function fetchWorkerDetails() {
+  if (_workerCache) return _workerCache;
+  try {
+    const res = await fetch(`${API}/workers`);
+    const data = await res.json();
+    _workerCache = data.workers || [];
+    return _workerCache;
+  } catch { return []; }
+}
+
+async function openWorkerDetail(workerName) {
+  const overlay = document.getElementById('modal-overlay');
+  const modalBody = document.getElementById('modal-body');
+  const modalTitle = document.getElementById('modal-title');
+  const modalActions = document.getElementById('modal-actions');
+
+  overlay.classList.add('active');
+  modalBody.innerHTML = '<div class="loading">Loading worker details...</div>';
+  modalTitle.textContent = workerName;
+  modalActions.innerHTML = '';
+
+  const workers = await fetchWorkerDetails();
+  const w = workers.find(w => w.name === workerName);
+  if (!w) {
+    modalBody.innerHTML = '<div class="loading">Worker not found</div>';
+    modalActions.innerHTML = '<button class="btn" onclick="closeModal()">Close</button>';
+    return;
+  }
+
+  let html = '';
+
+  // Description + meta
+  html += `<div style="color:var(--text-muted);font-size:13px;margin-bottom:14px;">${escapeHtml(w.description || '')}</div>`;
+  html += `<div style="display:flex;gap:12px;font-size:11px;color:var(--text-dim);margin-bottom:16px;">`;
+  html += `<span>Priority: ${w.priority}</span>`;
+  html += `<span>Timeout: ${w.timeout}s</span>`;
+  html += `<span>Max turns: ${w.max_turns}</span>`;
+  html += `</div>`;
+
+  // Tools
+  html += '<div class="worker-detail-section">';
+  html += '<div class="worker-detail-section-title">Allowed Tools</div>';
+  html += '<div class="worker-tool-badges">';
+  for (const tool of (w.allowed_tools || [])) {
+    const isMcp = tool.startsWith('mcp__');
+    const displayName = isMcp ? tool.replace('mcp__claude_ai_', '').replace('__*', '') : tool.replace('(*)', '');
+    html += `<span class="worker-tool-badge ${isMcp ? 'mcp' : ''}" title="${escapeHtml(tool)}">${escapeHtml(displayName)}</span>`;
+  }
+  html += '</div></div>';
+
+  // Skills
+  html += '<div class="worker-detail-section">';
+  html += '<div class="worker-detail-section-title">Skills</div>';
+  html += '<div class="worker-skill-chips">';
+  for (const skill of (w.skills || [])) {
+    const shortName = skill.split('/').pop();
+    html += `<span class="worker-skill-chip" title="${escapeHtml(skill)}">${escapeHtml(shortName)}</span>`;
+  }
+  if (!w.skills?.length) html += '<span style="color:var(--text-dim);font-size:12px;">(full catalog)</span>';
+  html += '</div></div>';
+
+  // Matching rules
+  html += '<div class="worker-detail-section">';
+  html += '<div class="worker-detail-section-title">Matching Rules</div>';
+  html += '<div class="worker-match-rules">';
+  const m = w.match || {};
+  if (m.task_type?.length) html += `<div>Task type: ${m.task_type.map(t => `<code>${escapeHtml(t)}</code>`).join(', ')}</div>`;
+  if (m.domains?.length) html += `<div>Domains: ${m.domains.map(d => `<code>${escapeHtml(d)}</code>`).join(', ')}</div>`;
+  if (m.title_patterns?.length) {
+    html += '<div style="margin-top:4px;">Title patterns:</div>';
+    for (const p of m.title_patterns) html += `<div style="margin-left:12px;"><code>${escapeHtml(p)}</code></div>`;
+  }
+  if (m.description_patterns?.length) {
+    html += '<div style="margin-top:4px;">Description patterns:</div>';
+    for (const p of m.description_patterns) html += `<div style="margin-left:12px;"><code>${escapeHtml(p)}</code></div>`;
+  }
+  if (!m.task_type?.length && !m.domains?.length && !m.title_patterns?.length) {
+    html += '<div style="color:var(--text-dim);">Catch-all (matches everything)</div>';
+  }
+  html += '</div></div>';
+
+  // Prompt body
+  html += '<div class="worker-detail-section">';
+  html += '<div class="worker-detail-section-title">Prompt (read-only)</div>';
+  html += `<div class="worker-prompt-view">${escapeHtml(w.prompt_body || '(no prompt body)')}</div>`;
+  html += '</div>';
+
+  modalBody.innerHTML = html;
+
+  // Actions
+  const lfPrompt = w.langfuse_prompt || `worker-${w.name}`;
+  modalActions.innerHTML = `
+    <a href="${LANGFUSE_HOST}/project/pm-os/prompts/${lfPrompt}" target="_blank" class="btn btn-primary">Edit Prompt in LangFuse</a>
+    <button class="btn" onclick="closeModal()">Close</button>
+  `;
+}
+
+// ─── Jira Draft ────────────────────────────────────────────────────
+
+function parseJiraDraft(body) {
+  if (!body || !body.includes('<!-- JIRA_DRAFT -->')) return null;
+  const block = body.match(/<!-- JIRA_DRAFT -->([\s\S]+?)<!-- \/JIRA_DRAFT -->/);
+  if (!block) return null;
+  const b = block[1];
+  const field = (name) => { const m = b.match(new RegExp(`<!-- ${name}:(.+?) -->`)); return m ? m[1].trim() : ''; };
+  const descMatch = b.match(/### Description\s*\n([\s\S]*?)(?=\n### |\n<!-- \/JIRA_DRAFT)/);
+  return {
+    type: field('JIRA_TYPE') || 'Bug',
+    summary: field('JIRA_SUMMARY') || '',
+    priority: field('JIRA_PRIORITY') || '',
+    labels: field('JIRA_LABELS').split(',').map(s => s.trim()).filter(Boolean),
+    release_notes: field('JIRA_RELEASE_NOTES') || '',
+    epic_name: field('JIRA_EPIC_NAME') || '',
+    gtm_date: field('JIRA_GTM_DATE') || '',
+    client_commitment: field('JIRA_CLIENT_COMMITMENT') || '',
+    description: descMatch ? descMatch[1].trim() : '',
+  };
+}
+
+async function publishToJira(taskId) {
+  if (!confirm('Publish this draft to Jira?')) return;
+  const btn = document.getElementById('btn-publish-jira');
+  if (btn) { btn.disabled = true; btn.textContent = 'Publishing...'; }
+  try {
+    const res = await fetch(`${API}/tasks/${taskId}/publish-jira`, { method: 'POST' });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+    alert(`Published! ${data.issue_key}: ${data.issue_url}`);
+    fetchTasks();
+    closeModal();
+  } catch (err) {
+    alert('Publish failed: ' + err.message);
+    if (btn) { btn.disabled = false; btn.textContent = 'Publish to Jira'; }
+  }
+}
+
+// ─── Cron Tab ──────────────────────────────────────────────────────
+
+let cronJobs = [];
+let cronRawInput = ''; // preserve between steps
+
+const CRON_EXAMPLES = [
+  "Every Monday morning, pull Pendo usage metrics and update the metrics spreadsheet",
+  "Every Friday at 4pm, summarize this week's Jira tickets and standup notes into a velocity brief",
+  "Daily at 8am for 2 weeks, check early adopter program metrics from Pendo and write a progress report",
+  "Every Wednesday, go through Zendesk tickets from the past 7 days and give me a product feedback summary",
+];
+
+async function fetchCronJobs() {
+  const view = document.getElementById('cron-view');
+  try {
+    const res = await fetch(`${API}/cron`);
+    const data = await res.json();
+    cronJobs = data.jobs || [];
+    renderCronList();
+  } catch (err) {
+    view.innerHTML = `<div class="cron-empty" style="color:var(--danger)">Failed to load cron jobs: ${err.message}</div>`;
+  }
+}
+
+function renderCronList() {
+  const view = document.getElementById('cron-view');
+  let html = `<div class="cron-header">
+    <h2>Recurring Jobs</h2>
+    <button class="cron-btn" onclick="showCronCreate()">+ New Cron Job</button>
+  </div>`;
+
+  if (cronJobs.length === 0) {
+    html += `<div class="cron-empty">
+      <div style="font-size:24px;margin-bottom:8px">No recurring jobs yet</div>
+      <div>Create a cron job to automate recurring agent tasks</div>
+    </div>`;
+    view.innerHTML = html;
+    return;
+  }
+
+  html += '<div class="cron-cards">';
+  for (const job of cronJobs) {
+    const isDisabled = !job.enabled;
+    const now = new Date();
+    const isExpiring = job.expires && ((new Date(job.expires) - now) / 86400000) < 7;
+    const cardClass = isDisabled ? 'disabled' : (isExpiring ? 'expiring' : '');
+
+    const nextRun = job.next_run ? new Date(job.next_run).toLocaleString('en-US', {weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}) : '—';
+    const lastRun = job.last_run ? new Date(job.last_run).toLocaleString('en-US', {weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}) : 'Never';
+    const latestTask = job.task_history?.length ? job.task_history[job.task_history.length - 1] : null;
+
+    html += `<div class="cron-card ${cardClass}">
+      <div class="cron-card-top">
+        <div>
+          <span class="cron-card-id">${job.id}</span>
+          <span class="cron-card-name">${esc(job.name)}</span>
+        </div>
+        <label class="cron-toggle" title="${job.enabled ? 'Disable' : 'Enable'}">
+          <input type="checkbox" ${job.enabled ? 'checked' : ''} onchange="toggleCronJob('${job.id}')">
+          <span class="cron-toggle-slider"></span>
+        </label>
+      </div>
+      <div class="cron-card-schedule">
+        ${esc(job.cron_human || job.cron_expr)}
+        <code>${esc(job.cron_expr)}</code>
+        ${job.expires ? `<span class="cron-card-expires">Expires: ${new Date(job.expires).toLocaleDateString()}</span>` : ''}
+      </div>
+      <div class="cron-card-meta">
+        <span>Next: ${nextRun}</span>
+        <span>Last: ${lastRun}</span>
+        <span>Runs: ${job.run_count || 0}</span>
+        ${latestTask ? `<span>Latest: <a href="#" onclick="switchTab('board');setTimeout(()=>openTask('${latestTask}'),300);return false">${latestTask}</a></span>` : ''}
+      </div>
+      <div class="cron-card-actions">
+        <button class="cron-btn small secondary" id="cron-run-${job.id}" onclick="runCronJob('${job.id}')">Run Now</button>
+        <button class="cron-btn small secondary" onclick="editCronJob('${job.id}')">Edit</button>
+        <button class="cron-btn small danger" id="cron-del-${job.id}" onclick="deleteCronJob('${job.id}')">Delete</button>
+      </div>
+      ${job.task_history?.length > 1 ? `<div class="cron-history" id="history-${job.id}">
+        <a href="#" onclick="toggleCronHistory('${job.id}');return false">Show ${job.task_history.length} task history</a>
+      </div>` : ''}
+    </div>`;
+  }
+  html += '</div>';
+  view.innerHTML = html;
+}
+
+function esc(s) { if (!s) return ''; const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+
+function showCronCreate() {
+  const view = document.getElementById('cron-view');
+  cronRawInput = '';
+  let examplesHtml = CRON_EXAMPLES.map(ex =>
+    `<span class="cron-example-chip" onclick="document.getElementById('cron-input').value=this.textContent">${esc(ex)}</span>`
+  ).join('');
+
+  view.innerHTML = `<div class="cron-create">
+    <h3>New Cron Job <button class="cron-btn small secondary" onclick="fetchCronJobs()">Cancel</button></h3>
+    <textarea class="cron-textarea" id="cron-input" placeholder="Describe what you want to happen and when...&#10;&#10;Example: Every Monday morning, go through Zendesk tickets from the past 7 days and give me a report on product feedback themes. Use the Databricks MCP to query zendesk.ticket. Write output to datasets/product/agent-output/weekly-zendesk-{date}.md"></textarea>
+    <div class="cron-examples">${examplesHtml}</div>
+    <div class="cron-parse-actions">
+      <button class="cron-btn" id="cron-parse-btn" onclick="parseCronInput()">Parse &rarr;</button>
+      <span id="cron-parse-status"></span>
+    </div>
+  </div>`;
+
+  document.getElementById('cron-input').addEventListener('keydown', e => {
+    if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') parseCronInput();
+  });
+  document.getElementById('cron-input').focus();
+}
+
+async function parseCronInput() {
+  const text = document.getElementById('cron-input').value.trim();
+  if (!text) return;
+  cronRawInput = text;
+
+  const btn = document.getElementById('cron-parse-btn');
+  const status = document.getElementById('cron-parse-status');
+  btn.disabled = true;
+  btn.textContent = 'Parsing...';
+  status.innerHTML = '<span class="cron-spinner"></span> Asking Ollama to parse your request...';
+
+  try {
+    const res = await fetch(`${API}/cron/parse`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({text}),
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+    renderCronReview(data.parsed);
+  } catch (err) {
+    status.innerHTML = `<span style="color:var(--danger)">Parse failed: ${esc(err.message)}</span>`;
+    btn.disabled = false;
+    btn.textContent = 'Parse →';
+  }
+}
+
+function renderCronReview(parsed, editJobId = null) {
+  const view = document.getElementById('cron-view');
+  const tpl = parsed.task_template || {};
+  const isEdit = !!editJobId;
+
+  view.innerHTML = `<div class="cron-create cron-review">
+    <h3>${isEdit ? 'Edit' : 'Review'} Cron Job
+      <button class="cron-btn small secondary" onclick="${isEdit ? 'fetchCronJobs()' : 'showCronCreate()'}">
+        ${isEdit ? 'Cancel' : '&larr; Back'}
+      </button>
+    </h3>
+
+    <div class="cron-field">
+      <label>Name</label>
+      <input type="text" id="cr-name" value="${esc(parsed.name || '')}">
+    </div>
+
+    <div class="cron-field-row">
+      <div class="cron-field" style="flex:1">
+        <label>Schedule (cron expression)</label>
+        <input type="text" id="cr-cron-expr" value="${esc(parsed.cron_expr || '')}" oninput="previewCronExpr()">
+        <div class="cron-preview-runs" id="cr-preview">Loading preview...</div>
+      </div>
+      <div class="cron-field" style="flex:1">
+        <label>Human-readable</label>
+        <input type="text" id="cr-cron-human" value="${esc(parsed.cron_human || '')}">
+      </div>
+    </div>
+
+    <div class="cron-field">
+      <label>Task Title (created each run — use {date}, {week}, {month})</label>
+      <input type="text" id="cr-title" value="${esc(tpl.title || parsed.name || '')}">
+    </div>
+
+    <div class="cron-field-row">
+      <div class="cron-field">
+        <label>Queue</label>
+        <select id="cr-queue">
+          ${['agent','collab','human','waiting'].map(q => `<option value="${q}" ${tpl.queue===q?'selected':''}>${q}</option>`).join('')}
+        </select>
+      </div>
+      <div class="cron-field">
+        <label>Priority</label>
+        <select id="cr-priority">
+          ${['low','medium','high','critical'].map(p => `<option value="${p}" ${tpl.priority===p?'selected':''}>${p}</option>`).join('')}
+        </select>
+      </div>
+      <div class="cron-field">
+        <label>Domain</label>
+        <select id="cr-domain">
+          <option value="">(none)</option>
+          ${['product','strategy','marketing','recruiting','metrics','learning','ops'].map(d => `<option value="${d}" ${tpl.domain===d?'selected':''}>${d}</option>`).join('')}
+        </select>
+      </div>
+    </div>
+
+    <div class="cron-field">
+      <label>Task Instructions</label>
+      <textarea class="cron-textarea" id="cr-description" style="min-height:120px">${esc(tpl.description || '')}</textarea>
+    </div>
+
+    <div class="cron-field-row">
+      <div class="cron-field">
+        <label>Expires</label>
+        <input type="date" id="cr-expires" value="${parsed.expires ? parsed.expires.split('T')[0] : ''}">
+      </div>
+      <div class="cron-field" style="display:flex;align-items:flex-end;gap:8px;padding-bottom:2px">
+        <label style="margin-bottom:0">
+          <input type="checkbox" id="cr-auto-dispatch" ${parsed.auto_dispatch !== false ? 'checked' : ''}>
+          Auto-dispatch when task is created
+        </label>
+      </div>
+    </div>
+
+    <div class="cron-review-actions">
+      <button class="cron-btn" onclick="${isEdit ? `saveEditedCronJob('${editJobId}')` : 'confirmCronJob()'}">
+        ${isEdit ? 'Save Changes' : 'Save Job'}
+      </button>
+      <button class="cron-btn secondary" onclick="${isEdit ? 'fetchCronJobs()' : 'showCronCreate()'}">Cancel</button>
+    </div>
+  </div>`;
+
+  previewCronExpr();
+}
+
+async function previewCronExpr() {
+  const expr = document.getElementById('cr-cron-expr').value.trim();
+  const preview = document.getElementById('cr-preview');
+  if (!expr) { preview.textContent = ''; return; }
+
+  try {
+    const res = await fetch(`${API}/cron/preview`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({cron_expr: expr, count: 5}),
+    });
+    const data = await res.json();
+    if (data.error) {
+      preview.className = 'cron-preview-runs error';
+      preview.textContent = data.error;
+      return;
+    }
+    const dates = data.runs.map(r => new Date(r).toLocaleString('en-US', {weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}));
+    preview.className = 'cron-preview-runs';
+    preview.textContent = 'Next 5: ' + dates.join('  ·  ');
+  } catch {
+    preview.className = 'cron-preview-runs error';
+    preview.textContent = 'Could not preview';
+  }
+}
+
+function _gatherCronForm() {
+  return {
+    name: document.getElementById('cr-name').value.trim(),
+    cron_expr: document.getElementById('cr-cron-expr').value.trim(),
+    cron_human: document.getElementById('cr-cron-human').value.trim(),
+    task_template: {
+      title: document.getElementById('cr-title').value.trim(),
+      queue: document.getElementById('cr-queue').value,
+      priority: document.getElementById('cr-priority').value,
+      domain: document.getElementById('cr-domain').value || null,
+      description: document.getElementById('cr-description').value.trim(),
+      tags: ['cron'],
+    },
+    expires: document.getElementById('cr-expires').value || null,
+    auto_dispatch: document.getElementById('cr-auto-dispatch').checked,
+    raw_input: cronRawInput,
+  };
+}
+
+async function confirmCronJob() {
+  const job = _gatherCronForm();
+  if (!job.name) return toast('Name is required', 'warn');
+  if (!job.cron_expr) return toast('Cron expression is required', 'warn');
+
+  try {
+    const res = await fetch(`${API}/cron/confirm`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({job}),
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+    fetchCronJobs();
+  } catch (err) {
+    toast('Failed to save: ' + err.message);
+  }
+}
+
+function editCronJob(jobId) {
+  const job = cronJobs.find(j => j.id === jobId);
+  if (!job) return;
+  cronRawInput = job.raw_input || '';
+  renderCronReview({
+    name: job.name,
+    cron_expr: job.cron_expr,
+    cron_human: job.cron_human,
+    task_template: job.task_template,
+    expires: job.expires,
+    auto_dispatch: job.auto_dispatch,
+  }, jobId);
+}
+
+async function saveEditedCronJob(jobId) {
+  const form = _gatherCronForm();
+  if (!form.name) return toast('Name is required', 'warn');
+  if (!form.cron_expr) return toast('Cron expression is required', 'warn');
+
+  try {
+    const res = await fetch(`${API}/cron/${jobId}`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        name: form.name,
+        cron_expr: form.cron_expr,
+        cron_human: form.cron_human,
+        task_template: form.task_template,
+        expires: form.expires,
+        auto_dispatch: form.auto_dispatch,
+        raw_input: form.raw_input,
+      }),
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+    fetchCronJobs();
+  } catch (err) {
+    toast('Failed to save: ' + err.message);
+  }
+}
+
+async function toggleCronJob(jobId) {
+  try {
+    await fetch(`${API}/cron/${jobId}/toggle`, {method: 'POST'});
+    fetchCronJobs();
+  } catch (err) {
+    toast('Toggle failed: ' + err.message);
+  }
+}
+
+async function runCronJob(jobId) {
+  const job = cronJobs.find(j => j.id === jobId);
+  const btn = document.getElementById(`cron-run-${jobId}`);
+  if (btn && !btn.dataset.armed) {
+    btn.dataset.armed = 'true';
+    btn.textContent = 'Confirm run?';
+    setTimeout(() => { if (btn.dataset.armed) { delete btn.dataset.armed; btn.textContent = 'Run Now'; } }, 3000);
+    return;
+  }
+  if (btn) { delete btn.dataset.armed; btn.textContent = 'Running...'; btn.disabled = true; }
+  try {
+    const res = await fetch(`${API}/cron/${jobId}/run`, {method: 'POST'});
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+    toast(`Created ${data.task_id}. Check the Board tab.`, 'success');
+    fetchCronJobs();
+  } catch (err) {
+    toast('Run failed: ' + err.message);
+  }
+}
+
+async function deleteCronJob(jobId) {
+  const btn = document.getElementById(`cron-del-${jobId}`);
+  if (btn && !btn.dataset.armed) {
+    btn.dataset.armed = 'true';
+    btn.textContent = 'Confirm delete?';
+    setTimeout(() => { if (btn.dataset.armed) { delete btn.dataset.armed; btn.textContent = 'Delete'; } }, 3000);
+    return;
+  }
+  if (btn) delete btn.dataset.armed;
+  try {
+    await fetch(`${API}/cron/${jobId}/delete`, {method: 'POST'});
+    fetchCronJobs();
+  } catch (err) {
+    toast('Delete failed: ' + err.message);
+  }
+}
+
+function toggleCronHistory(jobId) {
+  const el = document.getElementById(`history-${jobId}`);
+  const job = cronJobs.find(j => j.id === jobId);
+  if (!job || !el) return;
+  const history = job.task_history || [];
+  if (el.dataset.expanded === 'true') {
+    el.innerHTML = `<a href="#" onclick="toggleCronHistory('${jobId}');return false">Show ${history.length} task history</a>`;
+    el.dataset.expanded = 'false';
+  } else {
+    const links = history.slice().reverse().map(tid =>
+      `<a href="#" onclick="switchTab('board');setTimeout(()=>openTask('${tid}'),300);return false">${tid}</a>`
+    ).join(', ');
+    el.innerHTML = `<a href="#" onclick="toggleCronHistory('${jobId}');return false">Hide history</a><br>${links}`;
+    el.dataset.expanded = 'true';
+  }
+}
+
+// ─── Init ───────────────────────────────────────────────────────────
+
+fetchTasks();
+checkLangfuseHealth();
+// Auto-refresh every 15 seconds
+setInterval(fetchTasks, 15000);
+// Check LangFuse health every 60 seconds
+setInterval(checkLangfuseHealth, 60000);
+</script>
+</body>
+</html>

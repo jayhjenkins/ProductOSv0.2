@@ -12,45 +12,10 @@
 
 {Add context or additional details about why this project exists and what problem it solves.}
 
----
-
-## DACE & Key Resources
-
-### DACE
-
-| Role | Person/Team |
-|------|-------------|
-| **Driver** | {Who is driving this initiative} |
-| **Approver** | {Who has final approval authority} |
-| **Contributors** | {Who is contributing to the work} |
-| **Escalation Path** | {Where to escalate blockers or decisions} |
-
-### Driving Teams
-
-| Team | Product Mgt | PMO | Engineering | Design |
-|------|-------------|-----|-------------|--------|
-| {Team 1} | | | | |
-| {Team 2} | | | | |
-
-### Contributing Teams
-
-| Team | Product Mgt | PMO | Engineering | Design |
-|------|-------------|-----|-------------|--------|
-| {Team 3} | | | | |
-| {Team 4} | | | | |
-
-### Other Stakeholders
-
-| Function | Contact |
-|----------|---------|
-| Legal | |
-| Security | |
-
-### Key Resources & Links
+## Key Resources & Links
 
 | Resource | Link |
 |----------|------|
-| Slack Channels | |
 | Experience Design & Content (Figma) | |
 | Architecture & Technical Design Docs | |
 | Project Plan / Tracking (JIRA) | |
@@ -162,7 +127,7 @@
 
 ## Build Sequence
 
-> Everything in this PRD ships. The build sequence determines the **order** in which capabilities are delivered, not whether they are delivered. Each phase builds on the previous one, and all phases are planned from the start.
+> Everything in this PRD ships. The build sequence determines the **relative priority** in which capabilities are delivered, not whether they are delivered. Each phase builds on the previous one, and all phases are planned from the start.
 
 ### Foundation (P0)
 
@@ -196,26 +161,18 @@
 
 ---
 
-## Milestones and Timeline
-
-| Milestone / Phase | Team(s) Leading & Contributing | One liner for the milestone to be delivered | Expected Delivery Timeline |
-|-------------------|--------------------------------|---------------------------------------------|---------------------------|
-| {Architecture, Schemas, Planning} | | | |
-| {Design} | | | |
-| {Capability Enablement X in Platform Y} | | | |
-| {Testing & QA} | | | |
-| {Launch} | | | |
-
----
-
 ## Metrics and Learning Agenda
 
-> This section is used to list all of the metrics that will be used to measure the success of the implementation. Ensure to provide guidance if these metrics exist or need to be built. Make sure to incorporate guardrail metrics as well.
+> **Keep it tight.** 2-3 primary metrics that directly measure whether this feature works for this user. 1-2 guardrail metrics that catch harm. That's it. Feature PRDs are not the place for enterprise metric frameworks.
 
-| Goals and Hypotheses | Signals | Metrics |
-|----------------------|---------|---------|
-| {What do you want to happen?} | {What would indicate success or validation?} | {What to measure to see these signals?} |
-| | | |
+| Goal / Hypothesis | Signal | Metric | Baseline | Target | Source |
+|--------------------|--------|--------|----------|--------|--------|
+| {What do you want to happen?} | {What would indicate it?} | {What to measure?} | {Current value or "NEW"} | {Evidence-based target} | {Pendo / instrumentation / etc.} |
+| | | | | | |
+
+> **Baseline rule:** Invoke the `pendo-analytics` skill to populate baselines from existing product analytics. If no baseline exists, mark "NEW — instrument in P0" and express targets as directional thresholds, not precise percentages.
+>
+> **Guardrail metrics:** These answer "did we break something?" — not "did we also advance the company mission?"
 
 ---
 

@@ -2,12 +2,12 @@
 
 ## MANDATORY: Use the vision-clarifier Skill
 
-**You MUST use the `vision-clarifier` skill located at `.claude/skills/workflows/vision-clarifier/SKILL.md`**
+**You MUST use the `vision-clarifier` skill located at `.claude/skills/workflow-vision-clarifier/SKILL.md`**
 
 ## Before Starting
 
 1. **Announce**: "I'm using vision-clarifier to produce press releases and one-pager"
-2. **Read the skill**: Load `.claude/skills/workflows/vision-clarifier/SKILL.md`
+2. **Read the skill**: Load `.claude/skills/workflow-vision-clarifier/SKILL.md`
 3. **Follow exactly**: Execute the skill as written
 
 ## Purpose

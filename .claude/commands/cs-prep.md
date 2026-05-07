@@ -2,12 +2,12 @@
 
 ## MANDATORY: Use the cs-prep Skill
 
-**You MUST use the `cs-prep` skill located at `.claude/skills/workflows/cs-prep/SKILL.md`**
+**You MUST use the `cs-prep` skill located at `.claude/skills/workflow-cs-prep/SKILL.md`**
 
 ## Before Starting
 
 1. **Announce**: "I'm using cs-prep to compile customer success materials"
-2. **Read the skill**: Load `.claude/skills/workflows/cs-prep/SKILL.md`
+2. **Read the skill**: Load `.claude/skills/workflow-cs-prep/SKILL.md`
 3. **Follow exactly**: Execute the skill as written
 
 ## Purpose

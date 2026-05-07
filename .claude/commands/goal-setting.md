@@ -2,12 +2,12 @@
 
 ## MANDATORY: Use the goal-setting Skill
 
-**You MUST use the `goal-setting` skill located at `.claude/skills/workflows/goal-setting/SKILL.md`**
+**You MUST use the `goal-setting` skill located at `.claude/skills/workflow-goal-setting/SKILL.md`**
 
 ## Before Starting
 
 1. **Announce**: "I'm using goal-setting to establish metric targets"
-2. **Read the skill**: Load `.claude/skills/workflows/goal-setting/SKILL.md`
+2. **Read the skill**: Load `.claude/skills/workflow-goal-setting/SKILL.md`
 3. **Follow exactly**: Execute the skill as written
 
 ## Purpose

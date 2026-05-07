@@ -2,12 +2,12 @@
 
 ## MANDATORY: Use the metrics-definition Skill
 
-**You MUST use the `metrics-definition` skill located at `.claude/skills/workflows/metrics-definition/SKILL.md`**
+**You MUST use the `metrics-definition` skill located at `.claude/skills/workflow-metrics-definition/SKILL.md`**
 
 ## Before Starting
 
 1. **Announce**: "I'm using metrics-definition to establish success metrics"
-2. **Read the skill**: Load `.claude/skills/workflows/metrics-definition/SKILL.md`
+2. **Read the skill**: Load `.claude/skills/workflow-metrics-definition/SKILL.md`
 3. **Follow exactly**: Execute the skill as written
 
 ## Purpose

@@ -2,12 +2,12 @@
 
 ## MANDATORY: Use the dashboard-design Skill
 
-**You MUST use the `dashboard-design` skill located at `.claude/skills/workflows/dashboard-design/SKILL.md`**
+**You MUST use the `dashboard-design` skill located at `.claude/skills/workflow-dashboard-design/SKILL.md`**
 
 ## Before Starting
 
 1. **Announce**: "I'm using dashboard-design to create a product health dashboard"
-2. **Read the skill**: Load `.claude/skills/workflows/dashboard-design/SKILL.md`
+2. **Read the skill**: Load `.claude/skills/workflow-dashboard-design/SKILL.md`
 3. **Follow exactly**: Execute the skill as written
 
 ## Purpose

@@ -1,24 +1,24 @@
 {
   "main": {
-    "id": "65019875a11352c8",
+    "id": "1839666cecd1d5d0",
     "type": "split",
     "children": [
       {
-        "id": "0fb8ac6d05531ee3",
+        "id": "fd4e808e59c58f56",
         "type": "tabs",
         "children": [
           {
-            "id": "9b15350315af188c",
+            "id": "fa3e0c0226a74f9e",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "datasets/product/epics/2025/EPIC_purchase-timing-prediction-model.md",
+                "file": "datasets/product/packages/2026/landing-page-wysiwyg/one-pager.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "EPIC_purchase-timing-prediction-model"
+              "title": "one-pager"
             }
           }
         ]
@@ -27,15 +27,15 @@
     "direction": "vertical"
   },
   "left": {
-    "id": "7446ef498713fb19",
+    "id": "b1d964fa263100b1",
     "type": "split",
     "children": [
       {
-        "id": "efb6ccae6f76520e",
+        "id": "221efc595f7b9ab9",
         "type": "tabs",
         "children": [
           {
-            "id": "fb8d4179bf3483df",
+            "id": "0a9573a883880805",
             "type": "leaf",
             "state": {
               "type": "file-explorer",
@@ -48,7 +48,7 @@
             }
           },
           {
-            "id": "9869de309ca430cb",
+            "id": "98a96b0c34ffc654",
             "type": "leaf",
             "state": {
               "type": "search",
@@ -65,7 +65,7 @@
             }
           },
           {
-            "id": "49e7e02261d82bef",
+            "id": "3fc62d9f604e03d4",
             "type": "leaf",
             "state": {
               "type": "bookmarks",
@@ -78,22 +78,23 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300
+    "width": 418.5
   },
   "right": {
-    "id": "43ad7002eeea4503",
+    "id": "cee078b5d5666a99",
     "type": "split",
     "children": [
       {
-        "id": "155cd26317cd0c0b",
+        "id": "804954b2bad44c51",
         "type": "tabs",
         "children": [
           {
-            "id": "93dcf693387ad72c",
+            "id": "57340a0bc6664894",
             "type": "leaf",
             "state": {
               "type": "backlink",
               "state": {
+                "file": "datasets/product/agent-output/v3-eap-weekly-2026-04-06.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -103,30 +104,31 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Backlinks"
+              "title": "Backlinks for v3-eap-weekly-2026-04-06"
             }
           },
           {
-            "id": "28bb18ff5ce557b4",
+            "id": "86375a02d008a298",
             "type": "leaf",
             "state": {
               "type": "outgoing-link",
               "state": {
+                "file": "datasets/product/agent-output/v3-eap-weekly-2026-04-06.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "Outgoing links"
+              "title": "Outgoing links from v3-eap-weekly-2026-04-06"
             }
           },
           {
-            "id": "4bf6152d696ed408",
+            "id": "76e08763af4f3ef3",
             "type": "leaf",
             "state": {
               "type": "tag",
               "state": {
                 "sortOrder": "frequency",
-                "useHierarchy": false,
+                "useHierarchy": true,
                 "showSearch": false,
                 "searchQuery": ""
               },
@@ -135,51 +137,35 @@
             }
           },
           {
-            "id": "c5c037b0cb5c5cad",
+            "id": "19fea50e2b581343",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "All properties"
+            }
+          },
+          {
+            "id": "553373dac9317e2e",
             "type": "leaf",
             "state": {
               "type": "outline",
               "state": {
+                "file": "datasets/product/agent-output/v3-eap-weekly-2026-04-06.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Outline"
-            }
-          },
-          {
-            "id": "8718d2cc5e1c3d29",
-            "type": "leaf",
-            "state": {
-              "type": "review-queue-list-view",
-              "state": {},
-              "icon": "SpacedRepIcon",
-              "title": "Notes Review Queue"
-            }
-          },
-          {
-            "id": "20a3581bf2c70794",
-            "type": "leaf",
-            "state": {
-              "type": "review-queue-list-view",
-              "state": {},
-              "icon": "lucide-ghost",
-              "title": "review-queue-list-view"
-            }
-          },
-          {
-            "id": "b870d31f1159b2e1",
-            "type": "leaf",
-            "state": {
-              "type": "review-queue-list-view",
-              "state": {},
-              "icon": "SpacedRepIcon",
-              "title": "Notes Review Queue"
+              "title": "Outline of v3-eap-weekly-2026-04-06"
             }
           }
-        ],
-        "currentTab": 4
+        ]
       }
     ],
     "direction": "horizontal",
@@ -188,66 +174,58 @@
   },
   "left-ribbon": {
     "hiddenItems": {
-      "bases:Create new base": false,
       "switcher:Open quick switcher": false,
       "graph:Open graph view": false,
       "canvas:Create new canvas": false,
       "daily-notes:Open today's daily note": false,
       "templates:Insert template": false,
       "command-palette:Open command palette": false,
-      "darlal-switcher-plus:Open in Headings Mode": false,
-      "darlal-switcher-plus:Open Symbols for the active editor": false,
-      "omnisearch:Omnisearch": false,
-      "obsidian-spaced-repetition:Review flashcards": false
+      "bases:Create new base": false
     }
   },
-  "active": "9b15350315af188c",
+  "active": "fa3e0c0226a74f9e",
   "lastOpenFiles": [
-    "datasets/marketing/raleon-brand-summary.md",
-    "datasets/product/epics/2025/EPIC_purchase-timing-prediction-model.md",
-    "datasets/product/epics/2025/EPIC_launch-slack-integration-infrastructure-and-weekly-reports.md",
-    "datasets/product/roadmap.md",
-    "datasets/marketing/content/2025/10-28_blog_raleon-mailchimp-acquisition/snippets.md",
-    "datasets/meetings/Internal/Strategy/2025/2025-10-30_strategy_linkedin-post-messaging-for-mailchimp-acquisition-announcement_strategy_jay.md",
-    "datasets/meetings/Internal/Strategy/2025/2025-10-28_strategy_mailchimp-acquisition-communication-strategy-and-customer-transition-plan_strategy_jay.md",
-    "datasets/meetings/Internal/Standups/2025/2025-10-28_standups_raleon-team-meeting-on-openai-announcement-and-robot-technology_standups_jay-adam-nathan-jason.md",
-    "datasets/marketing/content/2025/10-28_blog_raleon-mailchimp-acquisition/draft.md",
-    "datasets/strategy/memos/2025/10-23_mailchimp-acquisition-execution-plan.md",
-    "datasets/strategy/memos/2025/10-23_mailchimp-acquisition-announcement-strategy.md",
-    "datasets/strategy/memos/2025/10-22_mailchimp-acquisition-announcement-strategy.md",
-    "datasets/meetings/Customers/Intuit/2025/2025-10-22_sales_jay-jenkins-raleon-diana-williams-intuit_intuit_jay-williams-diana-parekh-amit.md",
-    "docs/superpowers-transformation-analysis.md",
-    "docs/slack-sync-technical-specification.md",
-    "CLAUDE.md",
-    "README.md",
-    "datasets/product/epics/2025/EPIC_implement-customer-segmentation-data-model.md",
-    "raleon prompts archive/email-planning-strategy.md",
-    "raleon prompts archive/brief-layout-template.md",
-    "raleon prompts archive/klaviyo-hybrid-tags.md",
-    "raleon prompts archive/flows-mode.md",
-    "raleon prompts archive/multiple-emails-mode.md",
-    "raleon prompts archive/briefs-chat.md",
-    "raleon prompts archive/brainstorm-mode.md",
-    "raleon prompts archive",
-    "docs/Raleon Prompt Archive",
-    "datasets/meetings/Internal/Standups/2025/2025-10-21_standups_daily-sync_standups_jay.md",
-    "logs/meetings-to-backlog-20251020_171000.log.exit_code",
-    "logs/meetings-to-backlog-20251020_171000.log",
-    "datasets/meetings/Customers/Intuit/2025",
-    "datasets/meetings/Customers/Intuit",
-    "logs/meetings-to-backlog-20251017_171000.log.exit_code",
-    "logs/meetings-to-backlog-20251017_171000.log",
-    "logs/meetings-to-backlog-20251016_171001.log",
-    "datasets/meetings/Customers/Pilotcoffeeroasters/2025",
-    "_customers/KOS/_hero_reference_pink_with_cta.png",
-    "_customers/KOS/_hero_reference_protein_on_acai_bowl.png",
-    "_customers/KOS/_hero_reference_blender_fruit_kitchen.png",
-    "_customers/KOS/_hero_reference_female_yogi_on_beach.png",
-    "_customers/KOS/_hero_reference_female_yogi_with_shaker_on_beach.png",
-    "_customers/KOS/Add a heading (4).png",
-    "_customers/KOS/Add a heading (2).png",
-    "_customers/KOS/_hero_reference_female_model_white_tank.png",
-    "_customers/KOS/_hero_reference_hydration_raspberry.png",
-    "_customers/KOS/_hero_reference_hydration_pink.png"
+    "datasets/meetings/leadership/2026-05/2026-05-07_14-21_PLT L10.txt",
+    "datasets/meetings/2026-05/2026-05-07_14-21_PLT L10.txt",
+    "logs/dispatch-TASK-0518.log",
+    "logs/dispatch-TASK-0517.log",
+    "datasets/product/agent-output/2026-05-07-perkspot-pay-exclusive-vs-home-wide-tradeoff.tmp.md",
+    "datasets/product/agent-output/2026-05-07-perkspot-pay-exclusive-vs-home-wide-tradeoff.md",
+    "logs/dispatch-TASK-0516.log",
+    "datasets/product/agent-output/2026-05-07_voting-liability-and-compliance-memo.tmp.md",
+    "datasets/product/agent-output/2026-05-07_voting-liability-and-compliance-memo.md",
+    "logs/dispatch-TASK-0514.log",
+    "logs/dispatch-TASK-0519.log",
+    "datasets/product/agent-output/board-action-pages-prioritization-2026-05-07.tmp.md",
+    "datasets/product/agent-output/board-action-pages-prioritization-2026-05-07.md",
+    "logs/dispatch-TASK-0515.log",
+    "datasets/tasks/_archive/2026-05/TASK-0463.md",
+    "datasets/tasks/waiting/TASK-0520.md",
+    "datasets/tasks/collab/TASK-0519.md",
+    "datasets/tasks/collab/TASK-0518.md",
+    "datasets/tasks/collab/TASK-0517.md",
+    "datasets/tasks/collab/TASK-0516.md",
+    "datasets/tasks/agent/TASK-0515.md",
+    "datasets/tasks/agent/TASK-0514.md",
+    "datasets/meetings/leadership/2026-05/2026-05-07_13-21_Jay Mike - biweekly 1_1.txt",
+    "datasets/meetings/2026-05/2026-05-07_13-21_Jay Mike - biweekly 1_1.txt",
+    "datasets/meetings/leadership/2026-05/2026-05-07_13-54_Jay x Dennis weekly sync.txt",
+    "datasets/product/agent-output/2026-05-07_dynamic-forms-EA-customer-launch-email.tmp.md",
+    "datasets/product/agent-output/2026-05-07_dynamic-forms-EA-customer-launch-email.md",
+    "datasets/product/agent-output/2026-05-07_pmos-process-flow-brain-map.tmp.md",
+    "datasets/product/agent-output/2026-05-07_pmos-process-flow-brain-map.md",
+    "datasets/product/agent-output/2026-05-07_cai-annual-resident-experience-group-demo-script.tmp.md",
+    "datasets/product/agent-output/2026-05-07_cai-annual-resident-experience-group-demo-script.md",
+    "datasets/product/agent-output/2026-05-07_dynamic-forms-starter-templates-v2.tmp.md",
+    "datasets/product/agent-output/2026-05-07_dynamic-forms-starter-templates-v2.md",
+    "datasets/tasks/agent/TASK-0513.md",
+    "datasets/tasks/waiting/TASK-0512.md",
+    "datasets/tasks/agent/TASK-0511.md",
+    "datasets/product/agent-output/golden-age-site/images/router.png",
+    "datasets/product/agent-output/golden-age-site/images/inversion.png",
+    "datasets/product/agent-output/golden-age-site/images/hero.png",
+    "datasets/product/agent-output/golden age images/router.png",
+    "datasets/product/agent-output/golden age images/inversion.png",
+    "datasets/product/agent-output/golden age images/Hero.png"
   ]
 }

@@ -2,12 +2,12 @@
 
 ## MANDATORY: Use the red-team-reviewer Skill
 
-**You MUST use the `red-team-reviewer` skill located at `.claude/skills/workflows/red-team-reviewer/SKILL.md`**
+**You MUST use the `red-team-reviewer` skill located at `.claude/skills/workflow-red-team-reviewer/SKILL.md`**
 
 ## Before Starting
 
 1. **Announce**: "I'm using red-team-reviewer for adversarial PRD review"
-2. **Read the skill**: Load `.claude/skills/workflows/red-team-reviewer/SKILL.md`
+2. **Read the skill**: Load `.claude/skills/workflow-red-team-reviewer/SKILL.md`
 3. **Follow exactly**: Execute the skill as written
 
 ## Purpose

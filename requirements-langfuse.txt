@@ -1,0 +1,5 @@
+# LangFuse integration for PM-OS prompt management and tracing
+# Install: pip3 install -r requirements-langfuse.txt
+langfuse>=2.0
+openai>=1.0
+croniter>=1.3

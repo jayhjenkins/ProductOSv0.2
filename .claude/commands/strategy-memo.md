@@ -2,12 +2,12 @@
 
 ## MANDATORY: Use the strategy-memo Skill
 
-**You MUST use the `strategy-memo` skill located at `.claude/skills/workflows/strategy-memo/SKILL.md`**
+**You MUST use the `strategy-memo` skill located at `.claude/skills/workflow-strategy-memo/SKILL.md`**
 
 ## Before Starting
 
 1. **Announce**: "I'm using strategy-memo to generate formal strategic decision documentation"
-2. **Read the skill**: Load `.claude/skills/workflows/strategy-memo/SKILL.md`
+2. **Read the skill**: Load `.claude/skills/workflow-strategy-memo/SKILL.md`
 3. **Follow exactly**: Execute the skill's systematic process
 
 ## Purpose

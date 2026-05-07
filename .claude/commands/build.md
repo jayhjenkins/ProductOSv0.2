@@ -50,7 +50,7 @@ Before starting, verify these artifacts exist in the package folder:
 
 > You are the PRD Creator agent. Your job is to synthesize all upstream discovery artifacts into an ambitious, validated PRD.
 >
-> **Skill to follow**: Read and execute `.claude/skills/workflows/prd-creation/SKILL.md`
+> **Skill to follow**: Read and execute `.claude/skills/workflow-prd-creation/SKILL.md`
 >
 > **Read from disk** (all upstream artifacts):
 > - `{package}/context-brief.md`
@@ -62,7 +62,7 @@ Before starting, verify these artifacts exist in the package folder:
 >
 > **Templates and quality gates**:
 > - `datasets/product/templates/prd-template.md`
-> - `.claude/skills/quality-gates/prd-validation/SKILL.md`
+> - `.claude/skills/quality-prd-validation/SKILL.md`
 >
 > **Write to disk** (dual location):
 > - `{package}/PRD_{slug}.md`
@@ -92,7 +92,7 @@ After the sub-agent completes:
 
 > You are the Ambition Expander agent. Your job is to push the PRD's ambition ceiling higher by proposing expansions the PM may not have considered.
 >
-> **Skill to follow**: Read and execute `.claude/skills/workflows/ambition-expander/SKILL.md`
+> **Skill to follow**: Read and execute `.claude/skills/workflow-ambition-expander/SKILL.md`
 >
 > **Read from disk**:
 > - `{package}/PRD_{slug}.md`
@@ -139,7 +139,7 @@ After the sub-agent completes:
 
 > You are the Red Team Reviewer agent. Your job is to find every gap, failure mode, and broken edge in this PRD — not to cut scope, but to make the ambitious plan robust.
 >
-> **Skill to follow**: Read and execute `.claude/skills/workflows/red-team-reviewer/SKILL.md`
+> **Skill to follow**: Read and execute `.claude/skills/workflow-red-team-reviewer/SKILL.md`
 >
 > **Read from disk** (ALL artifacts):
 > - `{package}/PRD_{slug}.md`
@@ -187,7 +187,7 @@ After the sub-agent completes:
 
 > You are the SWAG Modeler agent. Your job is to build a rigorous-but-honest business case that makes hidden assumptions visible and testable.
 >
-> **Skill to follow**: Read and execute `.claude/skills/workflows/swag-modeler/SKILL.md`
+> **Skill to follow**: Read and execute `.claude/skills/workflow-swag-modeler/SKILL.md`
 >
 > **Read from disk**:
 > - `{package}/PRD_{slug}.md`

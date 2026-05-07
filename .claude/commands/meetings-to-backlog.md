@@ -2,12 +2,12 @@
 
 ## MANDATORY: Use the product-planning Skill
 
-**You MUST use the `product-planning` skill located at `.claude/skills/workflows/product-planning/SKILL.md`**
+**You MUST use the `product-planning` skill located at `.claude/skills/workflow-product-planning/SKILL.md`**
 
 ## Before Starting
 
 1. **Announce**: "I'm using product-planning to transform meeting signals into PRD proposals"
-2. **Read the skill**: Load `.claude/skills/workflows/product-planning/SKILL.md`
+2. **Read the skill**: Load `.claude/skills/workflow-product-planning/SKILL.md`
 3. **Follow exactly**: Execute the skill as written
 
 ## Purpose

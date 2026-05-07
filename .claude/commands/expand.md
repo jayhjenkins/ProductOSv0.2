@@ -2,12 +2,12 @@
 
 ## MANDATORY: Use the ambition-expander Skill
 
-**You MUST use the `ambition-expander` skill located at `.claude/skills/workflows/ambition-expander/SKILL.md`**
+**You MUST use the `ambition-expander` skill located at `.claude/skills/workflow-ambition-expander/SKILL.md`**
 
 ## Before Starting
 
 1. **Announce**: "I'm using ambition-expander to push scope UP and identify opportunities"
-2. **Read the skill**: Load `.claude/skills/workflows/ambition-expander/SKILL.md`
+2. **Read the skill**: Load `.claude/skills/workflow-ambition-expander/SKILL.md`
 3. **Follow exactly**: Execute the skill as written
 
 ## Purpose

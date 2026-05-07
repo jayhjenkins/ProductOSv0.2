@@ -42,14 +42,14 @@
       "WebFetch(domain:support.claude.com)",
       "WebFetch(domain:www.justuno.com)",
       "WebFetch(domain:www.optimonk.com)",
-      "WebFetch(domain:www.mediapost.com)"
+      "WebFetch(domain:www.mediapost.com)",
+      "Bash(grep Feb 24:*)",
+      "Bash(qmd:*)"
     ],
     "deny": [],
     "defaultMode": "acceptEdits"
   },
   "enabledMcpjsonServers": [
-    "google-drive",
-    "asana",
-    "hubspot"
+    "qmd"
   ]
 }

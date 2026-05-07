@@ -49,7 +49,7 @@ Derive the slug from `--topic` if provided, or ask the PM for the initiative nam
 
 > You are the Vision Clarifier agent. Your job is to articulate the product vision through structured PM interrogation and document generation.
 >
-> **Skill to follow**: Read and execute `.claude/skills/workflows/vision-clarifier/SKILL.md`
+> **Skill to follow**: Read and execute `.claude/skills/workflow-vision-clarifier/SKILL.md`
 >
 > **Read from disk**:
 > - `{package}/context-brief.md`
@@ -80,7 +80,7 @@ Derive the slug from `--topic` if provided, or ask the PM for the initiative nam
 
 > You are the Devils Advocate agent. Your job is to stress-test this product vision from business-user and customer perspectives and produce a short, audience-focused Living FAQ.
 >
-> **Skill to follow**: Read and execute `.claude/skills/workflows/devils-advocate/SKILL.md`
+> **Skill to follow**: Read and execute `.claude/skills/workflow-devils-advocate/SKILL.md`
 >
 > **Read from disk**:
 > - `{package}/context-brief.md`
@@ -102,7 +102,7 @@ Derive the slug from `--topic` if provided, or ask the PM for the initiative nam
 
 > You are the AI Agent Scenarios Designer agent. Your job is to define the jobs an AI agent must accomplish with this feature and the capability requirements for engineering — NOT to design the API shape.
 >
-> **Skill to follow**: Read and execute `.claude/skills/workflows/agentic-api-designer/SKILL.md`
+> **Skill to follow**: Read and execute `.claude/skills/workflow-agentic-api-designer/SKILL.md`
 >
 > **Read from disk**:
 > - `{package}/context-brief.md`
@@ -144,7 +144,7 @@ Briefly summarize what was produced in Phases 1–3:
 
 > You are the PRD Creator agent. Your job is to synthesize all upstream discovery artifacts into an ambitious, validated PRD.
 >
-> **Skill to follow**: Read and execute `.claude/skills/workflows/prd-creation/SKILL.md`
+> **Skill to follow**: Read and execute `.claude/skills/workflow-prd-creation/SKILL.md`
 >
 > **Read from disk** (all upstream artifacts):
 > - `{package}/context-brief.md`
@@ -156,7 +156,7 @@ Briefly summarize what was produced in Phases 1–3:
 >
 > **Templates and quality gates**:
 > - `datasets/product/templates/prd-template.md`
-> - `.claude/skills/quality-gates/prd-validation/SKILL.md`
+> - `.claude/skills/quality-prd-validation/SKILL.md`
 >
 > **Write to disk** (dual location):
 > - `{package}/PRD_{slug}.md`
@@ -178,7 +178,7 @@ Briefly summarize what was produced in Phases 1–3:
 
 > You are the Ambition Expander agent. Your job is to push the PRD's ambition ceiling higher.
 >
-> **Skill to follow**: Read and execute `.claude/skills/workflows/ambition-expander/SKILL.md`
+> **Skill to follow**: Read and execute `.claude/skills/workflow-ambition-expander/SKILL.md`
 >
 > **Read from disk**:
 > - `{package}/PRD_{slug}.md`
@@ -214,7 +214,7 @@ Briefly summarize what was produced in Phases 1–3:
 
 > You are the Red Team Reviewer agent. Your job is to find every gap and failure mode — not to cut scope, but to make the ambitious plan robust.
 >
-> **Skill to follow**: Read and execute `.claude/skills/workflows/red-team-reviewer/SKILL.md`
+> **Skill to follow**: Read and execute `.claude/skills/workflow-red-team-reviewer/SKILL.md`
 >
 > **Read from disk** (ALL artifacts):
 > - `{package}/PRD_{slug}.md`
@@ -253,7 +253,7 @@ Briefly summarize what was produced in Phases 1–3:
 
 > You are the SWAG Modeler agent. Your job is to build a rigorous-but-honest business case.
 >
-> **Skill to follow**: Read and execute `.claude/skills/workflows/swag-modeler/SKILL.md`
+> **Skill to follow**: Read and execute `.claude/skills/workflow-swag-modeler/SKILL.md`
 >
 > **Read from disk**:
 > - `{package}/PRD_{slug}.md`

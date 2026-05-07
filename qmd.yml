@@ -1,0 +1,95 @@
+# QMD Collection Reference
+#
+# This file documents the qmd collections registered for PM-OS.
+# Collections are managed via CLI and stored at ~/.config/qmd/index.yml
+#
+# To re-register from scratch, run: scripts/qmd-setup.sh
+# To rebuild index: qmd update
+# To build embeddings: qmd embed  (takes 30-60min first run, requires model download ~2-4GB)
+# To check status: qmd status
+#
+# Collection add syntax:
+#   qmd collection add <path> --mask "<glob>" --name <name>
+#   qmd context add qmd://<name>/ "<context description>"
+
+collections:
+
+  meetings_product:
+    path: ~/pm-os/datasets/meetings/product
+    mask: "**/*.txt"
+    context: >
+      Internal product team meeting transcripts by squad (home, payments, platform).
+      Contains standups, planning, roadmap discussions, design reviews.
+      Use for: product decisions, feature discussions, team signals, feature requests,
+      pain points, integration gaps, and customer feedback surfaced in product meetings.
+
+  meetings_leadership:
+    path: ~/pm-os/datasets/meetings/leadership
+    mask: "**/*.txt"
+    context: >
+      Leadership and cross-functional meeting transcripts.
+      Contains strategy, org decisions, goal-setting, exec alignment.
+      Use for: strategic direction, priorities, org context, and executive decisions.
+
+  meetings_general:
+    path: ~/pm-os/datasets/meetings/general
+    mask: "**/*.txt"
+    context: >
+      General internal meeting transcripts (catch-ups, onboarding, cross-team syncs).
+      Use for: relationship context, team dynamics, informal signals.
+
+  meetings_strategy:
+    path: ~/pm-os/datasets/meetings/strategy
+    mask: "**/*.txt"
+    context: >
+      Strategy meeting transcripts.
+      Contains company direction, OKR planning, and strategic initiative discussions.
+
+  meetings_recruiting:
+    path: ~/pm-os/datasets/meetings/recruiting
+    mask: "**/*.txt"
+    context: >
+      Recruiting and hiring meeting transcripts.
+      Contains candidate interviews, hiring discussions, and team growth planning.
+
+  meetings_customer:
+    path: ~/pm-os/datasets/meetings/customer
+    mask: "**/*.txt"
+    context: >
+      Customer-facing meeting transcripts (Customer Advisory Board sessions,
+      customer 1:1s, customer demos, monthly product reviews with customers,
+      training sessions). Use for: customer feedback, voice-of-customer signals,
+      advisory board input, demo reactions, customer pain points.
+
+  research:
+    path: ~/pm-os/datasets/research/sources
+    mask: "**/*.md"
+    context: >
+      Strategic research library by topic: competitive-analysis, pricing-strategy,
+      market-positioning, product-strategy, customer-segmentation, growth-strategy.
+      Files have YAML frontmatter with expiry_date — check it for staleness.
+      Use for: market context, competitive intelligence, strategic frameworks.
+
+  product_artifacts:
+    path: ~/pm-os/datasets/product
+    mask: "**/*.md"
+    context: >
+      PM artifacts: PRDs, epics, backlog, roadmaps, strategies, customer briefs.
+      PRDs have status flags (Drafting, Actionable, Closed, Abandoned).
+      Use for: existing product decisions, feature specs, prioritization context.
+
+  tasks:
+    path: ~/pm-os/datasets/tasks
+    mask: "**/*.md"
+    context: >
+      Active task queues across human, agent, collab, and waiting queues.
+      Each has YAML frontmatter: status, priority, domain, queue.
+      Use for: current work-in-progress, pending decisions, open action items.
+
+# Maintenance notes:
+# - BM25 index updates automatically via otter_sync.py hook (meetings_product)
+# - Vector embeddings: run nightly via LaunchAgent at ~/Library/LaunchAgents/com.jayjenkins.qmd-embed.plist
+# - Manual full re-embed: qmd embed -f
+# - qmd binary: /opt/homebrew/bin/qmd
+# - Index DB: ~/.cache/qmd/index.sqlite
+# - Config: ~/.config/qmd/index.yml

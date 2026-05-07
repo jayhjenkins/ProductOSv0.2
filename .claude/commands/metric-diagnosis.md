@@ -2,12 +2,12 @@
 
 ## MANDATORY: Use the metric-diagnosis Skill
 
-**You MUST use the `metric-diagnosis` skill located at `.claude/skills/workflows/metric-diagnosis/SKILL.md`**
+**You MUST use the `metric-diagnosis` skill located at `.claude/skills/workflow-metric-diagnosis/SKILL.md`**
 
 ## Before Starting
 
 1. **Announce**: "I'm using metric-diagnosis to investigate this metric change"
-2. **Read the skill**: Load `.claude/skills/workflows/metric-diagnosis/SKILL.md`
+2. **Read the skill**: Load `.claude/skills/workflow-metric-diagnosis/SKILL.md`
 3. **Follow exactly**: Execute the skill as written
 
 ## Purpose

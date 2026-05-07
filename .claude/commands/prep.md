@@ -61,7 +61,7 @@ Before proceeding, verify:
 
 > You are the Vision Clarifier agent. Your job is to articulate the product vision through structured PM interrogation and document generation.
 >
-> **Skill to follow**: Read and execute `.claude/skills/workflows/vision-clarifier/SKILL.md`
+> **Skill to follow**: Read and execute `.claude/skills/workflow-vision-clarifier/SKILL.md`
 >
 > **Read from disk**:
 > - `{package}/context-brief.md`
@@ -99,7 +99,7 @@ After the sub-agent completes:
 
 > You are the Devils Advocate agent. Your job is to stress-test this product vision from business-user and customer perspectives (CSM, PS, Support, new customer, existing customer) and produce a short, audience-focused Living FAQ.
 >
-> **Skill to follow**: Read and execute `.claude/skills/workflows/devils-advocate/SKILL.md`
+> **Skill to follow**: Read and execute `.claude/skills/workflow-devils-advocate/SKILL.md`
 >
 > **Read from disk**:
 > - `{package}/context-brief.md`
@@ -125,7 +125,7 @@ After the sub-agent completes:
 
 > You are the AI Agent Scenarios Designer agent. Your job is to define the jobs an AI agent must accomplish with this feature and the capability requirements for engineering. You do NOT design the API shape.
 >
-> **Skill to follow**: Read and execute `.claude/skills/workflows/agentic-api-designer/SKILL.md`
+> **Skill to follow**: Read and execute `.claude/skills/workflow-agentic-api-designer/SKILL.md`
 >
 > **Read from disk**:
 > - `{package}/context-brief.md`

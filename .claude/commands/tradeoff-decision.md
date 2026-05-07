@@ -2,12 +2,12 @@
 
 ## MANDATORY: Use the tradeoff-decision Skill
 
-**You MUST use the `tradeoff-decision` skill located at `.claude/skills/workflows/tradeoff-decision/SKILL.md`**
+**You MUST use the `tradeoff-decision` skill located at `.claude/skills/workflow-tradeoff-decision/SKILL.md`**
 
 ## Before Starting
 
 1. **Announce**: "I'm using tradeoff-decision to evaluate these mixed results"
-2. **Read the skill**: Load `.claude/skills/workflows/tradeoff-decision/SKILL.md`
+2. **Read the skill**: Load `.claude/skills/workflow-tradeoff-decision/SKILL.md`
 3. **Follow exactly**: Execute the skill as written
 
 ## Purpose
