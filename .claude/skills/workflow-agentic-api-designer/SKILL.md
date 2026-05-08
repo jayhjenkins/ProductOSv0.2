@@ -81,6 +81,9 @@ For each scenario:
 - **Job to be done:** the outcome in one sentence
 - **Trigger:** what causes the agent to initiate this (user request, scheduled event, system trigger, etc.)
 - **Inputs needed:** what the agent must know or have — in plain language (e.g., "the association ID, the current action type, and the customer's preferred language"). Do NOT use JSON or schema notation.
+- **Acting on behalf of:** the person whose authority the agent is using — customer, user, homeowner, or *none* if the agent is acting for itself (internal automation, scheduled job). Agent's actions and the audit trail attach to this party. If a scenario can fire on behalf of more than one party (e.g., a CAM acting for a homeowner), name both and state which is the principal.
+- **Latency expectation:** *realtime* (sub-second; conversational flow), *interactive* (a few seconds; user is waiting), or *background* (minutes-to-hours; user is not waiting). This shapes which capabilities can compose into one scenario — a realtime flow can't chain ten capability calls.
+- **Consumer scope:** *internal agents only* (HOAi voice, internal automation), *external partners too*, or *both*. This shapes which tier the underlying capabilities sit in and what guardrails engineering will apply.
 - **Steps:** 3–7 numbered prose steps describing what the agent does. Example: "retrieves the association's current form configuration", "confirms the template is compatible with the association's action types", "applies the template and reports the result back to the user". Do NOT write HTTP calls or code.
 - **Success criteria:** what state exists when done
 - **Failure modes:** 2–4 things that can go wrong, each with how the agent should respond (retry, fall back, escalate, abort)
@@ -105,9 +108,11 @@ High-level requirements for how agents discover and navigate the API. Plain lang
 Standard set (adapt to this feature):
 - Agents must be able to enumerate the actions available on any resource from the resource itself — no out-of-band documentation required.
 - Errors must include a remediation hint that tells the agent what to do next (retry, call another capability, or escalate to a human).
-- Responses must be predictable — the same request returns the same shape regardless of context.
+- Responses must be predictable — the same request returns the same shape regardless of which agent or which user is calling, and regardless of upstream context the caller can't see.
 - Every write operation must be safely retryable.
 - Every capability exposed to humans in the UI must also be available to agents.
+- Every action taken by an agent must be retrievable on request — by user, customer, conversation, or call. The audit trail is part of the contract, not an afterthought. If a customer asks "what did your AI do for me on Tuesday?", the answer must exist.
+- When the agent is acting on behalf of someone (per the scenario's *Acting on behalf of* field), the API must carry that identity end-to-end and never silently substitute it with a system identity mid-request.
 
 ## Arguments
 
@@ -120,9 +125,9 @@ Standard set (adapt to this feature):
 - [ ] 3–5 scenarios written in prose — no HTTP, no JSON, no code blocks
 - [ ] Use Case Inventory covers every capability implied by the press releases
 - [ ] API Requirements section is bullet-list capabilities only — no verbs, paths, or schemas
-- [ ] Each scenario has: job, trigger, inputs, steps, success criteria, failure modes
+- [ ] Each scenario has: job, trigger, inputs, acting-on-behalf-of, latency expectation, consumer scope, steps, success criteria, failure modes
 - [ ] Failure modes include the agent's intended response for each
-- [ ] Discoverability Principles present and stated at a high level
+- [ ] Discoverability Principles present, including auditability/retrievability and on-behalf-of identity persistence
 - [ ] No resource model, state machine, or endpoint specification anywhere in the doc
 
 ## Failure Modes
@@ -135,6 +140,9 @@ Standard set (adapt to this feature):
 | Call-sequence docs | Scenarios written as numbered API calls | Rewrite as plain-language "agent does X, then Y" |
 | Incomplete failure modes | Scenarios that only describe the happy path | Add 2–4 failure modes per scenario with agent response |
 | Vague capabilities | "Agent needs the right data" | Rewrite specifically: "list active associations for the authenticated agent" |
+| Missing on-behalf-of | Scenario doesn't say whose authority the agent is using | Add the *Acting on behalf of* line — even if the answer is *none*, name it explicitly |
+| No latency framing | Scenario silent on how fast the user expects the response | Add the *Latency expectation* line — realtime / interactive / background |
+| Audit gap | Discoverability section silent on whether actions are retrievable later | Add the auditability principle — agent actions must be retrievable by user, customer, conversation, or call |
 
 ## Interaction Model
 
