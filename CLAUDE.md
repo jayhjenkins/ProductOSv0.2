@@ -157,6 +157,7 @@ Key files: `scripts/cron_lib.py`, `scripts/cron_scheduler.py`, `scripts/parse_cr
 
 ## Output Conventions
 
+- For diagnosis, research, and synthesis, apply the `quality-neutral-reporting` skill: report what the evidence shows, and treat "no issue found / expected variation" as a valid, complete result rather than manufacturing a finding. (Adversarial review skills — `red-team`, `devils-advocate`, `expand` — are intentionally biased and exempt.)
 - Never delete generated artifacts — append version suffixes (`v1`, `v2`)
 - Maintain `status.json` for processing state, `progress.md` for human notes
 - Historical snapshots for roadmaps and decisions

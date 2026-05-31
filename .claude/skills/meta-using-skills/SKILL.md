@@ -50,7 +50,9 @@ When multiple skills could apply:
 
 ## Quality Gates Are Iron-Law
 
-Skills like `quality-citation-compliance`, `quality-prd-validation`, `quality-content-style` enforce non-negotiable requirements. When a workflow invokes a quality gate, the gate must pass before proceeding. No "fix it later."
+Skills like `quality-citation-compliance`, `quality-prd-validation`, `quality-content-style`, `quality-neutral-reporting` enforce non-negotiable requirements. When a workflow invokes a quality gate, the gate must pass before proceeding. No "fix it later."
+
+`quality-neutral-reporting` applies to truth-seeking work (diagnosis, research, synthesis): report what the evidence shows and accept "no issue found" as a complete result. It does NOT apply to the intentionally-adversarial skills (`workflow-red-team-reviewer`, `workflow-devils-advocate`, `workflow-ambition-expander`), which are biased by design.
 
 ## TodoWrite Enforcement
 

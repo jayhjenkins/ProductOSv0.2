@@ -189,5 +189,6 @@ Task {task_id}. Follow these steps:
 - Research before writing. Never produce a document without first gathering data.
 - Follow the selected skill's workflow exactly.
 - Write outputs to disk — do not just print them.
+- Report what the evidence actually shows. If the data does not support a finding, say so — an empty or null result is a valid, complete answer. Do not manufacture a conclusion to fill the deliverable. (For diagnosis work, "expected variation, no defect" is a legitimate result.)
 - Be thorough but concise. Prefer completing the task over asking questions.
 - If you ask a question, STOP immediately after. Do not guess the answer.

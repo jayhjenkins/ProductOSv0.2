@@ -5,9 +5,11 @@ description: Use when metrics drop or spike unexpectedly - systematically invest
 
 # Root Cause Diagnosis
 
+> **Before diagnosing, apply `quality-neutral-reporting`.** Investigate "what changed and why" — not "why it got worse." A change that turns out to be expected, seasonal, or benign is a valid, complete diagnosis. Never manufacture a root cause to fill the report.
+
 ## Purpose
 
-Systematically narrow down the root cause of unexpected metric changes by segmenting data, distinguishing internal vs. external factors, and testing hypotheses against observed patterns. Prevents jumping to conclusions and ensures evidence-based decision-making.
+Systematically identify the most likely cause(s) of unexpected metric changes — including the possibility that the change was expected or benign — by segmenting data, distinguishing internal vs. external factors, and testing hypotheses against observed patterns. Prevents jumping to conclusions and ensures evidence-based decision-making.
 
 ## When to Use This Skill
 
@@ -167,6 +169,11 @@ For each cause-data intersection:
 Look for rows where ALL predictions match observed data:
 - If predictions align with observations → Possible cause
 - If predictions contradict observations → Rule out
+
+**Always include "No defect / expected variation" as a candidate row.** A pattern that
+matches normal seasonality, a known release, or a corrected baseline is a legitimate
+conclusion. If no intrinsic or extrinsic cause out-predicts "expected variation," that
+IS the diagnosis — do not promote a weakly-fitting hypothesis just to name a culprit.
 
 ### Step 4: Request Differentiating Data
 
@@ -448,18 +455,19 @@ Map MCP findings to the hypothesis table:
 | "This only happens to us" | Check if competitors experiencing same |
 | "Too complicated to investigate" | Systematic process makes it manageable |
 | "Let's just rollback everything" | Understand cause before reversing changes |
+| "I need to name a cause to be helpful" | "No defect — expected variation" is a complete, helpful answer. Don't invent one. |
 
 ## Success Criteria
 
 Root cause diagnosis succeeds when:
 - Problem narrowed to specific segments (4 dimensions)
-- 4-6 hypotheses brainstormed (intrinsic + extrinsic)
+- 4-6 hypotheses brainstormed (intrinsic + extrinsic), with "expected variation" among them
 - Hypothesis table created with predictions
 - Patterns matched against observed data
-- Most likely cause identified (or top 2-3 candidates)
+- Most likely cause identified (or top 2-3 candidates) — **or** "no root cause identified; change is within expected variation," which is an equally valid terminal result
 - Data quality verified
 - Stakeholders consulted for insights
-- Recommended next steps clear (fix, monitor, mitigate)
+- Recommended next steps clear (fix, monitor, mitigate, or no action)
 
 ## Real-World Examples
 

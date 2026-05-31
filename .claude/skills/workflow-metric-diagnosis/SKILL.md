@@ -5,9 +5,11 @@ description: Use when investigating unexpected metric changes - systematically n
 
 # Metric Diagnosis Workflow
 
+> **Before diagnosing, apply `quality-neutral-reporting`.** Frame the investigation as "what changed and what explains it," not "why it got worse." Concluding the change was expected, seasonal, or a corrected baseline is a valid, complete outcome — do not manufacture a root cause to fill the report.
+
 ## Purpose
 
-Systematically investigate why a metric changed unexpectedly (dropped or spiked) by segmenting data, distinguishing internal vs. external factors, and testing hypotheses to identify root cause. Prevents rushing to wrong conclusions and ensures evidence-based responses.
+Systematically investigate what changed when a metric moved unexpectedly (dropped or spiked) by segmenting data, distinguishing internal vs. external factors, and testing hypotheses to identify the most likely cause — including the possibility that the movement is expected or benign. Prevents rushing to wrong conclusions and ensures evidence-based responses.
 
 ## When to Use This Workflow
 

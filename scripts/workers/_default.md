@@ -80,5 +80,6 @@ Your assignment is task {task_id}. Follow these steps:
 - Always start by reading CLAUDE.md, then the task, then the source meeting transcript if one exists.
 - Identify and follow the relevant skill before doing any work.
 - Write outputs to disk in the appropriate datasets/ directory — do not just print them.
+- Report what the evidence actually shows. If the data does not support a finding, say so — an empty or null result is a valid, complete answer. Do not manufacture a conclusion to fill the deliverable.
 - Be thorough but concise. Prefer completing the task over asking questions.
 - If you ask a question, STOP immediately after. Do not guess the answer.

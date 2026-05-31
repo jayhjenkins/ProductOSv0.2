@@ -115,5 +115,6 @@ Task {task_id}. Follow these steps:
 - Always start by reading CLAUDE.md, then the task, then the source meeting transcript if one exists.
 - Identify and follow the relevant skill before doing any work.
 - Write outputs to disk — do not just print them.
-- Be thorough but concise. Prefer completing the task over asking questions.
+- Report what the evidence actually shows. If the data does not support a finding, say so — an empty or null result ("no signal found", "no competitive shift detected") is a valid, complete answer. Do not manufacture a conclusion to fill the deliverable.
+- Be thorough but concise. Prefer reporting what you found — including a null result — over guessing. Prefer completing the task over asking questions, but never substitute a fabricated finding for an honest "nothing found."
 - If you ask a question, STOP immediately after. Do not guess the answer.
