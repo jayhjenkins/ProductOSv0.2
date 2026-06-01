@@ -17,10 +17,39 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 PM_OS_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-# Jira config (from jira-home skill)
+# Jira config (from workflow-jira-home skill)
 JIRA_CLOUD_ID = "vantaca.atlassian.net"
 JIRA_PROJECT_KEY = "VNT"
 JIRA_COMPONENT_ID = "10011"  # Vantaca HXP
+JIRA_AUTO_LABEL = "home_aidlc"  # AI DLC swim lane indicator. Not auto-applied — drafts decide; see Swim Lane Rule in workflow-jira-home/SKILL.md.
+JIRA_DEFAULT_ASSIGNEE = "712020:aeec48b7-3829-433b-9125-c8c2a4c84e6f"  # Jay Jenkins — default assignee for Features
+
+# Canonical type names. Drafts that arrive with different casing or shorthand
+# get normalized so Jira's case-sensitive issueTypeName check doesn't fail.
+JIRA_TYPE_CANONICAL = {
+    "bug": "Bug",
+    "regression defect": "Regression Defect",
+    "regression": "Regression Defect",
+    "story": "Story",
+    "unit": "Unit",
+    "epic": "Epic",
+    "feature": "Feature",
+    "spike": "Spike",
+    "hotfix": "Hotfix",
+    "work item defect": "Work Item Defect",
+    "performance defect": "Performance Defect",
+    "security defect": "Security Defect",
+}
+
+# Types that use the Feature/Epic-name custom field (customfield_10011).
+NAMED_PARENT_TYPES = {"Feature", "Epic"}
+
+
+def normalize_type(raw):
+    """Map common casings/shorthand to the canonical Jira issue type name."""
+    if not raw:
+        return "Bug"
+    return JIRA_TYPE_CANONICAL.get(raw.strip().lower(), raw.strip())
 
 
 # ─── Draft Parsing ───────────────────────────────────────────────────────────
@@ -29,7 +58,7 @@ def parse_jira_draft(body):
     """Extract JIRA_DRAFT fields from a task body string.
 
     Returns dict with: type, summary, description, priority, labels,
-    release_notes, epic_name, gtm_date, client_commitment.
+    release_notes, feature_name, gtm_date, client_commitment, parent.
     Returns None if no draft found.
     """
     if not body or "<!-- JIRA_DRAFT -->" not in body:
@@ -46,16 +75,30 @@ def parse_jira_draft(body):
         m = re.search(rf"<!-- {name}:(.+?) -->", block)
         return m.group(1).strip() if m else ""
 
+    # JIRA_FEATURE_NAME is preferred; JIRA_EPIC_NAME accepted as legacy fallback.
+    feature_name = _field("JIRA_FEATURE_NAME") or _field("JIRA_EPIC_NAME") or ""
+
+    def _date_or_empty(name):
+        # TBD and empty both mean "leave the Jira date field blank"
+        raw = _field(name)
+        return "" if raw.lower() == "tbd" else raw
+
     # Extract structured fields from HTML comments
     draft = {
-        "type": _field("JIRA_TYPE") or "Bug",
+        "type": normalize_type(_field("JIRA_TYPE") or "Bug"),
         "summary": _field("JIRA_SUMMARY") or "",
         "priority": _field("JIRA_PRIORITY") or "",
         "labels": [l.strip() for l in _field("JIRA_LABELS").split(",") if l.strip()],
         "release_notes": _field("JIRA_RELEASE_NOTES") or "",
-        "epic_name": _field("JIRA_EPIC_NAME") or "",
-        "gtm_date": _field("JIRA_GTM_DATE") or "",
+        "feature_name": feature_name,
+        # Kept for backwards-compatible callers; mirrors feature_name.
+        "epic_name": feature_name,
+        "gtm_date": _date_or_empty("JIRA_GTM_DATE"),
+        "ea_date": _date_or_empty("JIRA_EA_DATE"),
+        "spec_reference": _field("JIRA_SPEC_REFERENCE") or "",
         "client_commitment": _field("JIRA_CLIENT_COMMITMENT") or "",
+        "parent": _field("JIRA_PARENT") or "",
+        "assignee": _field("JIRA_ASSIGNEE") or "",
     }
 
     # Extract the description from the ### Description section
@@ -77,30 +120,56 @@ def parse_jira_draft(body):
 
 def build_claude_prompt(draft):
     """Build a constrained prompt for Claude to call the Jira MCP tool."""
-    issue_type = draft["type"]  # Bug, Story, or Epic
+    issue_type = normalize_type(draft.get("type") or "Bug")
+
+    # Labels come straight from the draft. The skill's Swim Lane Rule decides
+    # whether home_aidlc is present (Features/Epics yes; Bugs/Units/etc. no).
+    # Dedupe only — preserve the draft's order and intent.
+    seen = set()
+    labels = []
+    for l in (draft.get("labels") or []):
+        if l and l not in seen:
+            seen.add(l)
+            labels.append(l)
 
     # Build additional_fields
     additional_fields = {
         "components": [{"id": JIRA_COMPONENT_ID}],
+        "labels": labels,
     }
 
-    if draft["priority"]:
+    if draft.get("priority"):
         additional_fields["priority"] = {"name": draft["priority"]}
 
-    if draft["labels"]:
-        additional_fields["labels"] = draft["labels"]
-
-    if draft["release_notes"]:
+    if draft.get("release_notes"):
         additional_fields["customfield_10499"] = {"value": draft["release_notes"]}
 
-    # Epic-specific fields
-    if issue_type == "Epic":
-        if draft["epic_name"]:
-            additional_fields["customfield_10011"] = draft["epic_name"]
-        if draft["gtm_date"]:
+    # Feature / Epic — use customfield_10011 for the short name.
+    if issue_type in NAMED_PARENT_TYPES:
+        name = draft.get("feature_name") or draft.get("epic_name")
+        if name:
+            additional_fields["customfield_10011"] = name
+        if draft.get("gtm_date"):
             additional_fields["customfield_10300"] = draft["gtm_date"]
-        if draft["client_commitment"]:
+        if draft.get("ea_date"):
+            additional_fields["customfield_10683"] = draft["ea_date"]
+        if draft.get("spec_reference"):
+            additional_fields["customfield_10783"] = draft["spec_reference"]
+        if draft.get("client_commitment"):
             additional_fields["customfield_10298"] = [draft["client_commitment"]]
+
+    # Parent link — typically for Unit → Feature/Epic. Jira accepts a top-level
+    # `parent` key in additional_fields.
+    parent_key = (draft.get("parent") or "").strip()
+    if parent_key:
+        additional_fields["parent"] = {"key": parent_key}
+
+    # Assignee — Features default to Jay Jenkins unless the draft overrides.
+    assignee_id = (draft.get("assignee") or "").strip()
+    if issue_type in NAMED_PARENT_TYPES:
+        additional_fields["assignee"] = {"accountId": assignee_id or JIRA_DEFAULT_ASSIGNEE}
+    elif assignee_id:
+        additional_fields["assignee"] = {"accountId": assignee_id}
 
     additional_fields_json = json.dumps(additional_fields)
 
@@ -236,16 +305,36 @@ def main():
         print("Error: No JIRA_DRAFT block found in task body", file=sys.stderr)
         sys.exit(1)
 
+    # Labels submitted as-is (deduped). No auto-prepend — Swim Lane Rule lives
+    # in the draft, not here.
+    effective_labels = []
+    for l in draft["labels"]:
+        if l and l not in effective_labels:
+            effective_labels.append(l)
+
+    if not effective_labels:
+        lane_hint = " ('everything else' column)"
+    elif JIRA_AUTO_LABEL in effective_labels:
+        lane_hint = " (AI DLC swim lane)"
+    else:
+        lane_hint = ""
+
     print(f"Parsed Jira Draft:")
     print(f"  Type:        {draft['type']}")
     print(f"  Summary:     {draft['summary']}")
     print(f"  Priority:    {draft['priority'] or '(default)'}")
-    print(f"  Labels:      {', '.join(draft['labels']) or '(none)'}")
+    print(f"  Labels:      {', '.join(effective_labels) or '(none)'}{lane_hint}")
     print(f"  Release:     {draft['release_notes'] or '(none)'}")
-    if draft["type"] == "Epic":
-        print(f"  Epic Name:   {draft['epic_name']}")
+    if draft.get("parent"):
+        print(f"  Parent:      {draft['parent']}")
+    if draft["type"] in NAMED_PARENT_TYPES:
+        print(f"  {draft['type']} Name: {draft.get('feature_name') or draft.get('epic_name') or '(none)'}")
         print(f"  GTM Date:    {draft['gtm_date'] or '(none)'}")
+        print(f"  EA Date:     {draft['ea_date'] or '(none)'}")
+        print(f"  Spec Ref:    {draft['spec_reference'] or '(none)'}")
         print(f"  Commitment:  {draft['client_commitment'] or '(none)'}")
+        assignee_display = draft.get("assignee") or JIRA_DEFAULT_ASSIGNEE + " (default: Jay Jenkins)"
+        print(f"  Assignee:    {assignee_display}")
     print(f"  Description: {draft['description'][:200]}...")
 
     if args.dry_run:

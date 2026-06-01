@@ -1,8 +1,8 @@
 # /project:ship-it
 
-## End-to-End Product Package (Phases 1–6) — Sub-Agent Orchestration
+## End-to-End Product Package (Phases 1–7) — Sub-Agent Orchestration
 
-This is the "do all this and make sure it's amazing" command. You are the **orchestrator** — a thin coordination layer that dispatches 7 sub-agents across 6 phases, runs quality gates between each, and handles PM decision points. You do NOT run skills inline. Sub-agents do the deep work in fresh context windows. Artifacts on disk are the state transfer mechanism.
+This is the "do all this and make sure it's amazing" command. You are the **orchestrator** — a thin coordination layer that dispatches 7 sub-agents across Phases 1–6, runs quality gates between each, handles PM decision points, and (in Phase 7) drives a short interactive Jira Feature handoff directly. You do NOT run skills inline for Phases 1–6. Sub-agents do the deep work in fresh context windows. Artifacts on disk are the state transfer mechanism.
 
 **Your job**: Manage the sequence, verify quality at each gate, handle PM interactions for key decisions, and keep the overall process on track. Stay lean — don't accumulate artifact content in your context when you can read summaries from disk.
 
@@ -14,6 +14,8 @@ This is the "do all this and make sure it's amazing" command. You are the **orch
 - `--from-transcript ./path/to/transcript.md` — Start from a meeting transcript
 - `--skip-expand` — Skip the Ambition Expander
 - `--skip-swag` — Skip the business case modeling
+- `--skip-jira` — Skip the Phase 7 Jira Feature handoff (no draft task created)
+- `--jira-only --package <path>` — Run only Phase 7 against an existing package folder (skips Phases 1–6). Useful when a package already exists and you just need the Jira Feature draft.
 
 ## Step 0: Establish the Product Package Folder
 
@@ -272,6 +274,104 @@ Briefly summarize what was produced in Phases 1–3:
 
 ---
 
+### Phase 7: Jira Feature Handoff (Orchestrator — Direct) — unless `--skip-jira`
+
+Sam's 2026-05-22 process refresh made the Jira **Feature** the source of truth for downstream comms. Three fields drive that workflow: **Spec Reference** (URL of the spec/PRD), **GTM Date**, and **EA Date**. Phase 7 turns this package into a published-ready Jira Feature draft.
+
+**Handle this directly in the orchestrator — no sub-agent.** It is interactive and short.
+
+#### Step 7.1: Confirm intent
+
+Ask the PM:
+> "All artifacts are in `{package}`. Want to draft the Jira Feature now so engineering can pick it up? (Y/N)"
+
+- If `--skip-jira` or the PM declines: end Phase 7 with the reminder "Run `/jira:create --feature` later, or re-run with `--jira-only --package {package}`."
+- If yes: continue.
+
+#### Step 7.2: Get the Spec Reference URL (manual publish gate)
+
+The PRD's Word/SharePoint URL becomes both the Jira **Spec Reference** field value and the in-body link. We also need the internal press release URL for the description body.
+
+Ask:
+> "To populate Spec Reference, the PRD needs a Word URL. Pick one:
+> (a) Publish the package to SharePoint now (manual confirmation — same rule as always).
+> (b) Paste a URL I already have.
+> (c) Skip — draft with Spec Reference blank, fill in later."
+
+- **(a)**: Run `python3 scripts/doc_sync.py sync-folder {package} --json`. Parse the JSON output (shape: `{"folder": "...", "files": [{"file": "...", "url": "...", ...}]}`). Capture two URLs:
+  - The `url` from the entry whose `file` matches `PRD_{slug}.md` → **Spec Reference** field + "Full PRD" line in the description.
+  - The `url` from the entry whose `file` matches `press-release-internal.md` → "Internal Press Release" line in the description.
+  Skip a URL silently if its entry has `status: "error: ..."` or `url` is empty.
+- **(b)**: Prompt twice — once for the PRD URL (Spec Reference) and once for the internal press release URL. Either can be skipped.
+- **(c)**: Leave both empty.
+
+#### Step 7.3: Gather Feature fields
+
+Ask in order, accepting `TBD` or empty for each date field (these mean "leave the Jira field blank — Sam's process accepts filling them in later"):
+
+1. **Feature Name** — default to `{slug}` title-cased; allow edit.
+2. **GTM Date** — `YYYY-MM-DD`, or `TBD`/empty.
+3. **EA Date** — `YYYY-MM-DD`, or `TBD`/empty. (Early-access date; typically before GTM.)
+4. **Client Commitment** — `CAI` / `Vision` / none.
+
+Do **not** ask about Release Notes, Priority, Components, or Regression Area — those are set in Jira when the issue transitions out of Refinement.
+
+#### Step 7.4: Build the description body (lean)
+
+The description has exactly, in this order:
+
+1. **Outcome paragraph** — 1–3 sentences lifted from `one-pager.md` / `press-release-external.md` (the "why we're building this").
+2. **Full PRD line** — `Full PRD: {PRD Word URL}`. Omit silently if no URL.
+3. **Internal Press Release line** — `Internal Press Release: {press-release-internal Word URL}`. Omit silently if no URL.
+4. **AC seed** — 3–5 bullets lifted from the PRD's Requirements section as placeholders for engineering to refine.
+
+Explicitly **omit**: meeting framing, name-dropping, version narrative, TASK-NNNN IDs, local paths, transcript filenames.
+
+#### Step 7.5: Save as a JIRA_DRAFT task
+
+Create the task. Build the description argument as a single string containing the JIRA_DRAFT block plus the body sections — the existing `task.sh add` writes `--description` into the body, and `jira_publish.py` parses the `<!-- JIRA_DRAFT -->…<!-- /JIRA_DRAFT -->` block wherever it appears.
+
+```
+./scripts/task.sh add "Publish Jira Feature: {Feature Name}" \
+  -q human -p medium -d product \
+  --description "$(cat <<'EOF'
+<!-- JIRA_DRAFT -->
+<!-- JIRA_TYPE:Feature -->
+<!-- JIRA_SUMMARY:{summary} -->
+<!-- JIRA_LABELS:home_aidlc -->
+<!-- JIRA_FEATURE_NAME:{feature name} -->
+<!-- JIRA_GTM_DATE:{YYYY-MM-DD or empty} -->
+<!-- JIRA_EA_DATE:{YYYY-MM-DD or empty} -->
+<!-- JIRA_SPEC_REFERENCE:{PRD Word URL or empty} -->
+<!-- JIRA_CLIENT_COMMITMENT:{CAI/Vision/empty} -->
+
+### Summary
+{summary}
+
+### Description
+{outcome paragraph}
+
+Full PRD: {PRD Word URL}
+Internal Press Release: {press-release-internal Word URL}
+
+**Acceptance Criteria (seed)**
+- {AC bullet 1}
+- {AC bullet 2}
+- {AC bullet 3}
+
+### Fields
+- Type: Feature
+- Labels: home_aidlc (Features go to the AI DLC swim lane)
+<!-- /JIRA_DRAFT -->
+EOF
+)"
+```
+
+Print the TASK ID and the task-board URL. End with:
+> "Draft saved at TASK-NNNN. Open the task board, review the draft, click **Publish to Jira** when ready. Sam's process is satisfied as long as Spec Reference is set — GTM/EA dates can be filled in later in the Jira UI."
+
+---
+
 ## COMPLETE PACKAGE DELIVERY
 
 Present the complete product package:
@@ -301,6 +401,8 @@ datasets/product/packages/{YYYY}/{slug}/
 
 The PRD is also written to `datasets/product/prds/{YYYY}/PRD_{slug}.md` for backlog/roadmap integration.
 
+Phase 7 produces one side-effect outside the package folder: a `human`-queue task titled `Publish Jira Feature: {Feature Name}` containing a JIRA_DRAFT block. The PM publishes it from the task board.
+
 ## When to Use
 
 - When you have sufficient context and want to let the system rip
@@ -317,5 +419,6 @@ This pipeline is cheap to run. Feed it different input context, run it multiple 
 While `/ship-it` minimizes pauses, the PM MUST still make judgment calls at:
 - **Expansion proposals**: Accept or reject each one (auto-pauses here)
 - **Critical red team findings**: Confirm fixes are adequate
+- **Jira Feature handoff (Phase 7)**: Confirm intent, decide on manual publish vs. paste vs. skip for the Spec Reference URL, and provide GTM/EA dates (TBD allowed)
 
 These pauses are non-negotiable even in end-to-end mode. The PM decides, agents propose.

@@ -94,8 +94,18 @@ If any files failed, list them separately with error details.
 | Individual file conversion fails | Report which files failed, continue with rest |
 | sync_config.yaml missing | Tell user to run `scripts/setup_doc_sync.sh` |
 
+## Hand-off to Jira
+
+After publish, two URLs from the result table feed the Jira Feature ticket:
+
+- **`PRD_{slug}.md`** → the Jira Feature's **Spec Reference** field (`customfield_10783`). Sam's 2026-05-22 process refresh made this the load-bearing field for downstream Teams comms.
+- **`press-release-internal.md`** → an "Internal Press Release" link in the Feature's description body, so reviewers can jump straight from the ticket to the announce-style narrative.
+
+`/project:ship-it` Phase 7 pulls both automatically from `sync-folder --json`. For manual use: copy the URLs from the rendered table and paste into `/jira:create --feature`.
+
 ## Related Skills
 
 - **doc-sync**: Lower-level document sync (single files, bidirectional)
 - **prd-creation**: Creates PRDs that live in packages
 - **ship-it / build**: Upstream workflows that create the package artifacts
+- **workflow-jira-home**: Consumes the Spec Reference URL when drafting the Jira Feature
