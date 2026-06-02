@@ -140,7 +140,9 @@ The load-bearing recurring jobs (grows to ~20 over time):
 9. **Support / sales signal digest** — weekly; Zendesk + Gong via Databricks
 10. **Doc-sync reconciliation** — agent-output → Word / SharePoint, detect drift
 
-*Later (11–20): research expiry sweep, recruiting pipeline status, north-star weekly, cron self-audit, Jira draft reconciliation, competitive watch.*
+11. **Human-queue audit** — weekly; finds human tasks an agent could own, messages an agent could draft, and stale tasks to kill → proposes each as a one-tap recommendation (`task-human-queue-audit`). The self-improvement loop pointed at task *routing*; keeps the human pile from forming. See `UX_VISION.md`.
+
+*Later (12–20): research expiry sweep, recruiting pipeline status, north-star weekly, cron self-audit, Jira draft reconciliation, competitive watch.*
 
 ---
 
