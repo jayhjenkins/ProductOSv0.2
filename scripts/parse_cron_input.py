@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 """
 parse_cron_input.py — Parse free-form text into structured cron job fields
-using local Ollama LLM.
+using Claude Haiku.
 
 Input: raw text describing a recurring task (via stdin, --text, or parse_cron())
 Output: JSON with cron job fields ready for cron_lib.create_job()
 
-Uses the same Ollama calling pattern as parse_task_input.py.
-LangFuse integration: auto-traces when LANGFUSE_SECRET_KEY is set.
+Uses the same headless `claude` CLI calling pattern as parse_task_input.py.
+LangFuse integration: degrades gracefully when LANGFUSE_SECRET_KEY is unset.
 """
 
 import argparse
@@ -16,9 +16,9 @@ import sys
 import os
 from datetime import date
 
-# Reuse the Ollama calling infrastructure from parse_task_input.py
+# Reuse the Claude calling infrastructure from parse_task_input.py
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from parse_task_input import call_ollama, extract_json
+from parse_task_input import call_claude, extract_json, PARSER_MODEL
 
 # ─── Constants ───────────────────────────────────────────────────────────────
 
@@ -104,42 +104,33 @@ def parse_cron(text):
     Raises on failure.
     """
     system = _get_system_prompt()
-    models = ["nemotron-3-nano:30b", "qwen3:30b-a3b"]
 
-    for model in models:
-        try:
-            raw = call_ollama(model, system, text)
-            parsed = extract_json(raw)
+    raw = call_claude(system, text, model=PARSER_MODEL)
+    parsed = extract_json(raw)
 
-            # Validate cron expression
-            from croniter import croniter
-            if not croniter.is_valid(parsed.get("cron_expr", "")):
-                raise ValueError(f"Invalid cron expression: {parsed.get('cron_expr')}")
+    # Validate cron expression
+    from croniter import croniter
+    if not croniter.is_valid(parsed.get("cron_expr", "")):
+        raise ValueError(f"Invalid cron expression: {parsed.get('cron_expr')}")
 
-            # Ensure required fields
-            if not parsed.get("name"):
-                raise ValueError("Missing job name")
-            if not parsed.get("task_template", {}).get("description"):
-                raise ValueError("Missing task description")
+    # Ensure required fields
+    if not parsed.get("name"):
+        raise ValueError("Missing job name")
+    if not parsed.get("task_template", {}).get("description"):
+        raise ValueError("Missing task description")
 
-            # Defaults
-            parsed.setdefault("auto_dispatch", True)
-            parsed.setdefault("expires", None)
-            tpl = parsed.setdefault("task_template", {})
-            tpl.setdefault("queue", "agent")
-            tpl.setdefault("priority", "medium")
-            tags = tpl.get("tags", [])
-            if "cron" not in tags:
-                tags = ["cron"] + tags
-            tpl["tags"] = tags
+    # Defaults
+    parsed.setdefault("auto_dispatch", True)
+    parsed.setdefault("expires", None)
+    tpl = parsed.setdefault("task_template", {})
+    tpl.setdefault("queue", "agent")
+    tpl.setdefault("priority", "medium")
+    tags = tpl.get("tags", [])
+    if "cron" not in tags:
+        tags = ["cron"] + tags
+    tpl["tags"] = tags
 
-            return parsed
-        except Exception:
-            if model == models[-1]:
-                raise
-            continue
-
-    raise RuntimeError("All models failed")
+    return parsed
 
 
 # ─── CLI ─────────────────────────────────────────────────────────────────────

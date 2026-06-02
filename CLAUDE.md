@@ -148,7 +148,7 @@ python3 scripts/langfuse_setup.py --dry-run
 
 Cron jobs auto-create tasks on a schedule that flow through the existing dispatch pipeline.
 
-- UI: Cron tab on the task board (paste text → Ollama parses → review → save)
+- UI: Cron tab on the task board (paste text → Claude Haiku parses → review → save)
 - Storage: `datasets/cron/jobs.json`, atomic counter at `datasets/cron/_counter`
 - Scheduler: daemon thread in `task_server.py`, 30s tick
 - Template vars in titles/descriptions: `{date}`, `{week}`, `{month}`, `{year}` resolved at execution

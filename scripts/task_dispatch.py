@@ -344,9 +344,9 @@ No markdown, no code fences, no explanation outside the JSON."""
 
 
 def _match_worker_llm(task, workers):
-    """Use Ollama to match a task to the best worker. Returns (worker, reason) or (None, None)."""
+    """Use Claude Haiku to match a task to the best worker. Returns (worker, reason) or (None, None)."""
     try:
-        from parse_task_input import call_ollama, extract_json
+        from parse_task_input import call_claude, extract_json, PARSER_MODEL
     except ImportError:
         return None, None
 
@@ -395,7 +395,7 @@ def _match_worker_llm(task, workers):
     )
 
     try:
-        raw = call_ollama("qwen3:4b", prompt, "Route this task to the best worker.", num_ctx=4096)
+        raw = call_claude(prompt, "Route this task to the best worker.", model=PARSER_MODEL)
         result = extract_json(raw)
         worker_name = result.get("worker", "")
         reason = result.get("reason", "")
@@ -420,7 +420,7 @@ def match_worker(task, workers):
                 return w, 100, [f"llm: {llm_reason}"]
         log(f"LLM returned unknown worker '{llm_name}', falling back to regex")
 
-    # Regex fallback (Ollama down, unknown worker name, etc.)
+    # Regex fallback (claude CLI unavailable, unknown worker name, etc.)
     log("Using regex fallback for worker matching")
     best_worker = None
     best_score = -999

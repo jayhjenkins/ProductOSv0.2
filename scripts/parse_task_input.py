@@ -1,16 +1,18 @@
 #!/usr/bin/env python3
 """
 parse_task_input.py — Parse unstructured text (voice dump, quick notes) into
-structured task fields using local Ollama LLM.
+structured task fields using Claude Haiku.
 
 Input: raw text blob via stdin or --text argument
 Output: JSON with task fields ready for task_cli.py
 
-Uses nemotron-3-nano:30b for structured extraction.
-Falls back to qwen3:30b-a3b if nemotron fails.
+Runs the structured extraction through a one-shot headless `claude` CLI call
+(`claude -p ... --model claude-haiku-4-5`), the same invocation pattern the rest
+of PM-OS uses for Claude (see task_dispatch.py and jira_publish.py). Override
+the model with PM_OS_PARSER_MODEL.
 
-LangFuse integration: auto-traces all LLM calls when LANGFUSE_SECRET_KEY is set.
-Falls back to stdlib urllib when langfuse/openai packages are not installed.
+LangFuse integration: parse operations are traced via langfuse_client.create_trace
+when LANGFUSE_SECRET_KEY is set; degrades gracefully when unavailable.
 """
 
 import argparse
@@ -19,38 +21,23 @@ import re
 import subprocess
 import sys
 import os
-import urllib.request
 import atexit
 from datetime import date
 
-# ─── LangFuse / OpenAI client setup (graceful degradation) ──────────────────
-
-_USE_OPENAI = False
-_openai_client = None
+# ─── LangFuse flush registration (graceful degradation) ─────────────────────
 
 try:
     sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-    from langfuse_client import get_openai_client, get_langfuse, flush as lf_flush
-    _client = get_openai_client()
-    if _client is not None:
-        _openai_client = _client
-        _USE_OPENAI = True
-        atexit.register(lf_flush)
+    from langfuse_client import flush as lf_flush
+    atexit.register(lf_flush)
 except ImportError:
     pass
 
-if not _USE_OPENAI:
-    try:
-        from openai import OpenAI
-        _openai_client = OpenAI(base_url="http://localhost:11434/v1", api_key="ollama")
-        _USE_OPENAI = True
-    except ImportError:
-        pass
-
 # ─── Constants ───────────────────────────────────────────────────────────────
 
-OLLAMA_URL = "http://localhost:11434/v1/chat/completions"
-OLLAMA_NATIVE_URL = "http://localhost:11434/api/chat"
+# Lightweight parsing/routing runs on Claude Haiku via the headless `claude`
+# CLI. Override with PM_OS_PARSER_MODEL.
+PARSER_MODEL = os.environ.get("PM_OS_PARSER_MODEL", "claude-haiku-4-5")
 
 SYSTEM_PROMPT = """You are a task parser for a Product Manager's task system. You receive raw, unstructured text (often from voice-to-text) and extract a single structured task.
 
@@ -114,82 +101,69 @@ def _get_system_prompt():
 
 # ─── LLM Calls ──────────────────────────────────────────────────────────────
 
-def _call_ollama_openai(model: str, system: str, user: str) -> str:
-    """Call Ollama via OpenAI SDK (with LangFuse auto-tracing if configured)."""
-    response = _openai_client.chat.completions.create(
-        model=model,
-        messages=[
-            {"role": "system", "content": system},
-            {"role": "user", "content": user},
-        ],
-        temperature=0.1,
-    )
-    return response.choices[0].message.content.strip()
+def _claude_bin() -> str:
+    """Resolve the claude CLI path (same lookup as jira_publish.py)."""
+    cand = os.path.join(os.path.expanduser("~"), ".local", "bin", "claude")
+    if os.path.exists(cand):
+        return cand
+    cand = "/opt/homebrew/bin/claude"
+    if os.path.exists(cand):
+        return cand
+    return "claude"  # fall back to PATH lookup
 
 
-def _call_ollama_native(model: str, system: str, user: str, num_ctx: int) -> str:
-    """Call Ollama native /api/chat endpoint (supports num_ctx, no LangFuse tracing)."""
-    payload = json.dumps({
-        "model": model,
-        "messages": [
-            {"role": "system", "content": system},
-            {"role": "user", "content": user},
-        ],
-        "options": {"num_ctx": num_ctx, "temperature": 0.1},
-        "stream": False,
-    }).encode("utf-8")
+def call_claude(system: str, user: str, model: str = PARSER_MODEL, timeout: int = 120) -> str:
+    """Run a one-shot headless `claude -p` call and return the printed result.
 
-    req = urllib.request.Request(
-        OLLAMA_NATIVE_URL,
-        data=payload,
-        headers={"Content-Type": "application/json"},
-    )
-    with urllib.request.urlopen(req, timeout=60) as resp:
-        data = json.loads(resp.read().decode("utf-8"))
+    Mirrors the dispatch / jira_publish pattern: strip CLAUDE_* env vars to
+    avoid nested-session detection and keep the claude binary on PATH. Used for
+    the lightweight structured-output calls (task parse, cron parse, worker
+    route), which run on Claude Haiku.
 
-    return data["message"]["content"].strip()
-
-
-def _call_ollama_urllib(model: str, system: str, user: str) -> str:
-    """Call Ollama chat completions endpoint using stdlib urllib (no tracing)."""
-    payload = json.dumps({
-        "model": model,
-        "messages": [
-            {"role": "system", "content": system},
-            {"role": "user", "content": user},
-        ],
-        "temperature": 0.1,
-        "stream": False,
-    }).encode("utf-8")
-
-    req = urllib.request.Request(
-        OLLAMA_URL,
-        data=payload,
-        headers={"Content-Type": "application/json"},
-    )
-    with urllib.request.urlopen(req, timeout=60) as resp:
-        data = json.loads(resp.read().decode("utf-8"))
-
-    return data["choices"][0]["message"]["content"].strip()
-
-
-def call_ollama(model: str, system: str, user: str, num_ctx: int = None) -> str:
-    """Call Ollama — uses OpenAI SDK with LangFuse tracing when available.
-
-    Args:
-        num_ctx: Override context window size via native API. The OpenAI-compat
-                 endpoint (/v1/) ignores num_ctx, so we use /api/chat instead.
+    The call is a clean text completion, not an agent loop:
+    - `--system-prompt` replaces the default agentic system prompt with ours,
+    - `--tools ""` disables every tool,
+    - `--setting-sources ""` loads no settings, so no project/user hooks fire
+      (e.g. the SessionStart skill-usage injection) — the call stays hermetic,
+    - `--max-turns 2` (the CLI reports an error at 1 even for a single reply).
     """
-    if num_ctx is not None:
-        return _call_ollama_native(model, system, user, num_ctx)
-    if _USE_OPENAI:
-        return _call_ollama_openai(model, system, user)
-    return _call_ollama_urllib(model, system, user)
+    # Strip Claude env vars to prevent nested-session detection; ensure the
+    # claude binary's dirs are on PATH (important under cron / task_server).
+    env = {k: v for k, v in os.environ.items()
+           if not k.startswith(("CLAUDE", "CMUX_CLAUDE"))}
+    env["PATH"] = (
+        os.path.join(os.path.expanduser("~"), ".local", "bin")
+        + ":/opt/homebrew/bin"
+        + ":" + env.get("PATH", "/usr/bin:/bin")
+    )
+
+    cmd = [
+        _claude_bin(), "-p", user or system,
+        "--model", model,
+        "--max-turns", "2",
+        "--tools", "",
+        "--setting-sources", "",
+    ]
+    if user:
+        cmd += ["--system-prompt", system]
+
+    result = subprocess.run(
+        cmd,
+        capture_output=True,
+        text=True,
+        env=env,
+        timeout=timeout,
+    )
+    if result.returncode != 0:
+        raise RuntimeError(
+            f"claude CLI failed (exit {result.returncode}): {result.stderr.strip()[:300]}"
+        )
+    return result.stdout.strip()
 
 
 def extract_json(raw: str) -> dict:
     """Extract JSON from LLM response, handling markdown fences and think blocks."""
-    # Strip <think> blocks (qwen3 sometimes emits these)
+    # Strip <think> blocks defensively (some models wrap reasoning this way)
     raw = re.sub(r"<think>.*?</think>", "", raw, flags=re.DOTALL).strip()
 
     # Strip markdown code fences
@@ -205,35 +179,25 @@ def extract_json(raw: str) -> dict:
 
 
 def parse_task(text: str, source_meeting: str = None) -> dict:
-    """Send raw text to Ollama and get structured task fields back.
+    """Send raw text to Claude Haiku and get structured task fields back.
 
     Args:
         text: Raw text to parse into task fields.
         source_meeting: Optional meeting file path (for LangFuse tracing).
     """
     system = _get_system_prompt()
+    model = PARSER_MODEL
 
-    models = ["nemotron-3-nano:30b", "qwen3:30b-a3b"]
-    result = None
-    used_model = None
-    error_msg = None
-
-    for model in models:
-        try:
-            raw = call_ollama(model, system, text)
-            result = extract_json(raw)
-            used_model = model
-            break
-        except Exception as e:
-            error_msg = str(e)
-            if model == models[-1]:
-                # Trace the failure before raising
-                _trace_parse(text, source_meeting, None, model, str(e))
-                raise
-            continue
+    try:
+        raw = call_claude(system, text, model=model)
+        result = extract_json(raw)
+    except Exception as e:
+        # Trace the failure before raising
+        _trace_parse(text, source_meeting, None, model, str(e))
+        raise
 
     # Trace the successful parse
-    _trace_parse(text, source_meeting, result, used_model, None)
+    _trace_parse(text, source_meeting, result, model, None)
     return result
 
 
