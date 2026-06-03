@@ -118,7 +118,7 @@ Sort surfaces by **what they want from you** and by **cadence** (daily / weekly 
 
 **Weekly — the machine's report card:**
 
-3. **Quality** (today's Eval tab, redesigned) — universal scoring (artifacts *and* message drafts *and* approvals), judge-vs-human agreement %, graduations and demotions, the draft → critique → revise traces. Proposals are *born* here and *flow to Recommendations*; you adjudicate them on **Now**, not here.
+3. **Quality** (today's Eval tab, split out into its own tab) — a **read-only** trust dashboard organized by task-type. Calibration itself happens per-card on the board, not here; this is where you *understand* drift and watch types climb toward graduation. Full design below.
 
 **Rarely — config rooms:**
 
@@ -126,6 +126,34 @@ Sort surfaces by **what they want from you** and by **cadence** (daily / weekly 
 5. **Schedules** (today's Cron tab) — recurring job *definitions only*. Their runs live in Activity.
 
 No "In Flight" lane. No four-column scan. The whole thing reduces to a sentence: **the judge triages the machine pile down to what you're accountable for, a weekly audit plus message-drafting dissolves the people pile, and whatever's left the system proposes as one-tap actions at the top of your day.**
+
+---
+
+## The Quality tab
+
+Its own tab, split from **Engine**: Engine is *how the machine is wired* (workers, prompts, skills), Quality is *how well it's doing and whether it's learning*. The organizing unit is the **task-type**.
+
+**Calibration is a free byproduct of review, not a chore.** The judge scores everything; its verdict (score + per-dimension breakdown + one-line why) rides on the card. When you review an artifact you're accountable for, your normal reaction — good / needs-work, plus an optional note — *is* the calibration signal. Agreement is the delta between your read and the judge's. You never sit down to "calibrate"; it accrues from the review you already owe the artifact. This is why calibration is **per-card and real-time**, and why the Quality tab can stay read-only.
+
+**Three surfaces, one job each — no competing action surfaces:**
+
+| Surface | Role | What you do |
+|---|---|---|
+| **Card** (on the board) | calibration input, in context | react to the output (the free signal) |
+| **Quality tab** | trust dashboard, read-only | understand where and why it's drifting |
+| **Now / Recommendations** | control | accept / reject rubric and promotion changes |
+
+**What the Quality tab shows** (all read-only):
+- **Scoreboard / promotion board** — a row per task-type: score trend, judge↔you agreement %, phase (Shadow / Gated), and trajectory toward graduate-or-demote. Answers "can I trust it more or less than last week" at a glance.
+- **Drill into a type** — its score distribution; the **disagreement list** (the biggest judge-vs-you divergences, each linking back to the card where it happened). This is the "queue" — kept as *evidence behind the agreement %*, not a place you work.
+- **The judge itself** — current rubric version + history, the draft → critique → revise traces when inline gating fired, and any **pending rubric change** shown as status ("PRD-draft: v4→v5 proposed → act on Now").
+
+**Governance is accept/reject only.** You never hand-edit the judge prompt. When divergences cluster, the improvement loop drafts a rubric change (or a promotion / demotion) and it lands as a Recommendation on **Now**, with the diff. The judge improves through your accept/reject plus your passive per-card reactions — never through manual tuning.
+
+**Incremental path** (the tab need not wait for the judge):
+1. **Now** — aggregate the per-card reactions you already collect into the scoreboard-by-task-type. Pure read, immediate value.
+2. **+ judge lands** — add the judge score column → agreement % appears → the disagreement list lights up.
+3. **+ loop lands** — clustered divergences start drafting rubric-change Recommendations on Now.
 
 ---
 
