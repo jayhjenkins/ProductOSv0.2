@@ -130,7 +130,7 @@ Once 1–3 hold, organize workers into **mini squads by product area** (e.g., Ho
 The load-bearing recurring jobs (grows to ~20 over time):
 
 1. **Rocks metrics refresh** — weekly; Home WAU + Board Member login rate (reference workflow)
-2. **Human-queue audit** — weekly; finds human tasks an agent could own, messages an agent could draft, and stale tasks to kill → proposes each as a one-tap recommendation (`task-human-queue-audit`). The self-improvement loop pointed at task *routing*; keeps the human pile from forming. See `UX_VISION.md`. **Highest QoL priority.**
+2. **Human-queue audit** — weekly; finds human tasks an agent could own, messages an agent could draft, and stale tasks to kill → proposes each as a one-tap recommendation. The self-improvement loop pointed at task *routing*; keeps the human pile from forming. See `UX_VISION.md`. **Highest QoL priority.**
 3. **Meetings-to-backlog** — nightly; new transcripts → signals / PRD proposals
 4. **Shadow judge pass** — scores cards completed since last run *(note: per-card scoring is event-driven; this is the backfill/sweep)*
 5. **Feedback-loop improvement pass** — weekly; low scores → collab proposals

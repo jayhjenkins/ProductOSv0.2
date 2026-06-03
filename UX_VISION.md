@@ -86,7 +86,7 @@ Human and Waiting are one category: *things involving other people that aren't d
 1. **Convert.** Many "human" tasks — draft a follow-up, research X, summarize, write the request — were never human tasks. An agent owns them.
 2. **Assist the ones that stay human.** If it's "send a message," the agent **drafts it** (Teams / email via the M365 MCP already used for scheduling), the judge scores the draft, and your action collapses to *review + send*. Sending is a Tier-2 external action, so it routes through approval per the roadmap.
 
-A People-work card should rarely be a naked "Jay, go do this." It arrives with a draft attached and a one-tap send, or it has already been promoted to an agent task. The weekly **human-queue audit** (see `task-human-queue-audit`, cron #11) is the engine that keeps this pile from forming.
+A People-work card should rarely be a naked "Jay, go do this." It arrives with a draft attached and a one-tap send, or it has already been promoted to an agent task. The planned weekly **human-queue audit** (cron #2 in `ROADMAP.md`) is the engine that keeps this pile from forming.
 
 ---
 
@@ -132,7 +132,7 @@ No "In Flight" lane. No four-column scan. The whole thing reduces to a sentence:
 ## How this maps to the roadmap
 
 - **Shadow judge (#2)** → the attention router. Per-card score + why is the load-bearing UI element; the depth-sort of Review is the judge's first job.
-- **Self-improvement loop (#1)** → its output is Recommendations cards (diffs you accept). `task-human-queue-audit` is the same loop pointed at task *routing* instead of skills.
+- **Self-improvement loop (#1)** → its output is Recommendations cards (diffs you accept). The planned human-queue audit (cron #2) is the same loop pointed at task *routing* instead of skills.
 - **Capability tiers (#3)** → tier is a badge on every card and the gate for receipt-eligibility; Tier 2 always surfaces in Review/Decide. Promotion and demotion are Recommendations.
 - **Product-area squads (#6)** → the lens that makes "find things" work: slice Now / Activity / Quality by product area, customer, or source.
 
