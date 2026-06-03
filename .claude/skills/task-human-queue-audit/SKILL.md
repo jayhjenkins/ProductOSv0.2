@@ -10,7 +10,7 @@ allowed-tools: Read, Grep, Glob, Bash
 
 The human and waiting queues pile up because most tasks land there **by habit, not necessity**. This skill is the chief-of-staff weekly pass over that pile: it reads every open human/waiting task and proposes, for each, the cheapest honest disposition — **convert to an agent task**, **let an agent draft the message** so the human action collapses to *send*, **schedule a meeting**, or **kill/snooze** what has gone stale. Nothing auto-applies; the output is a digest of one-tap recommendations you accept or reject.
 
-This is the self-improvement loop (`ROADMAP.md` #1) pointed at task *routing* instead of skills, and the engine behind the **People** lane in `UX_VISION.md`. It is **cron #2** — highest quality-of-life priority.
+It is the same idea as the self-improvement loop, pointed at task *routing* rather than skills: the agent does its part autonomously and brings the human only the decisions.
 
 ## When to Use
 
@@ -83,9 +83,9 @@ When run as a cron-dispatched agent task:
 ./scripts/task.sh agent:complete TASK-NNNN --output "datasets/product/agent-output/human-queue-audit-{date}.md"
 ```
 
-## Scheduling (cron #2)
+## Scheduling
 
-Paste-ready text for the Cron tab (Haiku parses it into a job):
+Designed to run weekly as a cron-dispatched agent task. Paste-ready text for the Cron tab (Haiku parses it into a job):
 
 > Every Monday at 7:47 AM, audit my human and waiting task queues. Find tasks an agent could take over, messages an agent could draft so I just send, meetings I should schedule, and stale tasks to kill. Write a digest of recommendations to agent-output. Don't change anything — just propose. Tag it human-audit.
 
