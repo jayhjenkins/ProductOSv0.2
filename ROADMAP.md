@@ -130,17 +130,16 @@ Once 1–3 hold, organize workers into **mini squads by product area** (e.g., Ho
 The load-bearing recurring jobs (grows to ~20 over time):
 
 1. **Rocks metrics refresh** — weekly; Home WAU + Board Member login rate (reference workflow)
-2. **Meetings-to-backlog** — nightly; new transcripts → signals / PRD proposals
-3. **Shadow judge pass** — scores cards completed since last run *(note: per-card scoring is event-driven; this is the backfill/sweep)*
-4. **Feedback-loop improvement pass** — weekly; low scores → collab proposals
-5. **Judge calibration** — weekly; judge-vs-human agreement report, flags drift
-6. **qmd index refresh** — nightly (`qmd-nightly-update.sh`)
-7. **Task hygiene sweep** — stale `waiting` / `in-progress` → inbox
-8. **Customer signal digest** — weekly synthesis by customer, QBR-ready
-9. **Support / sales signal digest** — weekly; Zendesk + Gong via Databricks
-10. **Doc-sync reconciliation** — agent-output → Word / SharePoint, detect drift
-
-11. **Human-queue audit** — weekly; finds human tasks an agent could own, messages an agent could draft, and stale tasks to kill → proposes each as a one-tap recommendation (`task-human-queue-audit`). The self-improvement loop pointed at task *routing*; keeps the human pile from forming. See `UX_VISION.md`.
+2. **Human-queue audit** — weekly; finds human tasks an agent could own, messages an agent could draft, and stale tasks to kill → proposes each as a one-tap recommendation (`task-human-queue-audit`). The self-improvement loop pointed at task *routing*; keeps the human pile from forming. See `UX_VISION.md`. **Highest QoL priority.**
+3. **Meetings-to-backlog** — nightly; new transcripts → signals / PRD proposals
+4. **Shadow judge pass** — scores cards completed since last run *(note: per-card scoring is event-driven; this is the backfill/sweep)*
+5. **Feedback-loop improvement pass** — weekly; low scores → collab proposals
+6. **Judge calibration** — weekly; judge-vs-human agreement report, flags drift
+7. **qmd index refresh** — nightly (`qmd-nightly-update.sh`)
+8. **Task hygiene sweep** — stale `waiting` / `in-progress` → inbox
+9. **Customer signal digest** — weekly synthesis by customer, QBR-ready
+10. **Support / sales signal digest** — weekly; Zendesk + Gong via Databricks
+11. **Doc-sync reconciliation** — agent-output → Word / SharePoint, detect drift
 
 *Later (12–20): research expiry sweep, recruiting pipeline status, north-star weekly, cron self-audit, Jira draft reconciliation, competitive watch.*
 
