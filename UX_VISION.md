@@ -155,6 +155,19 @@ Its own tab, split from **Engine**: Engine is *how the machine is wired* (worker
 2. **+ judge lands** — add the judge score column → agreement % appears → the disagreement list lights up.
 3. **+ loop lands** — clustered divergences start drafting rubric-change Recommendations on Now.
 
+### Note to explore: GEPA as the optimizer behind the judge
+
+The judge's `(score, feedback)` output is structurally a **GEPA metric** — GEPA (reflective prompt evolution) is the one optimizer whose loop *consumes a textual feedback string*, not just a scalar, which is exactly the asset the judge already produces. Worth exploring as the engine that *drafts* the rubric-change and prompt-improvement Recommendations (you still accept/reject; never hand-tune).
+
+Sequence and gates if pursued:
+- **Classifiers first** (task / worker / cron parsing) — verifiable labels, existing golden datasets, cheap rollouts, no judge needed. Low-risk proving ground.
+- **The judge itself next** — optimize against human agreement (real ground truth, not a proxy). GEPA proposes the rubric diff; you accept/reject. Fits the governance decision exactly.
+- **Workers last, and gated** — only after the judge is calibrated (else the optimizer **Goodharts** it — evolves prompts that win the judge, which is only as good as the judge). Calibration crossing threshold is a hard prerequisite.
+
+**Credit assignment is the real challenge for end-to-end work.** A single score on "is the PRD good?" can't say *which stage* failed — context gathering, reasoning, or formatting. An optimizer mutates one specific prompt, so a blob score gives it nothing to aim at. Two ways to make it tractable: (a) design the **judge's dimensions to mirror the pipeline stages** (context / reasoning / evidence / format) so failure localizes, or (b) decompose the worker into separately-scored stages. Either way, score against **trace + output**, not output alone — the judge can't tell "never gathered the evidence" from "gathered and ignored it" without the trace. The stage-aware judge is the cheaper path and is the same judge work already planned.
+
+*Optimization runs offline/batch (a training-style job, e.g. DSPy pointed at the Anthropic API) — separate from the headless-CLI runtime dispatch. Winning prompts land in LangFuse as new versions; accept/reject promotes them to `production`. Caveat: GEPA is recent; verify the current `dspy.GEPA` API before building.*
+
 ---
 
 ## How this maps to the roadmap
