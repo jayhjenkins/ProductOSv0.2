@@ -178,6 +178,14 @@ Queues, statuses (`open / in-progress / blocked / done / cancelled`), and `agent
 
 ---
 
+## Surfaces not yet designed
+
+The reframe and the Quality tab are designed; these surfaces still need a design pass.
+
+- **The Recommendations feed** — the load-bearing chief-of-staff surface. Several roadmap pieces empty into it (hygiene, judge flags, rubric changes, promotions/demotions, the human-queue audit). Needs: the card shape for a proposal, how one-tap accept/reject flows, how proposals from different sources are ranked/grouped, and what an empty feed looks like.
+- **The People lane** — the draft-the-message interaction (agent drafts via M365, you review + send), and how a human→agent conversion presents on the card. Ties to "Where People drafts route" below.
+- **Tier / promotion visibility** — how blast-radius badges (Tier 0/1/2) render across cards, how the promotion ladder shows a task-type climbing or being auto-demoted, and where the "graduate this?" moment surfaces.
+
 ## Open questions
 
 - **Recommendation density** — one rollup digest card per audit, or individual one-tap cards per item? Leaning: digest by default, spawn individual cards only for high-confidence conversions.
