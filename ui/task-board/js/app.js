@@ -5,6 +5,7 @@ function switchTab(tabName) {
   document.querySelectorAll('.topbar-tab').forEach(el => el.classList.remove('active'));
   document.getElementById(`tab-${tabName}`).classList.add('active');
   document.querySelector(`.topbar-tab[data-tab="${tabName}"]`).classList.add('active');
+  if (tabName === 'activity') renderActivity();
   if (tabName === 'engine') fetchPrompts();
   if (tabName === 'schedules') fetchCronJobs();
 }
