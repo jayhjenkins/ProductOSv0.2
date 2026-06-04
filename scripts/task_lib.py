@@ -439,6 +439,11 @@ def list_tasks(queue=None, status=None, domain=None, priority=None,
                 "waiting_expected": fm.get("waiting_expected"),
                 "source_meeting": fm.get("source_meeting"),
                 "task_type": fm.get("task_type"),
+                "judge_score": fm.get("judge_score"),
+                "judge_why": fm.get("judge_why"),
+                "judge_dimensions": fm.get("judge_dimensions"),
+                "judge_rubric_version": fm.get("judge_rubric_version"),
+                "judge_scored_at": fm.get("judge_scored_at"),
                 "file": os.path.relpath(filepath, TASKS_DIR),
             })
 
@@ -484,6 +489,12 @@ def list_archived(limit=200):
                 "sharepoint_path": fm.get("sharepoint_path"),
                 "sharepoint_url": fm.get("sharepoint_url"),
                 "source_meeting": fm.get("source_meeting"),
+                "task_type": fm.get("task_type"),
+                "judge_score": fm.get("judge_score"),
+                "judge_why": fm.get("judge_why"),
+                "judge_dimensions": fm.get("judge_dimensions"),
+                "judge_rubric_version": fm.get("judge_rubric_version"),
+                "judge_scored_at": fm.get("judge_scored_at"),
             })
 
     # Sort by updated descending (newest first); missing/None values sort last

@@ -62,8 +62,8 @@ Return ONLY valid JSON with these fields:
 
 Queue rules:
 - "agent": Work that produces a written artifact (memo, PRD, research, analysis, summary, draft). The AI agent can do this autonomously.
-- "collab": Decisions needing agent prep + human judgment, OR scheduling meetings. For meetings, set task_type to "schedule-meeting" and fill meeting_* fields.
-- "human": Only when the human must physically do it (send a message, have a conversation, get access to something, make a phone call).
+- "collab": Decisions needing agent prep + human judgment; scheduling a meeting; OR sending a message to a person. Communicative tasks — "talk to / speak with / share with / forward to / loop in / reach out to / ping [person]" — are MESSAGES: set task_type to "send-message" and capture the recipient(s) and the gist in the title/description. For an explicitly heavier engagement ("meeting", "sync", "working session", "demo", "call to walk through"), set task_type to "schedule-meeting" and fill meeting_* fields. When ambiguous between a message and a meeting, prefer the message (the lighter action).
+- "human": Only when the human must physically do something only they can do (get access to something, make a phone call, an in-person action). Note: drafting/sending a message is a "collab" send-message task, not human.
 - "waiting": When waiting on someone else to deliver something. Set waiting_on to the person/team name.
 
 Priority rules:
@@ -72,11 +72,15 @@ Priority rules:
 - "medium": Standard work, 1-2 weeks
 - "low": Nice-to-have, no deadline
 
-For scheduling meetings:
+For scheduling meetings (the heavier, explicitly-framed case — "meeting", "sync", "working session", "demo", "call to walk through"; a lighter "talk to / share / forward" is a send-message, not a meeting):
 - Set queue to "collab", task_type to "schedule-meeting"
 - Extract attendee names into meeting_attendees (comma-separated)
 - Set meeting_duration (minutes, default 30)
 - Write a calendar-appropriate meeting_title and meeting_description
+
+For sending a message (the lighter, communicative case — "talk to / share with / forward to / loop in / reach out to [person]"):
+- Set queue to "collab", task_type to "send-message"
+- Capture the recipient(s) and what to convey in the title/description (no meeting_* fields)
 
 Only include fields that are clearly indicated. Use null for anything not mentioned.
 Only set "due" if a specific date is mentioned. Today is {today}.

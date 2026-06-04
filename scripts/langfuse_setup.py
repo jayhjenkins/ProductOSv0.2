@@ -241,6 +241,31 @@ def register_worker_router(langfuse, dry_run=False):
             print(f"    Error: {e}")
 
 
+def register_judge_rubric(langfuse, dry_run=False):
+    """Register the per-deliverable judge rubrics (document / message / meeting)."""
+    from judge import RUBRICS
+
+    for kind, (name, text) in RUBRICS.items():
+        print(f"  {'[DRY-RUN] ' if dry_run else ''}Registering: {name} ({kind})")
+        if dry_run:
+            print(f"    Length: {len(text)} chars")
+            continue
+        try:
+            langfuse.create_prompt(
+                name=name,
+                prompt=text,
+                config={"model": "claude-opus-4-8", "temperature": 0.0, "kind": kind},
+                labels=["production"],
+                type="text",
+            )
+            print(f"    Registered (production)")
+        except Exception as e:
+            if "already exists" in str(e).lower() or "409" in str(e):
+                print(f"    Already exists (skipped)")
+            else:
+                print(f"    Error: {e}")
+
+
 def main():
     parser = argparse.ArgumentParser(description="Register PM-OS prompts in LangFuse")
     parser.add_argument("--dry-run", action="store_true", help="Show what would be registered")
@@ -248,9 +273,10 @@ def main():
     parser.add_argument("--skills", action="store_true", help="Only register skill prompts")
     parser.add_argument("--parser", action="store_true", help="Only register task-parser prompt")
     parser.add_argument("--cron", action="store_true", help="Only register cron-parser prompt")
+    parser.add_argument("--judge", action="store_true", help="Only register judge-rubric prompt")
     args = parser.parse_args()
 
-    register_all = not (args.workers or args.skills or args.parser or args.cron)
+    register_all = not (args.workers or args.skills or args.parser or args.cron or args.judge)
 
     if not args.dry_run:
         from langfuse_client import get_langfuse
@@ -281,6 +307,10 @@ def main():
     if register_all or args.cron:
         print("\n[Cron Parser]")
         register_cron_parser(langfuse, dry_run=args.dry_run)
+
+    if register_all or args.judge:
+        print("\n[Judge Rubric]")
+        register_judge_rubric(langfuse, dry_run=args.dry_run)
 
     if not args.dry_run and langfuse:
         from langfuse_client import flush

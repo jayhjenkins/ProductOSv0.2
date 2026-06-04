@@ -235,6 +235,29 @@ def cmd_agent_complete(args):
     print(f"Agent completed {args.task_id} — awaiting human review")
     if args.output:
         print(f"  Output: {args.output}")
+        _spawn_judge(args.task_id)
+
+
+def _spawn_judge(task_id):
+    """Fire the shadow judge detached so it scores the artifact without blocking
+    or affecting completion. Strictly additive — any failure here is swallowed."""
+    try:
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        pm_os_dir = os.path.dirname(script_dir)
+        log_dir = os.path.join(pm_os_dir, "logs")
+        os.makedirs(log_dir, exist_ok=True)
+        log_path = os.path.join(log_dir, f"judge-{task_id}.log")
+        logf = open(log_path, "a")
+        subprocess.Popen(
+            [sys.executable, os.path.join(script_dir, "judge.py"), "--task", task_id],
+            cwd=pm_os_dir,
+            stdout=logf,
+            stderr=logf,
+            start_new_session=True,
+        )
+        print(f"  Judge dispatched (log: logs/judge-{task_id}.log)")
+    except Exception as e:
+        print(f"  (judge not dispatched: {e})")
 
 
 def cmd_agent_fail(args):

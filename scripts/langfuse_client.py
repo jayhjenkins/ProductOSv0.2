@@ -111,6 +111,58 @@ def _rest_api(path, body):
         return None
 
 
+def _rest_get(path, params=None):
+    """GET the LangFuse public REST API. Returns parsed JSON or None."""
+    if not _is_enabled():
+        return None
+    host = os.environ.get("LANGFUSE_HOST", "http://localhost:3000")
+    pk = os.environ.get("LANGFUSE_PUBLIC_KEY", "")
+    sk = os.environ.get("LANGFUSE_SECRET_KEY", "")
+    auth = base64.b64encode(f"{pk}:{sk}".encode()).decode()
+    url = f"{host}/api/public{path}"
+    if params:
+        import urllib.parse
+        qs = urllib.parse.urlencode({k: v for k, v in params.items() if v is not None})
+        if qs:
+            url += "?" + qs
+    req = urllib.request.Request(url, headers={"Authorization": f"Basic {auth}"}, method="GET")
+    try:
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            return json.loads(resp.read().decode("utf-8"))
+    except Exception:
+        return None
+
+
+def list_scores(trace_ids=None, max_pages=20):
+    """Return scores via the REST API, newest-first.
+
+    The Python SDK's score read surface (`lf.api.score.list`) is broken on the
+    installed LangFuse version (`'LangfuseAPI' object has no attribute 'score'`),
+    so we read scores over REST — the same stable path used for writes. The
+    /scores endpoint ignores a traceId query filter, so when `trace_ids` is given
+    we page and filter client-side.
+
+    Each score dict: {name, value, comment, traceId, dataType, timestamp}.
+    """
+    if not _is_enabled():
+        return []
+    want = set(trace_ids) if trace_ids is not None else None
+    out = []
+    page = 1
+    while page <= max_pages:
+        batch = _rest_get("/scores", {"limit": 100, "page": page})
+        if not batch:
+            break
+        for s in batch.get("data", []):
+            if want is None or s.get("traceId") in want:
+                out.append(s)
+        total_pages = batch.get("meta", {}).get("totalPages", page)
+        if page >= total_pages:
+            break
+        page += 1
+    return out
+
+
 # ─── Tracing ─────────────────────────────────────────────────────────────────
 
 def create_trace(name, session_id=None, metadata=None, tags=None, input_data=None, output_data=None):

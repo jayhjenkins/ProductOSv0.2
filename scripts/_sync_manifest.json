@@ -812,9 +812,9 @@
   "datasets/product/agent-output/TASK-0163-jira-draft.md": {
     "local_path": "/Users/jayjenkins/pm-os/datasets/product/agent-output/TASK-0163-jira-draft.md",
     "remote_path": "/Users/jayjenkins/Library/CloudStorage/OneDrive-Vantaca,LLC/PM-OS/product/agent-output/TASK-0163-jira-draft.docx",
-    "local_hash": "7274c680132f1d477b103d47e6b59cf54eb57cc8f2888411b30264adb7f119f5",
-    "remote_hash": "da216f8654d2ba7bd812d4cb77d4f35dbe3911ad140c63956faab62c2d5fe4e1",
-    "last_sync": "2026-04-03T19:07:16Z",
+    "local_hash": "a605132aef12328085356385bbca025d04f76431a8fa79f809b1a4a536eeaa26",
+    "remote_hash": "9b1bac9e05b7f1d5516e39a4f57e47308255ae0538d26a72995e7a519b51e19f",
+    "last_sync": "2026-05-12T20:15:35Z",
     "direction": "local->remote",
     "status": "synced"
   },
@@ -1253,9 +1253,333 @@
   "datasets/product/agent-output/2026-05-07-perkspot-pay-exclusive-vs-home-wide-tradeoff.md": {
     "local_path": "/Users/jayjenkins/pm-os/datasets/product/agent-output/2026-05-07-perkspot-pay-exclusive-vs-home-wide-tradeoff.md",
     "remote_path": "/Users/jayjenkins/Library/CloudStorage/OneDrive-Vantaca,LLC/PM-OS/product/agent-output/2026-05-07-perkspot-pay-exclusive-vs-home-wide-tradeoff.docx",
-    "local_hash": "3ec62fadc1544dced82299507ad849ba46d027f5b55e017bf801ee33e1930b0d",
-    "remote_hash": "a376168ec7d00201eeeb04776d863ad43ee43378bb8b2b9ede4b431eb0d45388",
-    "last_sync": "2026-05-07T19:48:28Z",
+    "local_hash": "05b0d64077ac94bf017230b80f25b38abbc4f564ed7f6dd35b30b8e43cbb9303",
+    "remote_hash": "302ab0594c19e9c4817e10aeb4c7391c01d8f361f878aa3662f62646041353d5",
+    "last_sync": "2026-05-08T19:49:33Z",
+    "direction": "local->remote",
+    "status": "synced"
+  },
+  "datasets/product/agent-output/2026-05-07_elt-preread-may11_voting-board-comms-hub.md": {
+    "local_path": "/Users/jayjenkins/pm-os/datasets/product/agent-output/2026-05-07_elt-preread-may11_voting-board-comms-hub.md",
+    "remote_path": "/Users/jayjenkins/Library/CloudStorage/OneDrive-Vantaca,LLC/PM-OS/product/agent-output/2026-05-07_elt-preread-may11_voting-board-comms-hub.docx",
+    "local_hash": "5abb5b6691bca6a1d094a235cf311c84b0d1c0e36caa436af94840108c09b57b",
+    "remote_hash": "f3151edf9b21218e975971348700019beeecb08b921ecebcbaed2aa28c3dad44",
+    "last_sync": "2026-05-07T20:35:40Z",
+    "direction": "local->remote",
+    "status": "synced"
+  },
+  "datasets/product/agent-output/2026-05-08_webchat-metrics-framework-memo.md": {
+    "local_path": "/Users/jayjenkins/pm-os/datasets/product/agent-output/2026-05-08_webchat-metrics-framework-memo.md",
+    "remote_path": "/Users/jayjenkins/Library/CloudStorage/OneDrive-Vantaca,LLC/PM-OS/product/agent-output/2026-05-08_webchat-metrics-framework-memo.docx",
+    "local_hash": "2d855dd048fc3fe5ade7d1ba0b8f98b63633cd62f6d3bf4aa74a7d8290dcd63e",
+    "remote_hash": "f69a7a550543a069a4d8e1bf0a0f169218fbd5b93800483450cb17b5b13c9edf",
+    "last_sync": "2026-05-08T19:34:03Z",
+    "direction": "local->remote",
+    "status": "synced"
+  },
+  "datasets/product/agent-output/webchat-pendo-engagement-data-availability.md": {
+    "local_path": "/Users/jayjenkins/pm-os/datasets/product/agent-output/webchat-pendo-engagement-data-availability.md",
+    "remote_path": "/Users/jayjenkins/Library/CloudStorage/OneDrive-Vantaca,LLC/PM-OS/product/agent-output/webchat-pendo-engagement-data-availability.docx",
+    "local_hash": "66ba6083ec19e00006abf0cf32fbea7f16c42f9076f972e43ae8713c006de813",
+    "remote_hash": "449de215a6ec2b1cfc23818ce77184b699387c12ef02f4e2780663f48a4c3c43",
+    "last_sync": "2026-05-08T19:37:26Z",
+    "direction": "local->remote",
+    "status": "synced"
+  },
+  "datasets/product/agent-output/2026-05-12-voting-revenue-and-quorum-effectiveness-elt-followup.md": {
+    "local_path": "/Users/jayjenkins/pm-os/datasets/product/agent-output/2026-05-12-voting-revenue-and-quorum-effectiveness-elt-followup.md",
+    "remote_path": "/Users/jayjenkins/Library/CloudStorage/OneDrive-Vantaca,LLC/PM-OS/product/agent-output/2026-05-12-voting-revenue-and-quorum-effectiveness-elt-followup.docx",
+    "local_hash": "4cc422cdd00476dda0f29fbb352a19c09081434dbd74e86bbe1905bb15353411",
+    "remote_hash": "b7a91e8edf24c3cb22915a7cb38045cf76e233283c97efb42358126d25fe77cf",
+    "last_sync": "2026-05-13T18:54:33Z",
+    "direction": "local->remote",
+    "status": "synced"
+  },
+  "datasets/product/agent-output/2026-05-12_resident-experience-product-review-preread_native-voting-partner-vs-end-to-end.md": {
+    "local_path": "/Users/jayjenkins/pm-os/datasets/product/agent-output/2026-05-12_resident-experience-product-review-preread_native-voting-partner-vs-end-to-end.md",
+    "remote_path": "/Users/jayjenkins/Library/CloudStorage/OneDrive-Vantaca,LLC/PM-OS/product/agent-output/2026-05-12_resident-experience-product-review-preread_native-voting-partner-vs-end-to-end.docx",
+    "local_hash": "12431701f5e6142767a88f744c4dce703c888ed8b12d7360342b7f3c5532d26d",
+    "remote_hash": "bcd99e4da52dadc3450ce4ab37f729de49fbf30f0b979e9268eff2d0f3ce424d",
+    "last_sync": "2026-05-18T16:25:35Z",
+    "direction": "local->remote",
+    "status": "synced"
+  },
+  "datasets/product/agent-output/2026-05-12_cab-2026-04-27_questions-objections-ideas-use-cases-motivations.md": {
+    "local_path": "/Users/jayjenkins/pm-os/datasets/product/agent-output/2026-05-12_cab-2026-04-27_questions-objections-ideas-use-cases-motivations.md",
+    "remote_path": "/Users/jayjenkins/Library/CloudStorage/OneDrive-Vantaca,LLC/PM-OS/product/agent-output/2026-05-12_cab-2026-04-27_questions-objections-ideas-use-cases-motivations.docx",
+    "local_hash": "5f83f8b2bfd29a0ab232321bfb1090b569c16064b00e9d15252cbab4710517fd",
+    "remote_hash": "88904ed56b8fb015a0271e34efedc5d4efdaae3bbb91943f201a6023fd946102",
+    "last_sync": "2026-05-12T20:11:35Z",
+    "direction": "local->remote",
+    "status": "synced"
+  },
+  "datasets/product/agent-output/2026-05-12_vnt-43060-comparison-and-merge.md": {
+    "local_path": "/Users/jayjenkins/pm-os/datasets/product/agent-output/2026-05-12_vnt-43060-comparison-and-merge.md",
+    "remote_path": "/Users/jayjenkins/Library/CloudStorage/OneDrive-Vantaca,LLC/PM-OS/product/agent-output/2026-05-12_vnt-43060-comparison-and-merge.docx",
+    "local_hash": "4c903806312c047cbd4e1e11bda61d09fc687c11c2915e0653ab832b4083ead7",
+    "remote_hash": "374fe229ac4e6764e02f411d6a21b8463b6cc06adbb6f38f9703cfec09c5730a",
+    "last_sync": "2026-05-12T20:36:32Z",
+    "direction": "local->remote",
+    "status": "synced"
+  },
+  "datasets/product/agent-output/2026-05-13_agent-activated-definitions.md": {
+    "local_path": "/Users/jayjenkins/pm-os/datasets/product/agent-output/2026-05-13_agent-activated-definitions.md",
+    "remote_path": "/Users/jayjenkins/Library/CloudStorage/OneDrive-Vantaca,LLC/PM-OS/product/agent-output/2026-05-13_agent-activated-definitions.docx",
+    "local_hash": "2a926fe5eb9e6761370afbaf4a1c89417c6e3f4f2765f640d7005deb8cc48164",
+    "remote_hash": "6c6beee802a2f3f8356e6453ed4df06e96b2795d7cba5cd307bc54cf5c26a99c",
+    "last_sync": "2026-05-14T14:17:26Z",
+    "direction": "local->remote",
+    "status": "synced"
+  },
+  "datasets/product/agent-output/2026-05-14-cai-2027-agentic-home-reprioritization.md": {
+    "local_path": "/Users/jayjenkins/pm-os/datasets/product/agent-output/2026-05-14-cai-2027-agentic-home-reprioritization.md",
+    "remote_path": "/Users/jayjenkins/Library/CloudStorage/OneDrive-Vantaca,LLC/PM-OS/product/agent-output/2026-05-14-cai-2027-agentic-home-reprioritization.docx",
+    "local_hash": "5dfa05885e8ff3ef2e256d24dec14274462a64e7797f868fb51665a7b67ae0b8",
+    "remote_hash": "4db2c2e4624bef399b91fbfcc0075a4b376ebc93780a736edddb842e61a51b84",
+    "last_sync": "2026-05-14T14:33:27Z",
+    "direction": "local->remote",
+    "status": "synced"
+  },
+  "datasets/product/prds/2026/PRD_community-feed-manual.md": {
+    "local_path": "/Users/jayjenkins/pm-os/datasets/product/prds/2026/PRD_community-feed-manual.md",
+    "remote_path": "/Users/jayjenkins/Library/CloudStorage/OneDrive-Vantaca,LLC/PM-OS/product/prds/2026/PRD_community-feed-manual.docx",
+    "local_hash": "34dcb845aa2cf63c34bfdb17bd10b5631a3ed6096b9cf1df80edce3ac8dc01b7",
+    "remote_hash": "529bcd906347b24baf51c4ee695f597432d334d2fa0bde7251d8ec086333ef24",
+    "last_sync": "2026-05-15T17:36:55Z",
+    "direction": "local->remote",
+    "status": "synced"
+  },
+  "datasets/product/agent-output/2026-05-15_embedded-login-short-code-scoping-memo.md": {
+    "local_path": "/Users/jayjenkins/pm-os/datasets/product/agent-output/2026-05-15_embedded-login-short-code-scoping-memo.md",
+    "remote_path": "/Users/jayjenkins/Library/CloudStorage/OneDrive-Vantaca,LLC/PM-OS/product/agent-output/2026-05-15_embedded-login-short-code-scoping-memo.docx",
+    "local_hash": "098bd23ebdf5c0ea80b6d42d2377ecdaf14236fc3bcaf6b7bde7b0bc63215b50",
+    "remote_hash": "7ab340e100bf1c43bb2843efbc214f315699b0dccff64184cb90a207dd8f2b4b",
+    "last_sync": "2026-05-15T18:36:18Z",
+    "direction": "local->remote",
+    "status": "synced"
+  },
+  "datasets/product/prds/2026/PRD_resident-ftue-redesign.md": {
+    "local_path": "/Users/jayjenkins/pm-os/datasets/product/prds/2026/PRD_resident-ftue-redesign.md",
+    "remote_path": "/Users/jayjenkins/Library/CloudStorage/OneDrive-Vantaca,LLC/PM-OS/product/prds/2026/PRD_resident-ftue-redesign.docx",
+    "local_hash": "b059581ea90967cfc37a69cb581a977bee087194dbeebab50d2041141a509b73",
+    "remote_hash": "10925fdc4a632c61d83a4f2eda6d78d986f5d8770242602d42318d9c43cc8150",
+    "last_sync": "2026-05-15T21:35:55Z",
+    "direction": "local->remote",
+    "status": "synced"
+  },
+  "datasets/product/agent-output/2026-05-15_home-portal-support-escalation-cascade-strawman.md": {
+    "local_path": "/Users/jayjenkins/pm-os/datasets/product/agent-output/2026-05-15_home-portal-support-escalation-cascade-strawman.md",
+    "remote_path": "/Users/jayjenkins/Library/CloudStorage/OneDrive-Vantaca,LLC/PM-OS/product/agent-output/2026-05-15_home-portal-support-escalation-cascade-strawman.docx",
+    "local_hash": "136a5cd8dac6159b40903be52d04b6613cb7d89e35f69101606ba9842c95820f",
+    "remote_hash": "f3560a4e295512fcd415b6fa7e32d5486abce3e960b8c0e5265a2542cb8b46da",
+    "last_sync": "2026-05-15T21:38:27Z",
+    "direction": "local->remote",
+    "status": "synced"
+  },
+  "datasets/product/agent-output/2026-05-18_board-task-majority-voting-proposal.md": {
+    "local_path": "/Users/jayjenkins/pm-os/datasets/product/agent-output/2026-05-18_board-task-majority-voting-proposal.md",
+    "remote_path": "/Users/jayjenkins/Library/CloudStorage/OneDrive-Vantaca,LLC/PM-OS/product/agent-output/2026-05-18_board-task-majority-voting-proposal.docx",
+    "local_hash": "bfacbd603fa3543a3427b39256ac33593e2f67515b9f654ef4dc09b99b276671",
+    "remote_hash": "27475d93164839070f40dba47714678f6579d92bb7bb3a86da5b7fd81e0e252f",
+    "last_sync": "2026-05-18T15:33:25Z",
+    "direction": "local->remote",
+    "status": "synced"
+  },
+  "datasets/strategy/memos/2026/05-18_voting-product-direction.md": {
+    "local_path": "/Users/jayjenkins/pm-os/datasets/strategy/memos/2026/05-18_voting-product-direction.md",
+    "remote_path": "/Users/jayjenkins/Library/CloudStorage/OneDrive-Vantaca,LLC/PM-OS/strategy/memos/2026/05-18_voting-product-direction.docx",
+    "local_hash": "1044890572fa758b4e429b19ae29563d87e4513c1082ee98311baf9b4162a7b9",
+    "remote_hash": "1f16f2ff4b3ce235bff9182b51ac63934789157972104ed7485a0545839356f1",
+    "last_sync": "2026-05-18T21:33:12Z",
+    "direction": "local->remote",
+    "status": "synced"
+  },
+  "datasets/product/agent-output/2026-05-18-new-look-and-feel-rollout-metrics-slide.md": {
+    "local_path": "/Users/jayjenkins/pm-os/datasets/product/agent-output/2026-05-18-new-look-and-feel-rollout-metrics-slide.md",
+    "remote_path": "/Users/jayjenkins/Library/CloudStorage/OneDrive-Vantaca,LLC/PM-OS/product/agent-output/2026-05-18-new-look-and-feel-rollout-metrics-slide.docx",
+    "local_hash": "cb6f895367b5210149deec9d62d572b9206ac5a1ed5868ce765304673e353a21",
+    "remote_hash": "6e1cf9760241825ffcbfbc31fa32bd0e570a3b66aed7a37f55fc3b34806fa743",
+    "last_sync": "2026-05-18T21:36:55Z",
+    "direction": "local->remote",
+    "status": "synced"
+  },
+  "datasets/product/agent-output/2026-05-19_home-squad-intake-process-proposal.md": {
+    "local_path": "/Users/jayjenkins/pm-os/datasets/product/agent-output/2026-05-19_home-squad-intake-process-proposal.md",
+    "remote_path": "/Users/jayjenkins/Library/CloudStorage/OneDrive-Vantaca,LLC/PM-OS/product/agent-output/2026-05-19_home-squad-intake-process-proposal.docx",
+    "local_hash": "6282cde37e7764d1ccfc16f404b2fba63806c3e8f3aad406f1cdc64bbeb73030",
+    "remote_hash": "c9e9e2de086fbb245af592fc246c071ba154059e5276924a1fc51cbb08f333bb",
+    "last_sync": "2026-05-19T15:36:38Z",
+    "direction": "local->remote",
+    "status": "synced"
+  },
+  "datasets/product/agent-output/2026-05-19-communication-hub-scoping-and-tandem-roadmap.md": {
+    "local_path": "/Users/jayjenkins/pm-os/datasets/product/agent-output/2026-05-19-communication-hub-scoping-and-tandem-roadmap.md",
+    "remote_path": "/Users/jayjenkins/Library/CloudStorage/OneDrive-Vantaca,LLC/PM-OS/product/agent-output/2026-05-19-communication-hub-scoping-and-tandem-roadmap.docx",
+    "local_hash": "4d8a58db08206b16fc6d14e4e70e1ca04c45fbb8cfb8489147fca8084ea6c953",
+    "remote_hash": "93a912babdb4b0b4de48b0013255279a0333f42ee5eee784525679aaffca34b6",
+    "last_sync": "2026-05-19T18:33:57Z",
+    "direction": "local->remote",
+    "status": "synced"
+  },
+  "datasets/product/packages/2026/perkspot-offers/PRD_perkspot-offers.md": {
+    "local_path": "/Users/jayjenkins/pm-os/datasets/product/packages/2026/perkspot-offers/PRD_perkspot-offers.md",
+    "remote_path": "/Users/jayjenkins/Library/CloudStorage/OneDrive-Vantaca,LLC/PM-OS/product/packages/2026/perkspot-offers/PRD_perkspot-offers.docx",
+    "local_hash": "7c781d9c3142ebfcae1a87fca277d783ae43f83beab831dad3ff425cbed03b9c",
+    "remote_hash": "ad6be43c651e53b93433c8f999d713ca0f716e9d231409abf4cdcbfc1d104f14",
+    "last_sync": "2026-05-19T18:40:43Z",
+    "direction": "local->remote",
+    "status": "synced"
+  },
+  "datasets/product/agent-output/2026-05-20_aidlc-process-themes.md": {
+    "local_path": "/Users/jayjenkins/pm-os/datasets/product/agent-output/2026-05-20_aidlc-process-themes.md",
+    "remote_path": "/Users/jayjenkins/Library/CloudStorage/OneDrive-Vantaca,LLC/PM-OS/product/agent-output/2026-05-20_aidlc-process-themes.docx",
+    "local_hash": "3694dd3ec4f0acd0a5f0e5eaa94bc375dc72000bef18c74ff8cb1d3840d1fca1",
+    "remote_hash": "6461aa33d932fcaabcf3134113c9582922cb386636d37a41f48e8837f121c704",
+    "last_sync": "2026-05-20T21:05:25Z",
+    "direction": "local->remote",
+    "status": "synced"
+  },
+  "datasets/product/agent-output/2026-05-20_cross-mc-identity-platform-scoping-memo.md": {
+    "local_path": "/Users/jayjenkins/pm-os/datasets/product/agent-output/2026-05-20_cross-mc-identity-platform-scoping-memo.md",
+    "remote_path": "/Users/jayjenkins/Library/CloudStorage/OneDrive-Vantaca,LLC/PM-OS/product/agent-output/2026-05-20_cross-mc-identity-platform-scoping-memo.docx",
+    "local_hash": "33682a08d486be4c5a7ffd19cd4dedd1553c568f8339d5aedf1d75b96bc3946b",
+    "remote_hash": "c10d997f7358c659ba18d5e5221ba0b58d6245323ff8893a5d42071abac4e40c",
+    "last_sync": "2026-05-20T15:42:42Z",
+    "direction": "local->remote",
+    "status": "synced"
+  },
+  "datasets/product/agent-output/2026-05-20_cross-role-qa-routing-strawman.md": {
+    "local_path": "/Users/jayjenkins/pm-os/datasets/product/agent-output/2026-05-20_cross-role-qa-routing-strawman.md",
+    "remote_path": "/Users/jayjenkins/Library/CloudStorage/OneDrive-Vantaca,LLC/PM-OS/product/agent-output/2026-05-20_cross-role-qa-routing-strawman.docx",
+    "local_hash": "78dd65186039b55f5a943458db54b46ca37b4eddc254587938386e979c5f6f56",
+    "remote_hash": "e8268a84d3c54c63e3c9722a8efcd8875baf88f811d93339edeedd81cffb3e5c",
+    "last_sync": "2026-05-20T20:39:16Z",
+    "direction": "local->remote",
+    "status": "synced"
+  },
+  "datasets/product/agent-output/2026-05-21-cai-prospect-demo-click-path-and-talk-track-for-mike.md": {
+    "local_path": "/Users/jayjenkins/pm-os/datasets/product/agent-output/2026-05-21-cai-prospect-demo-click-path-and-talk-track-for-mike.md",
+    "remote_path": "/Users/jayjenkins/Library/CloudStorage/OneDrive-Vantaca,LLC/PM-OS/product/agent-output/2026-05-21-cai-prospect-demo-click-path-and-talk-track-for-mike.docx",
+    "local_hash": "5894d67fc1bbf8dfb5287d3ae1022437fc8f1d04f6838db7adffbad6d29c5782",
+    "remote_hash": "bd40558f16a6d30dd400d28d62d912b7697839900e91dec6005c08e01f621cce",
+    "last_sync": "2026-05-21T19:34:54Z",
+    "direction": "local->remote",
+    "status": "synced"
+  },
+  "datasets/product/agent-output/2026-05-21_product-enhancement-feedback-form-workflow-status-memo.md": {
+    "local_path": "/Users/jayjenkins/pm-os/datasets/product/agent-output/2026-05-21_product-enhancement-feedback-form-workflow-status-memo.md",
+    "remote_path": "/Users/jayjenkins/Library/CloudStorage/OneDrive-Vantaca,LLC/PM-OS/product/agent-output/2026-05-21_product-enhancement-feedback-form-workflow-status-memo.docx",
+    "local_hash": "541ca96fd414e3b1c92298093ec55b179651cbdac14a15c8d7f77e3433be7c20",
+    "remote_hash": "8df481c53e3a053a8d2ca041c91af4a672f8b23deaf1a463fd31fffd43252a0d",
+    "last_sync": "2026-05-21T19:38:47Z",
+    "direction": "local->remote",
+    "status": "synced"
+  },
+  "datasets/product/agent-output/2026-05-22_vision-training-day-home-session-pitches.md": {
+    "local_path": "/Users/jayjenkins/pm-os/datasets/product/agent-output/2026-05-22_vision-training-day-home-session-pitches.md",
+    "remote_path": "/Users/jayjenkins/Library/CloudStorage/OneDrive-Vantaca,LLC/PM-OS/product/agent-output/2026-05-22_vision-training-day-home-session-pitches.docx",
+    "local_hash": "0ec252e8bcbd0bda180bf34ea2d421ae7a70feb21cf2c5df152d46fd831de1b3",
+    "remote_hash": "f834fe5966eebfeec6b70b422fe0c90cf47ff8be21170cf45476bfd32293007a",
+    "last_sync": "2026-05-22T16:34:00Z",
+    "direction": "local->remote",
+    "status": "synced"
+  },
+  "datasets/product/agent-output/2026-05-27_vision-training-day-home-session-pitches-v2.md": {
+    "local_path": "/Users/jayjenkins/pm-os/datasets/product/agent-output/2026-05-27_vision-training-day-home-session-pitches-v2.md",
+    "remote_path": "/Users/jayjenkins/Library/CloudStorage/OneDrive-Vantaca,LLC/PM-OS/product/agent-output/2026-05-27_vision-training-day-home-session-pitches-v2.docx",
+    "local_hash": "85d4c8ab38108ae4e538b552485b61696dc7dedb3bced63d635b3b7bae5af33e",
+    "remote_hash": "f6cce707db26931f4c31f959bfde0574923aa3e432572812a0c25f1762b840a0",
+    "last_sync": "2026-05-27T17:06:49Z",
+    "direction": "local->remote",
+    "status": "synced"
+  },
+  "datasets/strategy/memos/2026/05-27_home-defect-triage-workflow.md": {
+    "local_path": "/Users/jayjenkins/pm-os/datasets/strategy/memos/2026/05-27_home-defect-triage-workflow.md",
+    "remote_path": "/Users/jayjenkins/Library/CloudStorage/OneDrive-Vantaca,LLC/PM-OS/strategy/memos/2026/05-27_home-defect-triage-workflow.docx",
+    "local_hash": "08ed7d2f761d52e28ef409acfd8099e4ef79d976cb25751e5678a5009520eaa2",
+    "remote_hash": "efd19c702d4f3944958eda5434c04aaee4904fa55ca91237f7b9d9063ab91662",
+    "last_sync": "2026-05-27T20:34:31Z",
+    "direction": "local->remote",
+    "status": "synced"
+  },
+  "datasets/strategy/memos/2026/05-27_brand-seo-customer-pre-login-pages.md": {
+    "local_path": "/Users/jayjenkins/pm-os/datasets/strategy/memos/2026/05-27_brand-seo-customer-pre-login-pages.md",
+    "remote_path": "/Users/jayjenkins/Library/CloudStorage/OneDrive-Vantaca,LLC/PM-OS/strategy/memos/2026/05-27_brand-seo-customer-pre-login-pages.docx",
+    "local_hash": "e9c72baf9bc0ff599c7f4574f145c032f7b864bde236be05cf83c8013591041a",
+    "remote_hash": "9959f80f52ad57edff5101811e60642e49d6395e5e0dc51e5531278ac030ee64",
+    "last_sync": "2026-05-27T20:38:46Z",
+    "direction": "local->remote",
+    "status": "synced"
+  },
+  "datasets/product/agent-output/TASK-0618-zach-coaching-prep.md": {
+    "local_path": "/Users/jayjenkins/pm-os/datasets/product/agent-output/TASK-0618-zach-coaching-prep.md",
+    "remote_path": "/Users/jayjenkins/Library/CloudStorage/OneDrive-Vantaca,LLC/PM-OS/product/agent-output/TASK-0618-zach-coaching-prep.docx",
+    "local_hash": "639691016a753f2dd462c99dc8c466e0c213af8123db6b14b2bc5e0e15d38441",
+    "remote_hash": "23e52b486b5c0aa8b15d13bcd347778d898450d9fd16745c03b79dcbbb6b6502",
+    "last_sync": "2026-05-28T12:03:36Z",
+    "direction": "local->remote",
+    "status": "synced"
+  },
+  "datasets/product/agent-output/TASK-0638_cai-resident-demo-talk-track.md": {
+    "local_path": "/Users/jayjenkins/pm-os/datasets/product/agent-output/TASK-0638_cai-resident-demo-talk-track.md",
+    "remote_path": "/Users/jayjenkins/Library/CloudStorage/OneDrive-Vantaca,LLC/PM-OS/product/agent-output/TASK-0638_cai-resident-demo-talk-track.docx",
+    "local_hash": "68b964d381021f422f6a4a8c2bbfa5ad8f1c15901b7ff1c448f022e2bfacc86e",
+    "remote_hash": "3534aad8bc01ccb75f3fe49a81a9fcd460a8393c0b927ad5db5f71778742d633",
+    "last_sync": "2026-05-28T19:31:46Z",
+    "direction": "local->remote",
+    "status": "synced"
+  },
+  "datasets/strategy/memos/2026/05-28_pm-escalation-process-from-defect-backlog.md": {
+    "local_path": "/Users/jayjenkins/pm-os/datasets/strategy/memos/2026/05-28_pm-escalation-process-from-defect-backlog.md",
+    "remote_path": "/Users/jayjenkins/Library/CloudStorage/OneDrive-Vantaca,LLC/PM-OS/strategy/memos/2026/05-28_pm-escalation-process-from-defect-backlog.docx",
+    "local_hash": "6b30d9084618d1293107b286dc3f0b509d2ca210ec9deec3f4302ad119d9156b",
+    "remote_hash": "10095b3ccd4c456b02288fd0a5f2280e69709079e887ccb8ba84215e980d953a",
+    "last_sync": "2026-05-28T19:35:52Z",
+    "direction": "local->remote",
+    "status": "synced"
+  },
+  "datasets/product/agent-output/2026-06-01_wau-decline-diagnosis.md": {
+    "local_path": "/Users/jayjenkins/pm-os/datasets/product/agent-output/2026-06-01_wau-decline-diagnosis.md",
+    "remote_path": "/Users/jayjenkins/Library/CloudStorage/OneDrive-Vantaca,LLC/PM-OS/product/agent-output/2026-06-01_wau-decline-diagnosis.docx",
+    "local_hash": "f59ebe2484594ebe3417b62d74f4a460124f12d0b50a1238a911806c1c270967",
+    "remote_hash": "04becd35932b608d4b70dfd2c04662496859491615a7c42766dbd469dc3956e4",
+    "last_sync": "2026-06-01T15:10:01Z",
+    "direction": "local->remote",
+    "status": "synced"
+  },
+  "datasets/product/agent-output/2026-06-01_ssl-certificate-outages-90day-review.md": {
+    "local_path": "/Users/jayjenkins/pm-os/datasets/product/agent-output/2026-06-01_ssl-certificate-outages-90day-review.md",
+    "remote_path": "/Users/jayjenkins/Library/CloudStorage/OneDrive-Vantaca,LLC/PM-OS/product/agent-output/2026-06-01_ssl-certificate-outages-90day-review.docx",
+    "local_hash": "61b78d24dfdc4149ec63a461bd316c81ad60f30f7d9cebc68f579892d874812a",
+    "remote_hash": "4a0d122556f211d31bf2705ae94a95ebda7e66c0d6b2e81f559cbb14cec7299e",
+    "last_sync": "2026-06-01T21:04:55Z",
+    "direction": "local->remote",
+    "status": "synced"
+  },
+  "datasets/product/agent-output/2026-06-04_msg-will-peltzer-voting-partnerships.md": {
+    "local_path": "/Users/jayjenkins/pm-os/datasets/product/agent-output/2026-06-04_msg-will-peltzer-voting-partnerships.md",
+    "remote_path": "/Users/jayjenkins/Library/CloudStorage/OneDrive-Vantaca,LLC/PM-OS/product/agent-output/2026-06-04_msg-will-peltzer-voting-partnerships.docx",
+    "local_hash": "e02b95c2fcedfa1b6b1c5979a45ea2411a5e5ded38abc340f1d8e684f96c7620",
+    "remote_hash": "5dd4da459ae18be78fd9c36e3ffc5aa9b10aec1ec7d7d0d18bf8cadb35db1552",
+    "last_sync": "2026-06-04T12:18:16Z",
+    "direction": "local->remote",
+    "status": "synced"
+  },
+  "datasets/product/agent-output/2026-06-04_forward-arc-year-limit-advantage-app.md": {
+    "local_path": "/Users/jayjenkins/pm-os/datasets/product/agent-output/2026-06-04_forward-arc-year-limit-advantage-app.md",
+    "remote_path": "/Users/jayjenkins/Library/CloudStorage/OneDrive-Vantaca,LLC/PM-OS/product/agent-output/2026-06-04_forward-arc-year-limit-advantage-app.docx",
+    "local_hash": "5ea4ddb53965d2e7b7dcfc7bb2aa7413bcc1a8824fabd63c19f0b87d94b2b345",
+    "remote_hash": "60a6c8950eae4ae404e46352441c1ceb535b79686587c2d093a44a06f8053b96",
+    "last_sync": "2026-06-04T12:21:06Z",
+    "direction": "local->remote",
+    "status": "synced"
+  },
+  "datasets/product/agent-output/2026-06-04_vendor-payments-competitive-analysis.md": {
+    "local_path": "/Users/jayjenkins/pm-os/datasets/product/agent-output/2026-06-04_vendor-payments-competitive-analysis.md",
+    "remote_path": "/Users/jayjenkins/Library/CloudStorage/OneDrive-Vantaca,LLC/PM-OS/product/agent-output/2026-06-04_vendor-payments-competitive-analysis.docx",
+    "local_hash": "59dc51601029978fa95d4b44c3095c4d0a6f947b961bb23b2927b6141fee611d",
+    "remote_hash": "3c884c179908120034874f45e02da78340375ef2b9b8aacb7f5475d732174fb1",
+    "last_sync": "2026-06-04T12:27:01Z",
     "direction": "local->remote",
     "status": "synced"
   }
