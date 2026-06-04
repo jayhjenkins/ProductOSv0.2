@@ -1829,7 +1829,20 @@ async function openTask(taskId) {
     if (hasJiraDraft) {
       const jiraDraft = parseJiraDraft(task.body);
       if (jiraDraft) {
-        const typeBadgeColor = {'Bug': 'var(--danger)', 'Story': 'var(--success)', 'Epic': '#9f8fef'}[jiraDraft.type] || 'var(--text-muted)';
+        const typeBadgeColor = {
+          'Feature': '#9f8fef',
+          'Epic': '#9f8fef',
+          'Unit': '#14b8a6',
+          'Story': 'var(--success)',
+          'Bug': 'var(--danger)',
+          'Regression Defect': '#f59e0b',
+          'Spike': 'var(--text-muted)',
+          'Hotfix': '#dc2626',
+          'Work Item Defect': '#f59e0b',
+          'Performance Defect': '#f59e0b',
+          'Security Defect': '#dc2626'
+        }[jiraDraft.type] || 'var(--text-muted)';
+        const featureFieldLabel = jiraDraft.type === 'Feature' ? 'Feature' : 'Epic';
         html += '<div style="background:var(--surface);border:1px solid var(--border);border-left:3px solid ' + typeBadgeColor + ';border-radius:8px;padding:14px;margin:12px 0;">';
         html += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">';
         html += `<span style="background:${typeBadgeColor};color:#fff;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;">${escapeHtml(jiraDraft.type)}</span>`;
@@ -1839,12 +1852,15 @@ async function openTask(taskId) {
           html += `<div style="font-size:13px;color:var(--text-muted);white-space:pre-wrap;margin-bottom:10px;max-height:200px;overflow-y:auto;">${escapeHtml(jiraDraft.description)}</div>`;
         }
         html += '<div style="display:flex;gap:8px;flex-wrap:wrap;font-size:11px;">';
+        if (jiraDraft.parent) html += `<span style="background:var(--surface-hover);padding:2px 6px;border-radius:3px;">Parent: ${escapeHtml(jiraDraft.parent)}</span>`;
         if (jiraDraft.priority) html += `<span style="background:var(--surface-hover);padding:2px 6px;border-radius:3px;">Priority: ${escapeHtml(jiraDraft.priority)}</span>`;
         if (jiraDraft.labels.length) html += `<span style="background:var(--surface-hover);padding:2px 6px;border-radius:3px;">Labels: ${escapeHtml(jiraDraft.labels.join(', '))}</span>`;
         if (jiraDraft.release_notes) html += `<span style="background:var(--surface-hover);padding:2px 6px;border-radius:3px;">Release: ${escapeHtml(jiraDraft.release_notes)}</span>`;
-        if (jiraDraft.epic_name) html += `<span style="background:var(--surface-hover);padding:2px 6px;border-radius:3px;">Epic: ${escapeHtml(jiraDraft.epic_name)}</span>`;
+        if (jiraDraft.feature_name) html += `<span style="background:var(--surface-hover);padding:2px 6px;border-radius:3px;">${featureFieldLabel}: ${escapeHtml(jiraDraft.feature_name)}</span>`;
+        if (jiraDraft.gtm_date) html += `<span style="background:var(--surface-hover);padding:2px 6px;border-radius:3px;">GTM: ${escapeHtml(jiraDraft.gtm_date)}</span>`;
+        if (jiraDraft.client_commitment) html += `<span style="background:var(--surface-hover);padding:2px 6px;border-radius:3px;">Commit: ${escapeHtml(jiraDraft.client_commitment)}</span>`;
         html += '</div>';
-        html += '<div style="margin-top:6px;font-size:11px;color:var(--text-dim);">Project: VNT &middot; Component: Vantaca HXP &middot; Status: Refinement</div>';
+        html += '<div style="margin-top:6px;font-size:11px;color:var(--text-dim);">Project: VNT &middot; Component: Vantaca HXP &middot; Board: AI DLC (1096) &middot; Status: Refinement</div>';
         html += '</div>';
       }
     }
@@ -2583,15 +2599,18 @@ function parseJiraDraft(body) {
   const b = block[1];
   const field = (name) => { const m = b.match(new RegExp(`<!-- ${name}:(.+?) -->`)); return m ? m[1].trim() : ''; };
   const descMatch = b.match(/### Description\s*\n([\s\S]*?)(?=\n### |\n<!-- \/JIRA_DRAFT)/);
+  const featureName = field('JIRA_FEATURE_NAME') || field('JIRA_EPIC_NAME') || '';
   return {
     type: field('JIRA_TYPE') || 'Bug',
     summary: field('JIRA_SUMMARY') || '',
     priority: field('JIRA_PRIORITY') || '',
     labels: field('JIRA_LABELS').split(',').map(s => s.trim()).filter(Boolean),
     release_notes: field('JIRA_RELEASE_NOTES') || '',
-    epic_name: field('JIRA_EPIC_NAME') || '',
+    feature_name: featureName,
+    epic_name: featureName,
     gtm_date: field('JIRA_GTM_DATE') || '',
     client_commitment: field('JIRA_CLIENT_COMMITMENT') || '',
+    parent: field('JIRA_PARENT') || '',
     description: descMatch ? descMatch[1].trim() : '',
   };
 }
