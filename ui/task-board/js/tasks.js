@@ -4,6 +4,21 @@
 // toast, meetingName, obsidianUri, renderAgentOutput) and on board/cron functions
 // (fetchTasks, etc.) that remain in the inline script — all resolved as globals at call time.
 
+// Provenance for the Details row. "creator" recorded the mechanism (human ran
+// the CLI / cron fired / an agent acted), so meeting-spawned tasks all read
+// "human" — as if a person authored them. Prefer the originating meeting (with
+// its date) when there is one; otherwise say plainly where the task came from.
+function taskSource(task) {
+  if (task.source_meeting) {
+    const name = meetingName(task.source_meeting) || 'Meeting';
+    const d = (task.source_meeting.split('/').pop().match(/^(\d{4}-\d{2}-\d{2})/) || [])[1];
+    return d ? `${name} · ${d}` : name;
+  }
+  if (task.creator === 'cron') return 'Recurring job';
+  if (task.creator === 'agent') return 'Agent';
+  return 'Added manually';
+}
+
 // ─── Modal ──────────────────────────────────────────────────────────
 
 // Shorten an artifact path to read relative to the PM-OS root. Output files
@@ -238,7 +253,7 @@ async function openTask(taskId) {
       ['Priority', task.priority || '—'],
       ['Domain', task.domain || '—'],
       ['Assignee', task.assignee || '—'],
-      ['Creator', task.creator || '—'],
+      ['Source', taskSource(task)],
       ['Project', task.project || '—'],
     ];
     if (task.due) sum.push(['Due', task.due]);
