@@ -27,6 +27,10 @@ const ICON = {
   output: `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h4v4"/><path d="M13 3l-5.4 5.4"/><path d="M11 9.5V12a1.5 1.5 0 0 1-1.5 1.5h-6A1.5 1.5 0 0 1 2 12V6a1.5 1.5 0 0 1 1.5-1.5H6"/></svg>`,
   doc: `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2.6h5l3 3v8H4Z"/><path d="M9 2.6v3h3"/><path d="M6 8.4h4M6 10.6h4"/></svg>`,
   jira: `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M2.6 7.2 7.2 2.6a1 1 0 0 1 1.4 0l3.8 3.8a1 1 0 0 1 0 1.4L7.8 12.4a1 1 0 0 1-1.4 0L2.6 8.6a1 1 0 0 1 0-1.4Z"/></svg>`,
+  mail: `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="2.4" y="3.6" width="11.2" height="8.8" rx="1.6"/><path d="M2.8 4.4 8 8.4l5.2-4"/></svg>`,
+  chat: `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M2.8 4.2h10.4v6H7.4l-2.8 2.4V10.2H2.8z"/></svg>`,
+  send: `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M13.4 2.6 7 9"/><path d="M13.4 2.6 9.4 13.2l-2.4-4.2-4.2-2.4Z"/></svg>`,
+  obsidian: `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9.2 1.8 13.4 7l-3.1 7.2-5.3-1.4-2.4-4.5 3.3-6.5Z"/><path d="M9.2 1.8 7.2 6l2.4 3-1.5 5.2"/></svg>`,
 };
 
 function svgIcon(name) { return ICON[name] || ''; }

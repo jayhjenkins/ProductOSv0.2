@@ -5,6 +5,9 @@ let currentTaskId = null;
 
 // ─── Toast Notifications ─────────────────────────────────────────────
 function toast(msg, type = 'error', duration = 4000) {
+  // No confirmation pop-overs — a click is its own confirmation. Only surface
+  // real problems (errors), and even those stay quiet and dismissible.
+  if (type !== 'error') return;
   const container = document.getElementById('toast-container');
   const el = document.createElement('div');
   el.className = `toast toast-${type}`;

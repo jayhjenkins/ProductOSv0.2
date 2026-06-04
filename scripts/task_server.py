@@ -412,6 +412,71 @@ def handle_update_description(handler, task_id):
         _error_response(handler, f"Failed to update description: {e}", status=500)
 
 
+def handle_update_message(handler, task_id):
+    """POST /api/tasks/{id}/message — Save edits to a send-message draft.
+
+    Body: {message_body, message_subject?}. Persists to frontmatter so the
+    Message preview reflects the human's edits before sending.
+    """
+    try:
+        body = _read_request_body(handler)
+    except (json.JSONDecodeError, ValueError) as e:
+        _error_response(handler, f"Invalid JSON body: {e}", status=400)
+        return
+
+    message_body = (body.get("message_body") or "").strip()
+    if not message_body:
+        _error_response(handler, "Missing or empty 'message_body' field", status=400)
+        return
+
+    changes = {"message_body": message_body}
+    if body.get("message_subject") is not None:
+        changes["message_subject"] = str(body.get("message_subject")).strip()
+
+    try:
+        task_lib.update_task(
+            task_id,
+            changes=changes,
+            comment="Message draft edited.",
+            actor="human",
+        )
+        _json_response(handler, {
+            "status": "ok",
+            "message": f"Message draft updated for {task_id}",
+        })
+    except FileNotFoundError:
+        _error_response(handler, f"Task {task_id} not found", status=404)
+    except Exception as e:
+        _error_response(handler, f"Failed to update message: {e}", status=500)
+
+
+def handle_send_message(handler, task_id):
+    """POST /api/tasks/{id}/send-message — Mark a send-message task as sent.
+
+    Records the send and archives the task. PM-OS has no Slack/Teams/Email
+    transmission channel — this is the approve-and-send step of the collab
+    pattern: the human sends from the drafted doc, then confirms here. It does
+    NOT transmit anything externally.
+    """
+    try:
+        task_lib.update_task(
+            task_id,
+            changes={"message_sent_at": task_lib._now_iso()},
+            comment="Message marked as sent (recorded; PM-OS does not transmit — sent manually from the draft).",
+            actor="human",
+        )
+        archive_path = task_lib.complete_task(task_id, actor="human")
+        _json_response(handler, {
+            "status": "ok",
+            "message": f"Message recorded as sent; {task_id} archived",
+            "archive_path": archive_path,
+        })
+    except FileNotFoundError:
+        _error_response(handler, f"Task {task_id} not found", status=404)
+    except Exception as e:
+        _error_response(handler, f"Failed to send message: {e}", status=500)
+
+
 def handle_add_comment(handler, task_id):
     """POST /api/tasks/{id}/comment — Append activity log entry."""
     try:
@@ -1357,6 +1422,26 @@ class TaskServerHandler(SimpleHTTPRequestHandler):
                 _error_response(self, "Invalid task ID format", status=400)
             else:
                 handle_update_description(self, task_id)
+            return True
+
+        # Match /api/tasks/{id}/send-message  (must precede /message)
+        match = re.match(r"^/api/tasks/([^/]+)/send-message$", path)
+        if match and method == "POST":
+            task_id = _parse_task_id(match.group(1))
+            if task_id is None:
+                _error_response(self, "Invalid task ID format", status=400)
+            else:
+                handle_send_message(self, task_id)
+            return True
+
+        # Match /api/tasks/{id}/message
+        match = re.match(r"^/api/tasks/([^/]+)/message$", path)
+        if match and method == "POST":
+            task_id = _parse_task_id(match.group(1))
+            if task_id is None:
+                _error_response(self, "Invalid task ID format", status=400)
+            else:
+                handle_update_message(self, task_id)
             return True
 
         # Match /api/tasks/{id}/comment

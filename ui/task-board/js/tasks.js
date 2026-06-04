@@ -23,119 +23,170 @@ async function openTask(taskId) {
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const task = await res.json();
 
-    modalTitle.textContent = `${task.id} — ${escapeHtml(task.title)}`;
+    modalTitle.innerHTML = escapeHtml(task.title);
 
-    // Fields grid
-    let html = '<div class="field-grid">';
-    const fields = [
-      ['Status', task.status],
-      ['Queue', task.queue],
-      ['Priority', task.priority],
-      ['Domain', task.domain || '—'],
-      ['Creator', task.creator],
-      ['Assignee', task.assignee || '—'],
-      ['Due', task.due || '—'],
-      ['Project', task.project || '—'],
-      ['Created', formatDate(task.created)],
-      ['Updated', formatDate(task.updated)],
-    ];
+    let html = '';
+
+    // ── Identity: the keepers — id · type · state · source · updated ──
+    const QMETA = { agent: ['agent', 'agent'], collab: ['supervised', 'collab'], human: ['human', 'human'], waiting: ['waiting', 'waiting'] };
+    const qm = QMETA[task.queue] || QMETA.human;
+    let stCls = '', stLabel = (task.status || 'open').replace(/-/g, ' '), stIcon = '';
+    if (task.agent_status === 'running')          { stCls = 'is-running';     stLabel = 'running';         stIcon = '<span class="mark-running"></span>'; }
+    else if (task.agent_status === 'needs-human') { stCls = 'is-needs-human'; stLabel = 'needs you';       stIcon = svgIcon('needsHuman'); }
+    else if (task.agent_status === 'complete')    { stCls = 'is-complete';    stLabel = 'ready to review'; stIcon = svgIcon('complete'); }
+    else if (task.agent_status === 'failed')      { stCls = 'is-failed';      stLabel = 'stopped';         stIcon = svgIcon('failed'); }
+    else if (task.queue === 'waiting')            { stLabel = 'waiting';      stIcon = svgIcon('hourglass'); }
+
+    html += `<div class="dt-identity">`;
+    html += `<span class="dt-type q-${task.queue}">${svgIcon(qm[1])}${qm[0]}</span>`;
+    html += `<span class="dt-idsep">·</span><span class="dt-status ${stCls}">${stIcon}${stLabel}</span>`;
     if (task.source_meeting) {
-      fields.push(['Source Meeting', meetingName(task.source_meeting)]);
+      html += `<span class="dt-idsep">·</span><span class="dt-source" title="From ${escapeHtml(task.source_meeting)}">${svgIcon('meeting')}<span>${escapeHtml(meetingName(task.source_meeting))}</span></span>`;
     }
-    if (task.agent_status) {
-      fields.push(['Agent Status', task.agent_status]);
-    }
+    html += `<span class="dt-idsep">·</span><span class="dt-when">updated ${formatDate(task.updated)}</span>`;
+    html += `</div>`;
+
+    // ── Output — prime real estate, same place on every card ──────────
+    const isAgentish = task.queue === 'agent' || task.queue === 'collab';
+    const artifacts = [];
     if (task.agent_output) {
-      fields.push(['Agent Output', renderAgentOutput(task.agent_output), true]);
+      const v = String(task.agent_output).trim();
+      if (v.endsWith('.md')) {
+        artifacts.push({ icon: 'obsidian', cls: '', kind: 'Obsidian', name: v.split('/').pop(), path: v, href: obsidianUri(v), label: 'Open in Obsidian', external: false });
+      } else {
+        const mu = v.match(/https?:\/\/[^\s)]+/);
+        if (mu) artifacts.push({ icon: 'output', cls: '', kind: 'Link', name: 'Agent output', path: mu[0].replace(/^https?:\/\//, ''), href: mu[0], label: 'Open', external: true });
+        else artifacts.push({ icon: 'output', cls: '', kind: 'Output', name: 'Agent output', path: v, href: null, label: '', external: false });
+      }
     }
-    if (task.sharepoint_url) {
-      const docName = task.sharepoint_path ? task.sharepoint_path.split('/').pop() : 'Open in Word Online';
-      fields.push(['Word Doc', `<a href="${escapeHtml(task.sharepoint_url)}" target="_blank" rel="noopener" style="color:var(--accent);text-decoration:none;" title="Open in Word Online">${escapeHtml(docName)}</a>`, true]);
-    } else if (task.sharepoint_path) {
-      fields.push(['Word Doc', `<a href="/open?file=${encodeURIComponent(task.sharepoint_path)}" style="color:var(--accent);text-decoration:none;" title="Open in Word">${escapeHtml(task.sharepoint_path.split('/').pop())}</a>`, true]);
+    if (task.sharepoint_url || task.sharepoint_path) {
+      const p = task.sharepoint_path || '';
+      artifacts.push({ icon: 'doc', cls: 'doc', kind: 'Word', name: p ? p.split('/').pop() : 'Word document', path: p || 'Word Online', href: task.sharepoint_url || `/open?file=${encodeURIComponent(task.sharepoint_path)}`, label: 'Open in Word', external: !!task.sharepoint_url });
     }
-    if (task.waiting_on) {
-      fields.push(['Waiting On', task.waiting_on]);
-      fields.push(['Expected', task.waiting_expected || '—']);
-    }
-    if (task.tags && task.tags.length > 0) {
-      fields.push(['Tags', task.tags.join(', ')]);
+    if (artifacts.length) {
+      html += `<div class="dt-output-wrap"><div class="dt-art-grid">`;
+      artifacts.forEach(a => {
+        const ext = a.external ? ' target="_blank" rel="noopener"' : '';
+        const href = a.href ? ` href="${escapeHtml(a.href)}"` : '';
+        html += `<a class="dt-artifact ${a.cls}"${href}${ext} onclick="event.stopPropagation()">`;
+        html += `<span class="dt-art-top"><span class="dt-art-icon">${svgIcon(a.icon)}</span><span class="dt-art-kind">${a.kind}</span></span>`;
+        html += `<span class="dt-art-name">${escapeHtml(a.name)}</span>`;
+        html += `<span class="dt-art-path">${escapeHtml(a.path)}</span>`;
+        if (a.label) html += `<span class="dt-art-open">${a.label}${svgIcon('output')}</span>`;
+        html += `</a>`;
+      });
+      html += `</div>`;
+      const lastOut = (task.activity_log || []).filter(e => e.type === 'output').pop();
+      if (lastOut) html += `<div class="dt-output-note">${escapeHtml(lastOut.content)}</div>`;
+      html += `</div>`;
+    } else if (isAgentish && task.task_type !== 'schedule-meeting' && task.task_type !== 'send-message' && !(task.body && task.body.includes('<!-- JIRA_DRAFT -->'))) {
+      let msg = 'No output yet.', mIcon = svgIcon('waiting');
+        if (task.agent_status === 'running') { msg = 'Agent is working — the output will land here when it’s done.'; mIcon = '<span class="mark-running"></span>'; }
+        else if (task.agent_status === 'failed') { msg = 'Agent stopped before producing an output.'; mIcon = svgIcon('failed'); }
+        else if (task.agent_status === 'needs-human') { msg = 'Paused — it needs your input before it can finish.'; mIcon = svgIcon('needsHuman'); }
+        else if (task.status === 'open') { msg = 'Not started yet — dispatch the agent to produce an output.'; }
+        html += `<div class="dt-output-wrap"><div class="dt-output-empty">${mIcon}<span>${msg}</span></div></div>`;
     }
 
-    fields.forEach(([label, value, raw]) => {
-      const rendered = raw ? value : escapeHtml(String(value));
-      html += `<div class="field-item"><span class="field-label">${label}</span><span class="field-value">${rendered}</span></div>`;
+    // ── The task — what was actually asked (the brief) ────────────────
+    let descContent = null; const otherSecs = [];
+    if (task.body) {
+      task.body.trim().split(/^## /m).filter(s => s.trim()).forEach(section => {
+        const lines = section.split('\n');
+        const t = lines[0].trim(); const content = lines.slice(1).join('\n').trim();
+        const tl = t.toLowerCase();
+        if (tl === 'activity log' || tl === 'suggested times' || tl === 'jira draft') return;
+        if (tl === 'description') descContent = content;
+        else if (content) otherSecs.push([t, content]);
+      });
+    }
+    html += `<div class="dt-section">`;
+    html += `<div class="dt-sec-head"><span class="dt-sec-title">The task</span>`;
+    if (descContent !== null) html += `<button class="dt-textbtn" id="desc-edit-btn" onclick="toggleDescEdit()">Edit</button>`;
+    html += `</div>`;
+    if (descContent !== null) {
+      html += `<div id="desc-display" class="dt-prose">${escapeHtml(descContent)}</div>`;
+      html += `<div id="desc-editor" style="display:none;margin-top:8px;"><textarea class="desc-textarea" id="desc-input">${escapeHtml(descContent)}</textarea><div class="desc-actions"><button class="btn btn-primary" onclick="saveDescription()">Save</button><button class="btn" onclick="toggleDescEdit()">Cancel</button></div></div>`;
+    } else {
+      html += `<div class="dt-prose dim">${escapeHtml(task.title)}</div>`;
+    }
+    otherSecs.forEach(([t, content]) => {
+      html += `<div class="dt-subsec"><div class="dt-subsec-label">${escapeHtml(t)}</div><div class="dt-prose">${escapeHtml(content)}</div></div>`;
     });
-    html += '</div>';
+    html += `</div>`;
 
     // Determine task type flags early so all sections can use them
     const isScheduleMeeting = task.task_type === 'schedule-meeting';
     const isAgentComplete = task.agent_status === 'complete' && task.status === 'done';
 
-    // Schedule-meeting info panel (above description and activity log)
+    // Schedule-meeting — two calm columns: the invite · pick a time
     if (isScheduleMeeting) {
-      // Pre-load email cache so we can resolve names → emails for chips
       await loadEmailCache();
-
-      html += '<div class="section-title" style="display:flex;align-items:center;justify-content:space-between;">Meeting Details<button class="btn-edit-meeting" id="btn-edit-meeting" onclick="editMeetingDetails()">Edit</button></div>';
-      html += '<div class="field-grid" style="margin-bottom:12px;">';
-      if (task.meeting_title) {
-        html += `<div class="field-item"><span class="field-label">Event Title</span><span class="field-value" id="meeting-title-display">${escapeHtml(task.meeting_title)}</span></div>`;
-      }
-      if (task.meeting_duration) {
-        html += `<div class="field-item"><span class="field-label">Duration</span><span class="field-value">${task.meeting_duration} min</span></div>`;
-      }
-      // Editable attendees as chips — resolve names to emails via cache
       const attendees = task.meeting_attendees || [];
-      html += `<div class="field-item" style="grid-column:1/-1;">`;
-      html += `<span class="field-label">Attendees</span>`;
-      html += `<div class="attendee-chips" id="attendee-chips">`;
+      const slots = task.body ? parseSlots(task.body) : [];
+      const isRecurring = task.meeting_recurring || false;
+      const recurrencePattern = task.meeting_recurrence_pattern || 'weekly';
+      const initials = (s) => String(s).trim().split(/\s+/).map(w => w[0] || '').slice(0, 2).join('').toUpperCase() || '?';
+
+      html += `<div class="dt-section">`;
+      html += `<div class="dt-sec-head"><span class="dt-sec-title">Meeting</span><button class="dt-textbtn" id="btn-edit-meeting" onclick="editMeetingDetails()">Edit</button></div>`;
+      html += `<div class="dt-meeting">`;
+
+      // Left — the invite
+      html += `<div class="dt-mcol">`;
+      html += `<div class="dt-mcol-label">The invite</div>`;
+      if (task.meeting_title) html += `<div class="dt-mtitle" id="meeting-title-display">${escapeHtml(task.meeting_title)}</div>`;
+      html += `<div class="dt-mline"><span class="dt-mline-icon">${svgIcon('due')}</span><span class="dt-mwhen">${task.meeting_duration ? task.meeting_duration + ' minutes' : 'Duration TBD'}</span></div>`;
+      html += `<div class="dt-att-list" id="attendee-chips">`;
       attendees.forEach(a => {
         const name = String(a);
         const email = (emailCache && emailCache[name]) || name;
-        html += `<span class="attendee-chip" data-email="${escapeHtml(email)}">${escapeHtml(name)}<span class="chip-remove" onclick="removeAttendee(this)">&times;</span></span>`;
+        const hasEmail = email && email !== name;
+        html += `<div class="dt-att" data-email="${escapeHtml(email)}"><span class="dt-att-avatar">${escapeHtml(initials(name))}</span><span class="dt-att-main"><span class="dt-att-name">${escapeHtml(name)}</span>${hasEmail ? `<span class="dt-att-email">${escapeHtml(email)}</span>` : ''}</span><span class="dt-att-remove" onclick="removeAttendee(this)">&times;</span></div>`;
       });
       html += `</div>`;
-      html += `<div class="attendee-add-wrap">`;
-      html += `<input type="text" class="attendee-add-input" id="attendee-input" placeholder="Add attendee (name or email)..." autocomplete="off">`;
-      html += `<div class="attendee-dropdown" id="attendee-dropdown"></div>`;
+      html += `<div class="attendee-add-wrap dt-att-add"><input type="text" class="attendee-add-input" id="attendee-input" placeholder="Add someone…" autocomplete="off"><div class="attendee-dropdown" id="attendee-dropdown"></div></div>`;
+      html += `<div class="dt-recurring"><label><input type="checkbox" id="recurring-check" ${isRecurring ? 'checked' : ''} onchange="toggleRecurring()"> Recurring</label><select class="recurring-select" id="recurring-pattern" ${isRecurring ? '' : 'style="display:none;"'} onchange="updateRecurrencePattern()"><option value="weekly" ${recurrencePattern === 'weekly' ? 'selected' : ''}>Weekly</option><option value="biweekly" ${recurrencePattern === 'biweekly' ? 'selected' : ''}>Biweekly</option><option value="monthly" ${recurrencePattern === 'monthly' ? 'selected' : ''}>Monthly</option></select></div>`;
       html += `</div>`;
-      html += `</div>`;
-      if (task.meeting_description) {
-        html += `<div class="field-item" style="grid-column:1/-1;"><span class="field-label">Description</span><span class="field-value" id="meeting-desc-display" style="white-space:pre-wrap;">${escapeHtml(task.meeting_description)}</span></div>`;
+
+      // Right — pick a time
+      html += `<div class="dt-mcol">`;
+      html += `<div class="dt-mcol-label">Pick a time</div>`;
+      if (slots.length) {
+        html += `<div class="dt-slots">`;
+        slots.forEach((slot, i) => {
+          html += `<div class="dt-slot" onclick="selectSlot(this, ${i})"><span class="dt-slot-radio"></span><input type="radio" name="slot" id="slot-${i}" value="${i}" data-start="${escapeHtml(slot.start)}" data-end="${escapeHtml(slot.end)}" style="display:none"><span class="dt-slot-label">${escapeHtml(slot.display)}</span></div>`;
+        });
+        html += `</div>`;
+      } else {
+        html += `<div class="dt-prose dim" style="font-size:12.5px;">No proposed times yet.</div>`;
       }
-      // Recurring meeting toggle
-      const isRecurring = task.meeting_recurring || false;
-      const recurrencePattern = task.meeting_recurrence_pattern || 'weekly';
-      html += `<div class="field-item" style="grid-column:1/-1;">`;
-      html += `<div class="recurring-toggle">`;
-      html += `<label><input type="checkbox" id="recurring-check" ${isRecurring ? 'checked' : ''} onchange="toggleRecurring()"> Recurring meeting</label>`;
-      html += `<select class="recurring-select" id="recurring-pattern" ${isRecurring ? '' : 'style="display:none;"'} onchange="updateRecurrencePattern()">`;
-      html += `<option value="weekly" ${recurrencePattern === 'weekly' ? 'selected' : ''}>Weekly</option>`;
-      html += `<option value="biweekly" ${recurrencePattern === 'biweekly' ? 'selected' : ''}>Biweekly</option>`;
-      html += `<option value="monthly" ${recurrencePattern === 'monthly' ? 'selected' : ''}>Monthly</option>`;
-      html += `</select>`;
       html += `</div>`;
+
+      html += `</div>`; // dt-meeting
+
+      if (task.meeting_description) html += `<div class="dt-subsec"><div class="dt-subsec-label">Notes for the invite</div><div class="dt-prose" id="meeting-desc-display">${escapeHtml(task.meeting_description)}</div></div>`;
       html += `</div>`;
-      html += '</div>';
     }
 
-    // Schedule-meeting slot picker (render whenever SLOT markers exist —
-    // independent of agent_status so the picker shows even if the agent
-    // ended in needs-human / open / blocked).
-    if (isScheduleMeeting && task.body) {
-      const slots = parseSlots(task.body);
-      if (slots.length > 0) {
-        html += '<div class="slot-picker">';
-        html += '<div class="slot-picker-title">Select a Time Slot</div>';
-        slots.forEach((slot, i) => {
-          html += `<div class="slot-option" onclick="selectSlot(this, ${i})">`;
-          html += `<input type="radio" name="slot" id="slot-${i}" value="${i}" data-start="${escapeHtml(slot.start)}" data-end="${escapeHtml(slot.end)}">`;
-          html += `<label for="slot-${i}">${escapeHtml(slot.display)}</label>`;
-          html += `</div>`;
-        });
-        html += '</div>';
-      }
+    // Send-message — a calm preview of what will be sent
+    if (task.task_type === 'send-message') {
+      const ch = task.message_channel || 'Message';
+      const isEmail = /email/i.test(ch);
+      const to = task.message_to || '';
+      const toInit = String(to).replace(/^[#@]/, '').trim().split(/\s+/).map(w => w[0] || '').slice(0, 2).join('').toUpperCase() || '?';
+      html += `<div class="dt-section">`;
+      html += `<div class="dt-sec-head"><span class="dt-sec-title">Message</span><button class="dt-textbtn" id="btn-edit-message" onclick="editMessage()">Edit</button></div>`;
+      html += `<div class="dt-msg-to">`;
+      html += `<span class="dt-msg-chip"><span class="k">To</span><span class="dt-msg-avatar">${escapeHtml(toInit)}</span>${escapeHtml(to)}</span>`;
+      html += `<span class="dt-msg-channel">${svgIcon(isEmail ? 'mail' : 'chat')}${escapeHtml(ch)}</span>`;
+      html += `</div>`;
+      html += `<div class="dt-msg-bubble ${isEmail ? 'email' : ''}" id="message-display">`;
+      if (isEmail && task.message_subject) html += `<div class="dt-msg-subject">${escapeHtml(task.message_subject)}</div>`;
+      html += `<div id="message-body-text">${escapeHtml(task.message_body || '')}</div>`;
+      html += `</div>`;
+      html += `<div class="dt-msg-edit" id="message-editor" style="display:none;"><textarea id="message-input">${escapeHtml(task.message_body || '')}</textarea><div class="dt-msg-edit-actions"><button class="btn btn-primary" onclick="saveMessage()">Save</button><button class="btn" onclick="editMessage()">Cancel</button></div></div>`;
+      html += `</div>`;
     }
 
     // Jira draft panel (when agent has drafted a ticket)
@@ -143,100 +194,78 @@ async function openTask(taskId) {
     if (hasJiraDraft) {
       const jiraDraft = parseJiraDraft(task.body);
       if (jiraDraft) {
-        const typeBadgeColor = {
-          'Feature': '#9f8fef',
-          'Epic': '#9f8fef',
-          'Unit': '#14b8a6',
-          'Story': 'var(--success)',
-          'Bug': 'var(--danger)',
-          'Regression Defect': '#f59e0b',
-          'Spike': 'var(--text-muted)',
-          'Hotfix': '#dc2626',
-          'Work Item Defect': '#f59e0b',
-          'Performance Defect': '#f59e0b',
-          'Security Defect': '#dc2626'
-        }[jiraDraft.type] || 'var(--text-muted)';
         const featureFieldLabel = jiraDraft.type === 'Feature' ? 'Feature' : 'Epic';
-        html += '<div style="background:var(--surface);border:1px solid var(--border);border-left:3px solid ' + typeBadgeColor + ';border-radius:8px;padding:14px;margin:12px 0;">';
-        html += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">';
-        html += `<span style="background:${typeBadgeColor};color:#fff;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;">${escapeHtml(jiraDraft.type)}</span>`;
-        html += `<span style="font-weight:600;font-size:14px;">${escapeHtml(jiraDraft.summary)}</span>`;
-        html += '</div>';
-        if (jiraDraft.description) {
-          html += `<div style="font-size:13px;color:var(--text-muted);white-space:pre-wrap;margin-bottom:10px;max-height:200px;overflow-y:auto;">${escapeHtml(jiraDraft.description)}</div>`;
+        html += `<div class="dt-section">`;
+        html += `<div class="dt-sec-head"><div style="display:flex;align-items:baseline;gap:9px;flex-wrap:wrap;"><span class="dt-sec-title">Jira draft</span><span class="dt-sec-hint">${escapeHtml(jiraDraft.type)}</span></div></div>`;
+        html += `<div class="dt-prose" style="font-weight:600;margin-bottom:8px;">${escapeHtml(jiraDraft.summary)}</div>`;
+        if (jiraDraft.description) html += `<div class="dt-prose dim" style="margin-bottom:13px;">${escapeHtml(jiraDraft.description)}</div>`;
+        const meta = [];
+        if (jiraDraft.parent) meta.push(['Parent', jiraDraft.parent]);
+        if (jiraDraft.priority) meta.push(['Priority', jiraDraft.priority]);
+        if (jiraDraft.labels.length) meta.push(['Labels', jiraDraft.labels.join(', ')]);
+        if (jiraDraft.release_notes) meta.push(['Release', jiraDraft.release_notes]);
+        if (jiraDraft.feature_name) meta.push([featureFieldLabel, jiraDraft.feature_name]);
+        if (jiraDraft.gtm_date) meta.push(['GTM', jiraDraft.gtm_date]);
+        if (jiraDraft.client_commitment) meta.push(['Commit', jiraDraft.client_commitment]);
+        if (meta.length) {
+          html += `<div class="dt-summary">`;
+          meta.forEach(([k, v]) => html += `<div class="dt-sum-item"><span class="dt-sum-k">${k}</span><span class="dt-sum-v">${escapeHtml(v)}</span></div>`);
+          html += `</div>`;
         }
-        html += '<div style="display:flex;gap:8px;flex-wrap:wrap;font-size:11px;">';
-        if (jiraDraft.parent) html += `<span style="background:var(--surface-hover);padding:2px 6px;border-radius:3px;">Parent: ${escapeHtml(jiraDraft.parent)}</span>`;
-        if (jiraDraft.priority) html += `<span style="background:var(--surface-hover);padding:2px 6px;border-radius:3px;">Priority: ${escapeHtml(jiraDraft.priority)}</span>`;
-        if (jiraDraft.labels.length) html += `<span style="background:var(--surface-hover);padding:2px 6px;border-radius:3px;">Labels: ${escapeHtml(jiraDraft.labels.join(', '))}</span>`;
-        if (jiraDraft.release_notes) html += `<span style="background:var(--surface-hover);padding:2px 6px;border-radius:3px;">Release: ${escapeHtml(jiraDraft.release_notes)}</span>`;
-        if (jiraDraft.feature_name) html += `<span style="background:var(--surface-hover);padding:2px 6px;border-radius:3px;">${featureFieldLabel}: ${escapeHtml(jiraDraft.feature_name)}</span>`;
-        if (jiraDraft.gtm_date) html += `<span style="background:var(--surface-hover);padding:2px 6px;border-radius:3px;">GTM: ${escapeHtml(jiraDraft.gtm_date)}</span>`;
-        if (jiraDraft.client_commitment) html += `<span style="background:var(--surface-hover);padding:2px 6px;border-radius:3px;">Commit: ${escapeHtml(jiraDraft.client_commitment)}</span>`;
-        html += '</div>';
-        html += '<div style="margin-top:6px;font-size:11px;color:var(--text-dim);">Project: VNT &middot; Component: Vantaca HXP &middot; Board: AI DLC (1096) &middot; Status: Refinement</div>';
-        html += '</div>';
+        html += `<div class="dt-sec-hint" style="margin-top:11px;">Project VNT · Vantaca HXP · Board AI DLC (1096) · Refinement</div>`;
+        html += `</div>`;
       }
     }
 
-    // Body sections (description, acceptance criteria)
-    if (task.body) {
-      const bodyText = task.body.trim();
-      const sections = bodyText.split(/^## /m).filter(s => s.trim());
-      sections.forEach(section => {
-        const lines = section.split('\n');
-        const title = lines[0].trim();
-        const content = lines.slice(1).join('\n').trim();
-        if (title.toLowerCase() === 'activity log') return;
-        if (title.toLowerCase() === 'suggested times') return;
-        if (title.toLowerCase() === 'jira draft') return;
-        if (title.toLowerCase() === 'description') {
-          html += `<div class="section-header"><span class="section-title" style="border:none;margin:0;padding-top:12px;">Description</span><button class="btn-edit" onclick="toggleDescEdit()" id="desc-edit-btn">Edit</button></div>`;
-          html += `<div id="desc-display" class="section-content">${escapeHtml(content)}</div>`;
-          html += `<div id="desc-editor" style="display:none;margin-top:8px;">`;
-          html += `<textarea class="desc-textarea" id="desc-input">${escapeHtml(content)}</textarea>`;
-          html += `<div class="desc-actions"><button class="btn btn-primary" onclick="saveDescription()">Save</button><button class="btn" onclick="toggleDescEdit()">Cancel</button></div>`;
-          html += `</div>`;
-        } else if (content) {
-          html += `<div class="section-title">${escapeHtml(title)}</div>`;
-          html += `<div class="section-content">${escapeHtml(content)}</div>`;
-        }
-      });
-    }
+    // ── Details — the demoted metadata, parked next to the pipeline ──
+    html += `<div class="dt-section">`;
+    html += `<div class="dt-sec-head"><span class="dt-sec-title">Details</span></div>`;
+    html += `<div class="dt-summary">`;
+    const sum = [
+      ['Priority', task.priority || '—'],
+      ['Domain', task.domain || '—'],
+      ['Assignee', task.assignee || '—'],
+      ['Creator', task.creator || '—'],
+      ['Project', task.project || '—'],
+    ];
+    if (task.due) sum.push(['Due', task.due]);
+    sum.push(['Created', formatDate(task.created)]);
+    if (task.waiting_on) { sum.push(['Waiting on', task.waiting_on]); sum.push(['Expected', task.waiting_expected || '—']); }
+    sum.forEach(([k, v]) => html += `<div class="dt-sum-item"><span class="dt-sum-k">${k}</span><span class="dt-sum-v">${escapeHtml(String(v))}</span></div>`);
+    html += `</div></div>`;
 
-    // Activity log
+    // ── Pipeline (evals) — filled async into this slot ─────────────────
+    html += `<div class="dt-section" id="pipeline-slot"></div>`;
+
+    // ── Activity + comments — one calm thread, no left bars ───────────
+    html += `<div class="dt-section">`;
+    html += `<div class="dt-sec-head"><span class="dt-sec-title">Activity</span></div>`;
     if (task.activity_log && task.activity_log.length > 0) {
-      html += '<div class="section-title">Activity Log</div>';
-      html += '<div class="activity-log">';
-      task.activity_log.forEach(entry => {
-        const typeClass = entry.type || '';
-        html += `<div class="log-entry ${typeClass}">`;
-        html += `<div class="log-meta">${formatDate(entry.timestamp)} — ${entry.actor}${entry.type ? ` [${entry.type}]` : ''}</div>`;
-        html += `<div class="log-content">${escapeHtml(entry.content)}</div>`;
-        html += `</div>`;
+      html += `<div class="dt-thread">`;
+      task.activity_log.forEach(e => {
+        const kind = e.type || 'comment';
+        html += `<div class="dt-event ev-${kind}"><span class="dt-ev-dot"></span><div><div class="dt-ev-meta"><span class="dt-ev-actor">${escapeHtml(e.actor)}</span><span>${formatDate(e.timestamp)}</span>${e.type ? `<span class="dt-ev-kind">${e.type.replace(/-/g, ' ')}</span>` : ''}</div><div class="dt-ev-body">${escapeHtml(e.content)}</div></div></div>`;
       });
-      html += '</div>';
+      html += `</div>`;
+    } else {
+      html += `<div class="dt-prose dim" style="font-size:12.5px;">Nothing logged yet.</div>`;
     }
-
-    // Comment box
-    html += `
-      <div class="comment-box">
-        <textarea class="comment-input" id="comment-input" placeholder="Add a comment..."></textarea>
-      </div>
-    `;
+    html += `<div class="dt-composer"><textarea class="comment-input" id="comment-input" placeholder="Leave a note for your agent — or yourself…"></textarea><div class="dt-composer-actions"><button class="btn btn-quiet" id="dt-comment-btn" onclick="addComment()">Add comment</button></div></div>`;
+    html += `</div>`;
 
     modalBody.innerHTML = html;
+    // Always open at the top — never inherit the last card's scroll position.
+    modalBody.scrollTop = 0;
+    overlay.scrollTop = 0;
 
     // Load pipeline traces (async, appends to modal)
     // Show for all tasks — task-creation traces exist for every task,
     // not just agent-dispatched ones
     loadPipelineTraces(task.id).then(traces => {
-      if (traces.length > 0) {
-        const pipelineHtml = renderPipeline(traces, task.id);
-        const pipelineDiv = document.createElement('div');
-        pipelineDiv.innerHTML = pipelineHtml;
-        modalBody.appendChild(pipelineDiv);
-      }
+      const slot = document.getElementById('pipeline-slot');
+      if (!slot) return;
+      if (traces.length > 0) slot.innerHTML = renderPipeline(traces, task.id);
+      else slot.remove();
     });
 
     // Set up attendee typeahead if this is a schedule-meeting task
@@ -245,51 +274,30 @@ async function openTask(taskId) {
       setupAttendeeTypeahead();
     }
 
-    // Actions — context-sensitive buttons
-    const doneLabel = isAgentComplete ? 'Approve & Archive' : 'Mark Done';
+    // Actions — regrouped by job. The output opens from the panel up top,
+    // so it's gone from here. Left = utilities (incl. rerun, moved aside);
+    // right = the one act you came to do.
+    const doneLabel = isAgentComplete ? 'Approve & archive' : 'Mark done';
     const canDispatch = (task.status === 'open' || (task.status === 'blocked' && task.agent_status === 'failed'))
                         && (task.queue === 'collab' || task.queue === 'agent');
     const canRerun = (task.queue === 'agent' || task.queue === 'collab')
                      && (task.agent_status === 'failed' || task.agent_status === 'complete' || task.status === 'blocked');
-    let actionsHtml = '';
-    if (canDispatch) {
-      actionsHtml += `<button class="btn btn-schedule" id="btn-start-agent" onclick="startAgent('${task.id}')">Start Agent</button>`;
-    }
-    if (canRerun) {
-      actionsHtml += `<button class="btn btn-warning" id="btn-rerun-agent" onclick="rerunAgent('${task.id}')">Rerun Agent</button>`;
-    }
-    actionsHtml += `<button class="btn btn-primary" onclick="addComment()">Add Comment</button>`;
-    // Show "Create Meeting" whenever the picker is shown (i.e., SLOT markers exist).
-    // Picker visibility is gated only on parsed slot count, not agent_status.
     const hasSlots = isScheduleMeeting && task.body && parseSlots(task.body).length > 0;
-    if (hasSlots) {
-      actionsHtml += `<button class="btn btn-schedule" id="btn-create-meeting" onclick="scheduleMeeting('${task.id}')" disabled>Create Meeting</button>`;
-    }
-    if (hasJiraDraft && (task.agent_status === 'complete' || task.agent_status === 'needs-human')) {
-      actionsHtml += `<button class="btn btn-schedule" id="btn-publish-jira" onclick="publishToJira('${task.id}')">Publish to Jira</button>`;
-    }
-    if (isAgentComplete && task.agent_output) {
-      const out = task.agent_output.trim();
-      if (out.endsWith('.md')) {
-        actionsHtml += `<a href="${obsidianUri(out)}" class="btn" title="Open in Obsidian">Open Output</a>`;
-      } else {
-        const urlMatch = out.match(/https?:\/\/[^\s)]+/);
-        if (urlMatch) {
-          actionsHtml += `<a href="${escapeHtml(urlMatch[0])}" target="_blank" rel="noopener" class="btn">Open Link</a>`;
-        }
-      }
-    }
-    if (task.sharepoint_url) {
-      actionsHtml += `<a href="${escapeHtml(task.sharepoint_url)}" target="_blank" rel="noopener" class="btn" title="Open in Word Online">Open in Word</a>`;
-    } else if (task.sharepoint_path) {
-      actionsHtml += `<a href="/open?file=${encodeURIComponent(task.sharepoint_path)}" class="btn" title="Open in Microsoft Word">Open in Word</a>`;
-    }
-    actionsHtml += `<button class="btn btn-success" onclick="markDone()">${doneLabel}</button>`;
-    if (isAgentComplete && task.agent_output) {
-      actionsHtml += `<button class="btn btn-danger" id="btn-done-delete" onclick="markDoneAndDelete()">Approve & Delete</button>`;
-    }
-    actionsHtml += `<button class="btn" onclick="closeModal()">Close</button>`;
-    modalActions.innerHTML = actionsHtml;
+    const canSendMessage = task.task_type === 'send-message' && (task.agent_status === 'complete' || task.agent_status === 'needs-human');
+
+    let leftHtml = `<button class="btn btn-quiet" onclick="closeModal()">Close</button>`;
+    if (canRerun) leftHtml += `<button class="btn btn-quiet" id="btn-rerun-agent" onclick="rerunAgent('${task.id}')">Rerun agent</button>`;
+
+    let rightHtml = '';
+    if (canDispatch) rightHtml += `<button class="btn btn-schedule" id="btn-start-agent" onclick="startAgent('${task.id}')">Start agent</button>`;
+    if (hasSlots) rightHtml += `<button class="btn btn-schedule" id="btn-create-meeting" onclick="scheduleMeeting('${task.id}')" disabled>Create meeting</button>`;
+    if (hasJiraDraft && (task.agent_status === 'complete' || task.agent_status === 'needs-human')) rightHtml += `<button class="btn btn-schedule" id="btn-publish-jira" onclick="publishToJira('${task.id}')">Publish to Jira</button>`;
+    if (canSendMessage) rightHtml += `<button class="btn btn-schedule" id="btn-send-message" onclick="sendMessage('${task.id}')">${svgIcon('send')}Send message</button>`;
+    // Both approvals sit together on the right
+    if (isAgentComplete && task.agent_output) rightHtml += `<button class="btn btn-danger" id="btn-done-delete" onclick="markDoneAndDelete()">Approve & delete</button>`;
+    rightHtml += `<button class="btn btn-success" onclick="markDone()">${doneLabel}</button>`;
+
+    modalActions.innerHTML = `<div class="dt-foot-left">${leftHtml}</div><div class="dt-foot-right">${rightHtml}</div>`;
   } catch (err) {
     modalBody.innerHTML = `<div class="loading">Error: ${err.message}</div>`;
   }
@@ -320,7 +328,7 @@ async function markDoneAndDelete() {
     btn.dataset.armed = 'true';
     btn.textContent = 'Click again to confirm delete';
     btn.classList.add('btn-danger');
-    setTimeout(() => { if (btn && btn.dataset.armed) { delete btn.dataset.armed; btn.textContent = 'Done & Delete'; btn.classList.remove('btn-danger'); } }, 3000);
+    setTimeout(() => { if (btn && btn.dataset.armed) { delete btn.dataset.armed; btn.textContent = 'Approve & delete'; btn.classList.remove('btn-danger'); } }, 3000);
     return;
   }
   if (btn) delete btn.dataset.armed;
@@ -389,7 +397,7 @@ async function rerunAgent(taskId) {
     btn.dataset.armed = 'true';
     btn.textContent = 'Click again to confirm';
     btn.classList.add('btn-danger');
-    setTimeout(() => { if (btn.dataset.armed) { delete btn.dataset.armed; btn.textContent = 'Rerun Agent'; btn.classList.remove('btn-danger'); } }, 3000);
+    setTimeout(() => { if (btn.dataset.armed) { delete btn.dataset.armed; btn.textContent = 'Rerun agent'; btn.classList.remove('btn-danger'); } }, 3000);
     return;
   }
   if (btn) {
@@ -410,7 +418,7 @@ async function rerunAgent(taskId) {
     toast(`Error rerunning agent: ${err.message}`);
     if (btn) {
       btn.disabled = false;
-      btn.textContent = 'Rerun Agent';
+      btn.textContent = 'Rerun agent';
     }
   }
 }
@@ -435,7 +443,7 @@ function parseSlots(body) {
 
 function selectSlot(el, index) {
   // Deselect all
-  document.querySelectorAll('.slot-option').forEach(s => s.classList.remove('selected'));
+  document.querySelectorAll('.dt-slot').forEach(s => s.classList.remove('selected'));
   // Select this one
   el.classList.add('selected');
   el.querySelector('input[type="radio"]').checked = true;
@@ -445,7 +453,7 @@ function selectSlot(el, index) {
 }
 
 async function scheduleMeeting(taskId) {
-  const selected = document.querySelector('.slot-option.selected input[type="radio"]');
+  const selected = document.querySelector('.dt-slot.selected input[type="radio"]');
   if (!selected) {
     toast('Please select a time slot first.', 'warn');
     return;
@@ -501,6 +509,54 @@ async function scheduleMeeting(taskId) {
       btn.disabled = false;
       btn.textContent = 'Create Meeting';
     }
+  }
+}
+
+// ─── Send Message ────────────────────────────────────────────────────
+
+function editMessage() {
+  const display = document.getElementById('message-display');
+  const editor = document.getElementById('message-editor');
+  const btn = document.getElementById('btn-edit-message');
+  if (!editor) return;
+  const editing = editor.style.display !== 'none';
+  editor.style.display = editing ? 'none' : 'block';
+  if (display) display.style.display = editing ? '' : 'none';
+  if (btn) btn.style.display = editing ? '' : 'none';
+  if (!editing) { const ta = document.getElementById('message-input'); if (ta) ta.focus(); }
+}
+
+async function saveMessage() {
+  if (!currentTaskId) return;
+  const input = document.getElementById('message-input');
+  const message_body = input.value.trim();
+  try {
+    const res = await fetch(`${API}/tasks/${currentTaskId}/message`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message_body }),
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const bodyEl = document.getElementById('message-body-text');
+    if (bodyEl) bodyEl.textContent = message_body;
+    editMessage();
+    toast('Message updated.', 'success');
+  } catch (err) {
+    toast(`Could not save message: ${err.message}`);
+  }
+}
+
+async function sendMessage(taskId) {
+  const btn = document.getElementById('btn-send-message');
+  if (btn) { btn.disabled = true; btn.textContent = 'Sending…'; }
+  try {
+    const res = await fetch(`${API}/tasks/${taskId}/send-message`, { method: 'POST' });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    toast('Message sent.', 'success');
+    closeModal();
+    fetchTasks();
+  } catch (err) {
+    toast(`Could not send: ${err.message}`);
+    if (btn) { btn.disabled = false; btn.textContent = 'Send message'; }
   }
 }
 
@@ -594,12 +650,12 @@ async function loadEmailCache() {
 }
 
 function getCurrentAttendees() {
-  const chips = document.querySelectorAll('#attendee-chips .attendee-chip');
+  const chips = document.querySelectorAll('#attendee-chips .dt-att');
   return Array.from(chips).map(c => c.dataset.email).filter(Boolean);
 }
 
 function removeAttendee(el) {
-  el.closest('.attendee-chip').remove();
+  el.closest('.dt-att').remove();
 }
 
 function addAttendeeChip(email) {
@@ -608,11 +664,12 @@ function addAttendeeChip(email) {
   const existing = getCurrentAttendees();
   if (existing.includes(email)) return;
   const container = document.getElementById('attendee-chips');
-  const chip = document.createElement('span');
-  chip.className = 'attendee-chip';
-  chip.dataset.email = email;
-  chip.innerHTML = `${escapeHtml(email)}<span class="chip-remove" onclick="removeAttendee(this)">&times;</span>`;
-  container.appendChild(chip);
+  const row = document.createElement('div');
+  row.className = 'dt-att';
+  row.dataset.email = email;
+  const initial = (email[0] || '?').toUpperCase();
+  row.innerHTML = `<span class="dt-att-avatar">${initial}</span><span class="dt-att-main"><span class="dt-att-name">${escapeHtml(email)}</span></span><span class="dt-att-remove" onclick="removeAttendee(this)">&times;</span>`;
+  container.appendChild(row);
 }
 
 function setupAttendeeTypeahead() {
@@ -742,65 +799,53 @@ async function loadPipelineTraces(taskId) {
 function renderPipeline(traces, taskId) {
   if (!traces || traces.length === 0) return '';
 
-  let html = '<div class="pipeline-section">';
-  html += '<div class="pipeline-title">Pipeline</div>';
+  const FRIENDLY = {
+    'task-parser':      'Task parser',
+    'worker-match':     'Worker match',
+    'worker-execution': 'Worker execution',
+  };
+  const upSvg = `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="2.6" height="6" rx="0.7"/><path d="M5.6 7.4 8 2.6c1 0 1.7.8 1.7 1.8V6h2.6c.7 0 1.2.64 1.04 1.3l-.92 3.9c-.12.5-.58.85-1.1.85H5.6z"/></svg>`;
+  const downSvg = `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="10.4" y="3" width="2.6" height="6" rx="0.7"/><path d="M10.4 8.6 8 13.4c-1 0-1.7-.8-1.7-1.8V10H3.7c-.7 0-1.2-.64-1.04-1.3l.92-3.9c.12-.5.58-.85 1.1-.85H10.4z"/></svg>`;
+  const noteSvg = `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4.4h10v6H7.2L4.6 12.6V10.4H3z"/></svg>`;
+
+  let html = '<div class="dt-sec-head"><span class="dt-sec-title">How it ran</span></div>';
+  html += '<div class="dt-pipe">';
 
   traces.forEach((t, i) => {
-    // Determine icon from trace name
     const name = t.name || '';
-    let icon = '⚙️';
-    if (name.includes('task-parser')) icon = '📝';
-    else if (name.includes('worker-match')) icon = '🔀';
-    else if (name.includes('worker-execution')) icon = '🤖';
+    let key = 'worker-execution';
+    if (name.includes('task-parser')) key = 'task-parser';
+    else if (name.includes('worker-match')) key = 'worker-match';
+    const label = FRIENDLY[key] || name;
 
-    const hasScores = t.scores && t.scores.length > 0;
-    const thumbUp = t.scores?.find(s => s.name === 'human-feedback' && s.value === 1);
-    const thumbDown = t.scores?.find(s => s.name === 'human-feedback' && s.value === 0);
+    const thumbUp = t.scores && t.scores.find(s => s.name === 'human-feedback' && s.value === 1);
+    const thumbDown = t.scores && t.scores.find(s => s.name === 'human-feedback' && s.value === 0);
+    const isError = String(t.output_summary || '').toLowerCase().includes('error');
+    let stClass = '';
+    if (thumbUp) stClass = 'st-good';
+    else if (thumbDown || isError) stClass = 'st-bad';
 
-    // Format timestamp
-    const ts = t.timestamp ? new Date(t.timestamp).toLocaleTimeString() : '';
+    html += `<div class="dt-step ${stClass}">`;
+    html += `<div class="dt-step-head"><span class="dt-step-dot"></span><span class="dt-step-name">${label}</span>`;
+    html += `<span class="dt-step-rate">`;
+    html += `<button class="dt-rate-btn ${thumbUp ? 'on-up' : ''}" onclick="scoreStep('${taskId}','${t.trace_id}',1,this)" title="Looks right">${upSvg}</button>`;
+    html += `<button class="dt-rate-btn ${thumbDown ? 'on-down' : ''}" onclick="scoreStep('${taskId}','${t.trace_id}',0,this)" title="Not right">${downSvg}</button>`;
+    html += `<button class="dt-rate-btn dt-rate-note" onclick="toggleAnnotation('annot-${i}')" title="Add a note">${noteSvg}Note</button>`;
+    html += `</span></div>`;
 
-    html += `<div class="pipeline-step">
-      <div class="pipeline-step-header">
-        <span class="pipeline-step-name">${icon} ${t.name} <span style="color:var(--text-dim);font-weight:normal;font-size:11px;">${ts}</span></span>
-        <div class="pipeline-step-actions">
-          <button class="btn-score ${thumbUp ? 'scored-up' : ''}" onclick="scoreStep('${taskId}','${t.trace_id}',1,this)" title="Good">👍</button>
-          <button class="btn-score ${thumbDown ? 'scored-down' : ''}" onclick="scoreStep('${taskId}','${t.trace_id}',0,this)" title="Bad">👎</button>
-          <button class="btn-annotate" onclick="toggleAnnotation('annot-${i}')" title="Add note">💬</button>
-        </div>
-      </div>`;
+    if (t.output_summary && t.output_summary !== 'null') html += `<div class="dt-step-out">${escapeHtml(String(t.output_summary))}</div>`;
 
-    // Show output first (the result) — this is the most useful info
-    if (t.output_summary && t.output_summary !== 'null') {
-      html += `<div class="pipeline-step-detail" style="color:var(--text);">→ ${t.output_summary}</div>`;
-    }
-    // Show input as secondary context
-    if (t.input_summary && t.input_summary !== 'null') {
-      html += `<div class="pipeline-step-detail">In: ${t.input_summary}</div>`;
-    }
+    (t.scores || []).filter(s => s.comment).forEach(s => {
+      html += `<div class="dt-saved-note"><span class="who">your note</span>${escapeHtml(s.comment)}</div>`;
+    });
 
-    // Show existing scores
-    if (hasScores) {
-      html += '<div class="pipeline-scores">';
-      for (const s of t.scores) {
-        const cls = s.value === 1 || s.value === 'good' ? 'good' : 'bad';
-        const label = s.comment || (s.value === 1 ? '👍' : s.value === 0 ? '👎' : s.value);
-        html += `<span class="pipeline-score-badge ${cls}">${label}</span>`;
-      }
-      html += '</div>';
-    }
+    html += `<div class="dt-anno" id="annot-${i}"><textarea id="annot-input-${i}" placeholder="What was off — or what to keep doing?"></textarea><div class="dt-anno-actions"><button class="btn btn-quiet" onclick="submitAnnotation('${taskId}','${t.trace_id}','annot-input-${i}')">Save note</button><button class="btn btn-quiet" onclick="toggleAnnotation('annot-${i}')">Cancel</button></div></div>`;
 
-    // Annotation box
-    html += `<div class="annotation-box" id="annot-${i}">
-      <textarea class="annotation-input" id="annot-input-${i}" placeholder="What went wrong or right?"></textarea>
-      <button class="annotation-submit" onclick="submitAnnotation('${taskId}','${t.trace_id}','annot-input-${i}')">Submit</button>
-    </div>`;
-
-    html += '</div>';
+    html += `</div>`;
   });
 
-  html += `<a class="pipeline-link" href="${LANGFUSE_HOST}/project/pm-os/sessions/${taskId}" target="_blank">View full traces in LangFuse ↗</a>`;
   html += '</div>';
+  html += `<a class="dt-pipe-link" href="${LANGFUSE_HOST}/project/pm-os/sessions/${taskId}" target="_blank">${svgIcon('output')}Full trace in LangFuse</a>`;
   return html;
 }
 
@@ -811,10 +856,12 @@ async function scoreStep(taskId, traceId, score, btn) {
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({ score }),
     });
-    // Visual feedback
+    // Visual feedback — light up the chosen thumb, settle the step's dot
     const parent = btn.parentElement;
-    parent.querySelectorAll('.btn-score').forEach(b => b.classList.remove('scored-up', 'scored-down'));
-    btn.classList.add(score === 1 ? 'scored-up' : 'scored-down');
+    parent.querySelectorAll('.dt-rate-btn').forEach(b => b.classList.remove('on-up', 'on-down'));
+    btn.classList.add(score === 1 ? 'on-up' : 'on-down');
+    const step = btn.closest('.dt-step');
+    if (step) { step.classList.remove('st-good', 'st-bad'); step.classList.add(score === 1 ? 'st-good' : 'st-bad'); }
   } catch (err) {
     console.error('Score failed:', err);
   }
@@ -822,7 +869,10 @@ async function scoreStep(taskId, traceId, score, btn) {
 
 function toggleAnnotation(id) {
   const box = document.getElementById(id);
-  box.classList.toggle('visible');
+  if (!box) return;
+  box.classList.toggle('open');
+  const ta = box.querySelector('textarea');
+  if (ta && box.classList.contains('open')) ta.focus();
 }
 
 async function submitAnnotation(taskId, traceId, inputId) {
@@ -835,10 +885,15 @@ async function submitAnnotation(taskId, traceId, inputId) {
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({ comment }),
     });
+    // Show the saved note inline (feels real without a round-trip refresh)
+    const box = input.closest('.dt-anno');
+    const note = document.createElement('div');
+    note.className = 'dt-saved-note';
+    note.innerHTML = `<span class="who">your note</span>${escapeHtml(comment)}`;
+    box.parentNode.insertBefore(note, box);
     input.value = '';
-    input.parentElement.classList.remove('visible');
-    // Refresh pipeline to show new annotation
-    if (currentTaskId) openTask(currentTaskId);
+    box.classList.remove('open');
+    toast('Note saved.', 'success');
   } catch (err) {
     console.error('Annotation failed:', err);
   }

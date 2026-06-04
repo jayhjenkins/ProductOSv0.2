@@ -221,7 +221,8 @@ def create_task(title, queue="human", priority="medium", domain=None,
                 waiting_on=None, waiting_expected=None,
                 task_type=None, meeting_attendees=None,
                 meeting_duration=None, meeting_title=None,
-                meeting_description=None):
+                meeting_description=None, message_channel=None,
+                message_to=None, message_subject=None, message_body=None):
     """Create a new task file in the appropriate queue directory.
 
     Returns (task_id, filepath).
@@ -290,6 +291,11 @@ def create_task(title, queue="human", priority="medium", domain=None,
         frontmatter["meeting_recurrence_pattern"] = None
         frontmatter["meeting_selected_slot"] = None
         frontmatter["meeting_event_id"] = None
+    if task_type == "send-message":
+        frontmatter["message_channel"] = message_channel
+        frontmatter["message_to"] = message_to
+        frontmatter["message_subject"] = message_subject
+        frontmatter["message_body"] = message_body
 
     # Build body
     body_parts = ["\n## Description\n"]
