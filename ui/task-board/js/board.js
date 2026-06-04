@@ -5,10 +5,10 @@ async function fetchTasks() {
     const res = await fetch(`${API}/tasks`);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     allTasks = await res.json();
-    renderBoard();
+    renderNow();
     renderStats();
   } catch (err) {
-    document.getElementById('board').innerHTML =
+    document.getElementById('now-view').innerHTML =
       `<div class="loading">Error loading tasks: ${err.message}</div>`;
   }
 }
