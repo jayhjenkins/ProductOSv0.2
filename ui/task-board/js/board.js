@@ -161,6 +161,7 @@ function renderCard(task, queueName) {
       : `<span class="chip chip-due">${svgIcon('due')}due ${task.due}</span>`);
   }
   if (task.task_type === 'schedule-meeting') signals.push(`<span class="chip chip-meeting">${svgIcon('meeting')}schedule</span>`);
+  if (task.task_type === 'send-message') signals.push(`<span class="chip chip-meeting" style="color:var(--q-human);background:color-mix(in oklab, var(--q-human) 16%, transparent)">${svgIcon('chat')}message</span>`);
   if (task.body && task.body.includes('<!-- JIRA_DRAFT -->')) signals.push(`<span class="chip chip-cron" style="color:var(--accent);background:var(--accent-soft)">${svgIcon('jira')}jira draft</span>`);
   if (isCronTask(task)) signals.push(`<span class="chip chip-cron">${svgIcon('cron')}cron</span>`);
   if (task.judge_score != null) {

@@ -106,11 +106,25 @@ Task {task_id}. Follow these steps:
    - {why this recipient, assumptions, anything to confirm before sending}
    ```
 
-7. Complete:
+7. Populate the task so the board's Message card shows the draft inline:
+   Write the **recommended** version (Teams unless email clearly fits better) back
+   into the task's message fields so the card preview and the Send button work:
+   ```
+   ./scripts/task.sh update {task_id} \
+     --message-channel "Teams" \
+     --message-to "{recipient}" \
+     --message-body "{the recommended draft, verbatim}" \
+     --actor agent
+   ```
+   For an email recommendation, use `--message-channel "Email"` and add
+   `--message-subject "{subject}"`. The full two-version draft still lives in the
+   output file; this just surfaces the one Jay will most likely send.
+
+8. Complete:
    Run: `./scripts/task.sh agent:complete {task_id} --output "datasets/product/agent-output/YYYY-MM-DD_msg-...md"`
    Then STOP. Do not send the message — Jay reviews and sends it himself.
 
-8. If you encounter an unrecoverable error:
+9. If you encounter an unrecoverable error:
    Run: `./scripts/task.sh agent:fail {task_id} --error "what went wrong"`
 
 {rerun_block}Important rules:

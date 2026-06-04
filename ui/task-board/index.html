@@ -278,71 +278,6 @@
   .chip-waiting { color: var(--warning); background: var(--warning-soft); }
   .chip-cron { color: var(--text-muted); background: var(--surface-hover); }
   .chip-meeting { color: var(--success); background: var(--success-soft); }
-  .chip-judge { cursor: help; }
-  .chip-judge-good { color: var(--success); background: var(--success-soft); }
-  .chip-judge-mid { color: var(--warning); background: var(--warning-soft); }
-  .chip-judge-low { color: var(--danger); background: var(--danger-soft); }
-
-  /* ─── Quality — calm worker-trust view (read-only) ─────────────────── */
-  .quality-view { padding: 30px 24px; max-width: 920px; margin: 0 auto; min-height: calc(100vh - 62px); }
-  .quality-head { margin-bottom: 24px; }
-  .quality-head h3 { font-family: 'Spectral', serif; font-size: 22px; font-weight: 500; margin: 0 0 6px; color: var(--text); }
-  .quality-sub { font-size: 13px; color: var(--text-muted); line-height: 1.55; max-width: 580px; }
-  .quality-sub-dim { color: var(--text-dim); }
-  .quality-empty { padding: 24px; color: var(--text-dim); font-size: 13.5px; font-style: italic; }
-
-  .quality-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
-
-  /* one calm card per worker — generous breathing room, clear vertical rhythm */
-  .q-card { cursor: default; display: flex; flex-direction: column; gap: 18px; padding: 18px 18px 15px; margin-bottom: 0; }
-  .q-card-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
-  .q-name { font-weight: 600; font-size: 14px; color: var(--text); flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .q-phase-txt { flex: 0 0 auto; font-size: 11px; color: var(--text-dim); white-space: nowrap; }
-
-  /* loud score + sparkline that SHOWS the trend */
-  .q-headline { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; }
-  .q-score-num { font-family: 'Spectral', serif; font-size: 40px; font-weight: 500; color: var(--tone, var(--text)); line-height: 0.9; flex: 0 0 auto; letter-spacing: -0.01em; }
-  .q-score-of { font-size: 14px; color: var(--text-dim); font-family: 'Mulish', sans-serif; font-weight: 400; margin-left: 2px; letter-spacing: 0; }
-  .q-spark { width: 72px; height: 26px; flex: 0 0 auto; overflow: visible; color: var(--tone, var(--accent)); margin-bottom: 4px; }
-  .q-spark-line { fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; opacity: 0.85; vector-effect: non-scaling-stroke; }
-  .q-spark-area { fill: currentColor; opacity: 0.10; stroke: none; }
-  .q-spark-dot { fill: currentColor; }
-
-  /* one compact dimension chart — vertical bars sharing a baseline */
-  .q-dims { display: flex; align-items: flex-end; gap: 4px; height: 76px; }
-  .q-dcol { flex: 1 1 0; display: flex; flex-direction: column; align-items: center; gap: 5px; height: 100%; justify-content: flex-end; }
-  .q-dval { font-size: 11px; color: var(--text-muted); font-variant-numeric: tabular-nums; line-height: 1; }
-  .q-dtrack { width: 100%; max-width: 26px; flex: 1 1 auto; display: flex; align-items: flex-end; background: linear-gradient(var(--border-soft), var(--border-soft)) center / 100% 1px no-repeat; border-radius: 4px; }
-  .q-dbar { display: block; width: 100%; border-radius: 4px 4px 2px 2px; background: color-mix(in oklab, var(--tone, var(--accent)) 52%, var(--surface-hover)); transition: height 0.6s cubic-bezier(0.22,0.61,0.36,1); }
-  .q-dlabel { font-size: 9.5px; color: var(--text-dim); letter-spacing: 0.2px; line-height: 1; }
-
-  .q-foot { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 8px; font-size: 11.5px; color: var(--text-dim); padding-top: 13px; border-top: 1px solid var(--border-soft); }
-  .q-foot span { white-space: nowrap; }
-  .q-foot-sep { opacity: 0.5; }
-
-  .quality-section-title { font-family: 'Spectral', serif; font-size: 16px; font-weight: 500; color: var(--text); margin: 34px 0 12px; display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
-  .quality-section-sub { font-family: 'Mulish', sans-serif; font-size: 12px; color: var(--text-dim); font-weight: 400; }
-
-  .q-dis-list { display: flex; flex-direction: column; gap: 10px; }
-  .q-disagreement { display: flex; flex-direction: column; gap: 8px; padding: 14px 16px; margin-bottom: 0; }
-  .q-dis-head { display: flex; align-items: center; gap: 9px; }
-  .q-dis-id { font-size: 11px; font-family: 'Mulish', monospace; color: var(--text-dim); letter-spacing: 0.4px; white-space: nowrap; }
-  .q-dis-type { font-size: 11.5px; color: var(--text-dim); white-space: nowrap; }
-  .q-dis-verdicts { display: flex; align-items: center; gap: 16px; }
-  .q-judge { font-size: 12.5px; font-weight: 600; color: var(--tone, var(--text)); white-space: nowrap; }
-  .q-you { display: inline-flex; align-items: center; gap: 5px; font-size: 12.5px; color: var(--text-muted); white-space: nowrap; }
-  .q-you svg { width: 13px; height: 13px; }
-  .q-you-keep { color: var(--success); }
-  .q-you-flag { color: var(--danger); }
-  .q-dis-why { font-size: 12.5px; color: var(--text-muted); line-height: 1.55; }
-  .q-dis-note { font-size: 11.5px; color: var(--text-dim); line-height: 1.5; }
-
-  .q-card.tone-high { --tone: var(--accent); }
-  .q-card.tone-mid  { --tone: var(--warning); }
-  .q-card.tone-low  { --tone: var(--danger); }
-  .q-judge.tone-high { --tone: var(--success); }
-  .q-judge.tone-mid  { --tone: var(--warning); }
-  .q-judge.tone-low  { --tone: var(--danger); }
 
   .card-actions {
     display: flex; gap: 6px; margin-top: 12px; padding-top: 11px;
@@ -656,6 +591,67 @@
   .cron-history a:hover { text-decoration: underline; }
 
   /* ─── Toasts ──────────────────────────────────────────────────────── */
+  /* ─── Quality — calm worker-trust view (read-only) ─────────────────── */
+  .quality-view { padding: 30px 24px; max-width: 920px; margin: 0 auto; min-height: calc(100vh - 62px); }
+  .quality-head { margin-bottom: 24px; }
+  .quality-head h3 { font-family: 'Spectral', serif; font-size: 22px; font-weight: 500; margin: 0 0 6px; color: var(--text); }
+  .quality-sub { font-size: 13px; color: var(--text-muted); line-height: 1.55; max-width: 580px; }
+  .quality-sub-dim { color: var(--text-dim); }
+  .quality-empty { padding: 24px; color: var(--text-dim); font-size: 13.5px; font-style: italic; }
+
+  .quality-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+
+  /* one calm card per worker — generous breathing room, clear vertical rhythm */
+  .q-card { cursor: default; display: flex; flex-direction: column; gap: 18px; padding: 18px 18px 15px; margin-bottom: 0; }
+  .q-card-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+  .q-name { font-weight: 600; font-size: 14px; color: var(--text); flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .q-phase-txt { flex: 0 0 auto; font-size: 11px; color: var(--text-dim); white-space: nowrap; }
+
+  /* loud score + sparkline that SHOWS the trend */
+  .q-headline { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; }
+  .q-score-num { font-family: 'Spectral', serif; font-size: 40px; font-weight: 500; color: var(--tone, var(--text)); line-height: 0.9; flex: 0 0 auto; letter-spacing: -0.01em; }
+  .q-score-of { font-size: 14px; color: var(--text-dim); font-family: 'Mulish', sans-serif; font-weight: 400; margin-left: 2px; letter-spacing: 0; }
+  .q-spark { width: 72px; height: 26px; flex: 0 0 auto; overflow: visible; color: var(--tone, var(--accent)); margin-bottom: 4px; }
+  .q-spark-line { fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; opacity: 0.85; vector-effect: non-scaling-stroke; }
+  .q-spark-area { fill: currentColor; opacity: 0.10; stroke: none; }
+  .q-spark-dot { fill: currentColor; }
+
+  /* one compact dimension chart — vertical bars sharing a baseline */
+  .q-dims { display: flex; align-items: flex-end; gap: 4px; height: 76px; }
+  .q-dcol { flex: 1 1 0; display: flex; flex-direction: column; align-items: center; gap: 5px; height: 100%; justify-content: flex-end; }
+  .q-dval { font-size: 11px; color: var(--text-muted); font-variant-numeric: tabular-nums; line-height: 1; }
+  .q-dtrack { width: 100%; max-width: 26px; flex: 1 1 auto; display: flex; align-items: flex-end; background: linear-gradient(var(--border-soft), var(--border-soft)) center / 100% 1px no-repeat; border-radius: 4px; }
+  .q-dbar { display: block; width: 100%; border-radius: 4px 4px 2px 2px; background: color-mix(in oklab, var(--tone, var(--accent)) 52%, var(--surface-hover)); transition: height 0.6s cubic-bezier(0.22,0.61,0.36,1); }
+  .q-dlabel { font-size: 9.5px; color: var(--text-dim); letter-spacing: 0.2px; line-height: 1; }
+
+  .q-foot { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 8px; font-size: 11.5px; color: var(--text-dim); padding-top: 13px; border-top: 1px solid var(--border-soft); }
+  .q-foot span { white-space: nowrap; }
+  .q-foot-sep { opacity: 0.5; }
+
+  .quality-section-title { font-family: 'Spectral', serif; font-size: 16px; font-weight: 500; color: var(--text); margin: 34px 0 12px; display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+  .quality-section-sub { font-family: 'Mulish', sans-serif; font-size: 12px; color: var(--text-dim); font-weight: 400; }
+
+  .q-dis-list { display: flex; flex-direction: column; gap: 10px; }
+  .q-disagreement { display: flex; flex-direction: column; gap: 8px; padding: 14px 16px; margin-bottom: 0; }
+  .q-dis-head { display: flex; align-items: center; gap: 9px; }
+  .q-dis-id { font-size: 11px; font-family: 'Mulish', monospace; color: var(--text-dim); letter-spacing: 0.4px; white-space: nowrap; }
+  .q-dis-type { font-size: 11.5px; color: var(--text-dim); white-space: nowrap; }
+  .q-dis-verdicts { display: flex; align-items: center; gap: 16px; }
+  .q-judge { font-size: 12.5px; font-weight: 600; color: var(--tone, var(--text)); white-space: nowrap; }
+  .q-you { display: inline-flex; align-items: center; gap: 5px; font-size: 12.5px; color: var(--text-muted); white-space: nowrap; }
+  .q-you svg { width: 13px; height: 13px; }
+  .q-you-keep { color: var(--success); }
+  .q-you-flag { color: var(--danger); }
+  .q-dis-why { font-size: 12.5px; color: var(--text-muted); line-height: 1.55; }
+  .q-dis-note { font-size: 11.5px; color: var(--text-dim); line-height: 1.5; }
+
+  .q-card.tone-high { --tone: var(--accent); }
+  .q-card.tone-mid  { --tone: var(--warning); }
+  .q-card.tone-low  { --tone: var(--danger); }
+  .q-judge.tone-high { --tone: var(--success); }
+  .q-judge.tone-mid  { --tone: var(--warning); }
+  .q-judge.tone-low  { --tone: var(--danger); }
+
   .toast-container { position: fixed; top: 18px; right: 18px; z-index: 10000; display: flex; flex-direction: column; gap: 9px; pointer-events: none; }
   .toast { pointer-events: auto; padding: 11px 17px; border-radius: 10px; font-size: 13px; max-width: 380px; color: var(--text); background: var(--surface); border: 1px solid var(--border); box-shadow: 0 18px 44px -22px rgba(0,0,0,0.8); animation: toast-in var(--ease); cursor: pointer; }
   .toast.toast-error { border-color: color-mix(in oklab, var(--danger) 45%, var(--border)); background: var(--danger-soft); }
@@ -682,6 +678,214 @@
     .topbar { flex-wrap: wrap; }
     .topbar-tabs { order: 3; width: 100%; overflow-x: auto; }
   }
+
+  /* ═══════════════════════════════════════════════════════════════════
+     TASK DETAIL — redesigned around the job-to-be-done:
+     review the output · understand the ask · leave evals · discuss · act
+     ═══════════════════════════════════════════════════════════════════ */
+
+  /* widen a touch — this is a workspace, not a dialog */
+  #modal-overlay .modal { max-width: 760px; }
+  .modal-header { align-items: flex-start; gap: 14px; }
+  .modal-header h2 { font-size: 19px; line-height: 1.4; padding-top: 1px; }
+  .modal-body { padding: 20px 24px 24px; }
+
+  /* ── Identity line (the keepers: id · type · status · source · when) ── */
+  .dt-identity {
+    display: flex; align-items: center; flex-wrap: wrap; gap: 7px 12px;
+    font-size: 12px; color: var(--text-muted);
+    padding-bottom: 16px; margin-bottom: 18px;
+    border-bottom: 1px solid var(--border-soft);
+  }
+  .dt-id { font-family: 'Mulish', monospace; letter-spacing: 0.4px; color: var(--text-dim); }
+  .dt-type { display: inline-flex; align-items: center; gap: 5px; color: var(--q-color, var(--text-muted)); font-weight: 600; }
+  .dt-type svg { width: 13px; height: 13px; }
+  .dt-type.q-agent { --q-color: var(--q-agent); }
+  .dt-type.q-collab { --q-color: var(--q-collab); }
+  .dt-type.q-human { --q-color: var(--q-human); }
+  .dt-type.q-waiting { --q-color: var(--q-waiting); }
+  .dt-status { display: inline-flex; align-items: center; gap: 5px; }
+  .dt-status svg { width: 13px; height: 13px; }
+  .dt-status.is-running { color: var(--accent); }
+  .dt-status.is-needs-human { color: var(--warning); }
+  .dt-status.is-complete { color: var(--success); }
+  .dt-status.is-failed { color: var(--danger); }
+  .dt-status .mark-running { width: 8px; height: 8px; }
+  .dt-idsep { color: var(--text-dim); opacity: 0.45; }
+  .dt-source { display: inline-flex; align-items: center; gap: 5px; min-width: 0; }
+  .dt-source svg { width: 13px; height: 13px; color: var(--text-dim); flex: 0 0 auto; }
+  .dt-source span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 220px; }
+  .dt-when { color: var(--text-dim); }
+
+  /* ── Output — PRIME real estate. Obsidian left, Word right (50/50). ── */
+  .dt-output-wrap { margin-bottom: 22px; }
+  .dt-art-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .dt-artifact {
+    min-width: 0;
+    display: flex; flex-direction: column; gap: 6px;
+    padding: 14px 15px 13px; text-decoration: none; color: inherit;
+    border: 1px solid color-mix(in oklab, var(--accent) 24%, var(--border-soft));
+    background: color-mix(in oklab, var(--accent) 5%, var(--surface-hover));
+    border-radius: 12px;
+    transition: background var(--ease), border-color var(--ease), transform var(--ease);
+  }
+  .dt-artifact:hover { background: color-mix(in oklab, var(--accent) 11%, transparent); border-color: color-mix(in oklab, var(--accent) 42%, transparent); transform: translateY(-1px); }
+  .dt-artifact.doc { border-color: color-mix(in oklab, var(--success) 24%, var(--border-soft)); background: color-mix(in oklab, var(--success) 5%, var(--surface-hover)); }
+  .dt-artifact.doc:hover { background: color-mix(in oklab, var(--success) 11%, transparent); border-color: color-mix(in oklab, var(--success) 42%, transparent); }
+  .dt-art-top { display: flex; align-items: center; gap: 9px; }
+  .dt-art-icon { flex: 0 0 auto; width: 30px; height: 30px; border-radius: 8px; display: grid; place-items: center; background: var(--accent-soft); color: var(--accent); }
+  .dt-art-icon svg { width: 17px; height: 17px; }
+  .dt-artifact.doc .dt-art-icon { background: var(--success-soft); color: var(--success); }
+  .dt-art-kind { font-size: 10.5px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; color: var(--accent); }
+  .dt-artifact.doc .dt-art-kind { color: var(--success); }
+  .dt-art-name { font-size: 13.5px; font-weight: 600; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .dt-art-path { font-family: 'Mulish', monospace; font-size: 10.5px; color: var(--text-dim); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; letter-spacing: 0.2px; }
+  .dt-art-open { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600; color: var(--accent); margin-top: 2px; }
+  .dt-artifact.doc .dt-art-open { color: var(--success); }
+  .dt-art-open svg { width: 13px; height: 13px; }
+  .dt-output-note { font-size: 12.5px; color: var(--text-muted); line-height: 1.5; margin: 10px 2px 0; }
+  .dt-output-empty {
+    display: flex; align-items: center; gap: 11px; padding: 15px 17px;
+    border: 1px solid var(--border-soft); border-radius: 12px;
+    background: color-mix(in oklab, var(--surface-hover) 45%, transparent);
+    color: var(--text-muted); font-size: 13px;
+  }
+  .dt-output-empty svg, .dt-output-empty .mark-running { width: 16px; height: 16px; flex: 0 0 auto; color: var(--text-dim); }
+
+  /* ── Section scaffold — soft hairline divider gives the eye a rest ── */
+  .dt-section { margin-top: 22px; padding-top: 22px; border-top: 1px solid var(--border-soft); }
+  .dt-section:empty { border-top: none; padding-top: 0; margin-top: 0; }
+  .dt-sec-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-bottom: 11px; }
+  .dt-sec-title { font-family: 'Spectral', serif; font-size: 15px; font-weight: 500; color: var(--text); letter-spacing: 0.01em; }
+  .dt-sec-hint { font-size: 11.5px; color: var(--text-dim); }
+  .dt-prose { font-size: 13.5px; line-height: 1.68; color: var(--text); white-space: pre-wrap; text-wrap: pretty; }
+  .dt-prose.dim { color: var(--text-muted); }
+  .dt-subsec { margin-top: 14px; }
+  .dt-subsec-label { font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 5px; }
+  .dt-textbtn { font-size: 11.5px; padding: 3px 10px; border-radius: 7px; border: 1px solid var(--border-soft); background: transparent; color: var(--text-muted); cursor: pointer; font-family: inherit; transition: border-color var(--ease), color var(--ease); }
+  .dt-textbtn:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* ── Pipeline — calm stacked panels, robust (no spine) ──────────── */
+  .dt-pipe { display: flex; flex-direction: column; gap: 8px; }
+  .dt-step {
+    background: color-mix(in oklab, var(--surface-hover) 45%, transparent);
+    border: 1px solid var(--border-soft); border-radius: 10px;
+    padding: 11px 13px;
+  }
+  .dt-step-head { display: flex; align-items: center; gap: 9px; }
+  .dt-step-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--st, var(--text-dim)); flex: 0 0 auto; }
+  .dt-step.st-good { --st: var(--success); }
+  .dt-step.st-bad  { --st: var(--danger); }
+  .dt-step.st-run  { --st: var(--accent); }
+  .dt-step.st-run .dt-step-dot { animation: breathe 2.8s ease-in-out infinite; }
+  .dt-step-name { font-size: 13px; font-weight: 600; color: var(--text); white-space: nowrap; }
+  .dt-step-rate { margin-left: auto; display: inline-flex; align-items: center; gap: 4px; }
+  .dt-rate-btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 27px; height: 24px; border-radius: 7px; cursor: pointer;
+    border: 1px solid var(--border-soft); background: transparent; color: var(--text-dim);
+    transition: all var(--ease);
+  }
+  .dt-rate-btn svg { width: 14px; height: 14px; }
+  .dt-rate-btn:hover { color: var(--text); border-color: var(--border); background: var(--surface-hover); }
+  .dt-rate-btn.on-up { color: var(--success); border-color: color-mix(in oklab, var(--success) 45%, transparent); background: var(--success-soft); }
+  .dt-rate-btn.on-down { color: var(--danger); border-color: color-mix(in oklab, var(--danger) 45%, transparent); background: var(--danger-soft); }
+  .dt-rate-note { width: auto; padding: 0 8px; gap: 5px; font-size: 11.5px; font-weight: 600; }
+  .dt-step-out { font-size: 12.5px; color: var(--text-muted); line-height: 1.55; margin-top: 8px; padding-left: 17px; }
+  .dt-anno { margin-top: 9px; display: none; }
+  .dt-anno.open { display: block; }
+  .dt-anno textarea { width: 100%; box-sizing: border-box; background: var(--bg); border: 1px solid var(--border); color: var(--text); border-radius: 9px; padding: 9px 11px; font-size: 12.5px; font-family: inherit; resize: vertical; min-height: 52px; }
+  .dt-anno textarea:focus { outline: none; border-color: var(--accent); }
+  .dt-anno-actions { display: flex; gap: 7px; margin-top: 7px; }
+  .dt-saved-note { margin-top: 8px; padding: 9px 12px; background: var(--surface-hover); border-radius: 9px; font-size: 12px; color: var(--text-muted); line-height: 1.55; }
+  .dt-saved-note .who { color: var(--text-dim); font-size: 11px; display: block; margin-bottom: 2px; }
+  .dt-pipe-link { display: inline-flex; align-items: center; gap: 6px; margin-top: 4px; font-size: 12px; color: var(--text-muted); text-decoration: none; }
+  .dt-pipe-link:hover { color: var(--accent); }
+  .dt-pipe-link svg { width: 13px; height: 13px; }
+
+  /* ── Meeting — two columns: the invite · pick a time ──────────────── */
+  .dt-meeting { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; align-items: start; }
+  .dt-mcol-label { font-size: 11px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; color: var(--text-dim); margin-bottom: 11px; }
+  .dt-mline { display: flex; align-items: center; gap: 9px; margin-bottom: 12px; }
+  .dt-mline-icon { width: 15px; height: 15px; color: var(--text-dim); flex: 0 0 auto; }
+  .dt-mline-icon svg { width: 15px; height: 15px; }
+  .dt-mtitle { font-size: 15px; font-weight: 600; color: var(--text); line-height: 1.4; }
+  .dt-mwhen { font-size: 13px; color: var(--text-muted); white-space: nowrap; }
+  /* attendees as a calm list */
+  .dt-att-list { display: flex; flex-direction: column; }
+  .dt-att { display: flex; align-items: center; gap: 10px; padding: 6px 0; }
+  .dt-att-avatar { flex: 0 0 auto; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; font-size: 11px; font-weight: 700; color: var(--accent); background: var(--accent-soft); }
+  .dt-att-main { min-width: 0; display: flex; flex-direction: column; line-height: 1.3; }
+  .dt-att-name { font-size: 13px; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .dt-att-email { font-size: 11px; color: var(--text-dim); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .dt-att-remove { margin-left: auto; flex: 0 0 auto; cursor: pointer; color: var(--text-dim); font-size: 16px; line-height: 1; padding: 2px 4px; border-radius: 5px; }
+  .dt-att-remove:hover { color: var(--danger); background: var(--danger-soft); }
+  .dt-att-add { margin-top: 8px; }
+  /* time-slot picker — clean selectable rows */
+  .dt-slots { display: flex; flex-direction: column; gap: 7px; }
+  .dt-slot { display: flex; align-items: center; gap: 11px; padding: 11px 13px; border: 1px solid var(--border-soft); border-radius: 10px; cursor: pointer; transition: border-color var(--ease), background var(--ease); }
+  .dt-slot:hover { border-color: var(--border); background: var(--surface-hover); }
+  .dt-slot.selected { border-color: var(--accent); background: var(--accent-soft); }
+  .dt-slot-radio { flex: 0 0 auto; width: 15px; height: 15px; border-radius: 50%; border: 1.5px solid var(--text-dim); display: grid; place-items: center; }
+  .dt-slot.selected .dt-slot-radio { border-color: var(--accent); }
+  .dt-slot.selected .dt-slot-radio::after { content: ''; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); }
+  .dt-slot-label { font-size: 13px; color: var(--text); }
+  .dt-recurring { display: flex; align-items: center; gap: 10px; margin-top: 14px; font-size: 13px; color: var(--text-muted); }
+  .dt-recurring label { display: inline-flex; align-items: center; gap: 7px; cursor: pointer; }
+  .dt-recurring input[type="checkbox"] { accent-color: var(--accent); }
+  @media (max-width: 620px) { .dt-meeting { grid-template-columns: 1fr; } }
+
+  /* ── Message — a calm preview of what will be sent ────────────────── */
+  .dt-msg-to { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 14px; margin-bottom: 12px; font-size: 12.5px; color: var(--text-muted); }
+  .dt-msg-chip { display: inline-flex; align-items: center; gap: 7px; }
+  .dt-msg-chip .k { color: var(--text-dim); }
+  .dt-msg-avatar { width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; font-size: 10px; font-weight: 700; color: var(--q-human); background: color-mix(in oklab, var(--q-human) 16%, transparent); }
+  .dt-msg-channel { display: inline-flex; align-items: center; gap: 6px; color: var(--text-muted); }
+  .dt-msg-channel svg { width: 14px; height: 14px; color: var(--text-dim); }
+  .dt-msg-bubble {
+    position: relative; padding: 14px 16px; border-radius: 12px;
+    background: var(--surface-hover); border: 1px solid var(--border-soft);
+    font-size: 13.5px; line-height: 1.62; color: var(--text); white-space: pre-wrap; text-wrap: pretty;
+  }
+  .dt-msg-bubble.email { background: var(--bg); }
+  .dt-msg-subject { font-weight: 600; color: var(--text); margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px solid var(--border-soft); }
+  .dt-msg-edit { margin-top: 9px; }
+  .dt-msg-edit textarea { width: 100%; box-sizing: border-box; min-height: 120px; padding: 12px 14px; border-radius: 12px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-size: 13.5px; font-family: inherit; line-height: 1.62; resize: vertical; }
+  .dt-msg-edit textarea:focus { outline: none; border-color: var(--accent); }
+  .dt-msg-edit-actions { display: flex; gap: 7px; margin-top: 8px; }
+
+  /* ── Summary — demoted metadata, parked next to the pipeline ─────── */
+  .dt-summary { display: grid; grid-template-columns: repeat(2, 1fr); gap: 9px 22px; }
+  .dt-sum-item { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  .dt-sum-k { font-size: 11px; color: var(--text-dim); }
+  .dt-sum-v { font-size: 13px; color: var(--text); overflow: hidden; text-overflow: ellipsis; }
+
+  /* ── Thread — activity + comments, one calm timeline, no left bar ── */
+  .dt-thread { display: flex; flex-direction: column; }
+  .dt-event { display: grid; grid-template-columns: 14px 1fr; column-gap: 11px; padding: 11px 0; border-bottom: 1px solid var(--border-soft); }
+  .dt-event:last-of-type { border-bottom: none; }
+  .dt-ev-dot { width: 7px; height: 7px; border-radius: 50%; margin-top: 6px; background: var(--text-dim); }
+  .dt-event.ev-question .dt-ev-dot { background: var(--warning); }
+  .dt-event.ev-error .dt-ev-dot { background: var(--danger); }
+  .dt-event.ev-output .dt-ev-dot { background: var(--success); }
+  .dt-event.ev-status-change .dt-ev-dot { background: var(--accent); }
+  .dt-event.ev-comment .dt-ev-dot { background: var(--q-human); }
+  .dt-ev-meta { font-size: 11.5px; color: var(--text-dim); margin-bottom: 3px; display: flex; gap: 7px; align-items: baseline; flex-wrap: wrap; }
+  .dt-ev-actor { color: var(--text-muted); font-weight: 600; white-space: nowrap; }
+  .dt-ev-kind { font-size: 10.5px; text-transform: lowercase; letter-spacing: 0.3px; color: var(--text-dim); }
+  .dt-ev-body { font-size: 13px; line-height: 1.6; color: var(--text); white-space: pre-wrap; }
+  .dt-composer { display: flex; flex-direction: column; gap: 9px; margin-top: 16px; }
+  .dt-composer textarea { width: 100%; box-sizing: border-box; padding: 11px 13px; border-radius: 10px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-size: 13.5px; font-family: inherit; resize: vertical; min-height: 70px; }
+  .dt-composer textarea:focus { outline: none; border-color: var(--accent); }
+  .dt-composer-actions { display: flex; justify-content: flex-end; }
+
+  /* ── Footer — regrouped by job: utilities left, the act on the right ─ */
+  .modal-actions { justify-content: space-between; align-items: center; }
+  .dt-foot-left, .dt-foot-right { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .modal-actions .btn { display: inline-flex; align-items: center; gap: 6px; }
+  .modal-actions .btn svg { width: 14px; height: 14px; }
+  .btn-quiet { background: transparent; border-color: transparent; color: var(--text-muted); }
+  .btn-quiet:hover { background: var(--surface-hover); border-color: var(--border-soft); color: var(--text); }
 </style>
 </head>
 <body>

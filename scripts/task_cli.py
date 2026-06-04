@@ -87,6 +87,10 @@ def cmd_add(args):
         meeting_duration=args.meeting_duration,
         meeting_title=args.meeting_title,
         meeting_description=args.meeting_description,
+        message_channel=args.message_channel,
+        message_to=args.message_to,
+        message_subject=args.message_subject,
+        message_body=args.message_body,
     )
     print(f"Created {task_id} in {args.queue} queue")
     print(f"  File: {os.path.relpath(filepath, os.path.dirname(task_lib.TASKS_DIR))}")
@@ -160,6 +164,14 @@ def cmd_update(args):
         changes["waiting_on"] = args.waiting_on
     if args.waiting_expected:
         changes["waiting_expected"] = args.waiting_expected
+    if getattr(args, "message_channel", None):
+        changes["message_channel"] = args.message_channel
+    if getattr(args, "message_to", None):
+        changes["message_to"] = args.message_to
+    if getattr(args, "message_subject", None):
+        changes["message_subject"] = args.message_subject
+    if getattr(args, "message_body", None):
+        changes["message_body"] = args.message_body
 
     comment = args.comment
     actor = args.actor or "human"
@@ -384,6 +396,10 @@ def main():
     p_add.add_argument("--meeting-duration", type=int, default=None, help="Meeting duration in minutes (default 30)")
     p_add.add_argument("--meeting-title", default=None, help="Calendar event title")
     p_add.add_argument("--meeting-description", default=None, help="Calendar event description")
+    p_add.add_argument("--message-channel", default=None, help="Message channel (send-message): Teams, Email, Slack")
+    p_add.add_argument("--message-to", default=None, help="Message recipient (send-message)")
+    p_add.add_argument("--message-subject", default=None, help="Message subject (send-message, email)")
+    p_add.add_argument("--message-body", default=None, help="Message body draft (send-message)")
     p_add.set_defaults(func=cmd_add)
 
     # ─── list ────────────────────────────────────────────────────────────
@@ -416,6 +432,10 @@ def main():
     p_update.add_argument("--agent-error", default=None)
     p_update.add_argument("--waiting-on", default=None)
     p_update.add_argument("--waiting-expected", default=None)
+    p_update.add_argument("--message-channel", default=None, help="Message channel (send-message)")
+    p_update.add_argument("--message-to", default=None, help="Message recipient (send-message)")
+    p_update.add_argument("--message-subject", default=None, help="Message subject (send-message)")
+    p_update.add_argument("--message-body", default=None, help="Message body draft (send-message)")
     p_update.set_defaults(func=cmd_update)
 
     # ─── done ────────────────────────────────────────────────────────────

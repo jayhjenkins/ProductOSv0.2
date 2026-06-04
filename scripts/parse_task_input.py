@@ -57,7 +57,10 @@ Return ONLY valid JSON with these fields:
   "meeting_attendees": null,
   "meeting_duration": null,
   "meeting_title": null,
-  "meeting_description": null
+  "meeting_description": null,
+  "message_channel": null,
+  "message_to": null,
+  "message_subject": null
 }
 
 Queue rules:
@@ -81,6 +84,10 @@ For scheduling meetings (the heavier, explicitly-framed case — "meeting", "syn
 For sending a message (the lighter, communicative case — "talk to / share with / forward to / loop in / reach out to [person]"):
 - Set queue to "collab", task_type to "send-message"
 - Capture the recipient(s) and what to convey in the title/description (no meeting_* fields)
+- Set message_to to the recipient (person name, or a channel like "#platform-eng")
+- Set message_channel if the channel is stated ("Teams", "Email", "Slack"); leave null if not mentioned
+- Set message_subject only for an email when a subject is clear; otherwise null
+- Do NOT draft the message body — the agent writes that later (leave it out)
 
 Only include fields that are clearly indicated. Use null for anything not mentioned.
 Only set "due" if a specific date is mentioned. Today is {today}.
@@ -258,6 +265,9 @@ def build_cli_args(parsed: dict) -> list[str]:
         "meeting_attendees": "--meeting-attendees",
         "meeting_title": "--meeting-title",
         "meeting_description": "--meeting-description",
+        "message_channel": "--message-channel",
+        "message_to": "--message-to",
+        "message_subject": "--message-subject",
     }
 
     for field, flag in optional_str_fields.items():
