@@ -89,6 +89,18 @@ const QUEUE_META = {
   waiting: { cls: 'q-waiting', label: 'waiting',    icon: 'waiting' },
 };
 
+// Judge score — a quiet, band-tinted rating that lives in the card head
+// (next to the status mark) so it reads as part of the card's state without
+// adding a whole signals row of its own.
+function judgeBand(score) {
+  return score >= 8 ? 'good' : (score >= 5 ? 'mid' : 'low');
+}
+function judgeScoreBadge(task) {
+  if (task.judge_score == null) return '';
+  const js = Number(task.judge_score);
+  return `<span class="card-score ${judgeBand(js)}" title="Judge rated this ${js}/10${task.judge_why ? ' — ' + task.judge_why.replace(/"/g, '&quot;') : ''}">${js}<span class="card-score-of">/10</span></span>`;
+}
+
 function statusMark(task) {
   switch (task.agent_status) {
     case 'running':     return '<span class="status-mark" title="Agent working"><span class="mark-running"></span></span>';
@@ -128,10 +140,10 @@ function renderCard(task, queueName) {
   const prioClass = `prio-${task.priority || 'low'}`;
   const today = new Date().toISOString().slice(0, 10);
 
-  // Head — queue/type chip (the "what kind of card is this") + status mark + id
+  // Head — queue/type chip (the "what kind of card is this") + judge score + status mark + id
   let head = `<div class="card-head">`;
   head += `<span class="card-queue">${svgIcon(q.icon)}${q.label}</span>`;
-  head += `<span class="card-head-right">${statusMark(task)}<span class="card-id">${task.id}</span></span>`;
+  head += `<span class="card-head-right">${judgeScoreBadge(task)}${statusMark(task)}<span class="card-id">${task.id}</span></span>`;
   head += `</div>`;
 
   // Title — with a single quiet priority dot
@@ -164,11 +176,6 @@ function renderCard(task, queueName) {
   if (task.task_type === 'send-message') signals.push(`<span class="chip chip-meeting" style="color:var(--q-human);background:color-mix(in oklab, var(--q-human) 16%, transparent)">${svgIcon('chat')}message</span>`);
   if (task.body && task.body.includes('<!-- JIRA_DRAFT -->')) signals.push(`<span class="chip chip-cron" style="color:var(--accent);background:var(--accent-soft)">${svgIcon('jira')}jira draft</span>`);
   if (isCronTask(task)) signals.push(`<span class="chip chip-cron">${svgIcon('cron')}cron</span>`);
-  if (task.judge_score != null) {
-    const js = Number(task.judge_score);
-    const band = js >= 8 ? 'good' : (js >= 5 ? 'mid' : 'low');
-    signals.push(`<span class="chip chip-judge chip-judge-${band}" title="${escapeHtml(task.judge_why || '')}">⚖ ${js}/10</span>`);
-  }
   const signalsHtml = signals.length ? `<div class="card-signals">${signals.join('')}</div>` : '';
 
   // Actions — pulled forward: Mark done + Open output

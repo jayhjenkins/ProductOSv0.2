@@ -820,6 +820,7 @@ function renderPipeline(traces, taskId) {
   const upSvg = `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="2.6" height="6" rx="0.7"/><path d="M5.6 7.4 8 2.6c1 0 1.7.8 1.7 1.8V6h2.6c.7 0 1.2.64 1.04 1.3l-.92 3.9c-.12.5-.58.85-1.1.85H5.6z"/></svg>`;
   const downSvg = `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="10.4" y="3" width="2.6" height="6" rx="0.7"/><path d="M10.4 8.6 8 13.4c-1 0-1.7-.8-1.7-1.8V10H3.7c-.7 0-1.2-.64-1.04-1.3l.92-3.9c.12-.5.58-.85 1.1-.85H10.4z"/></svg>`;
   const noteSvg = `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4.4h10v6H7.2L4.6 12.6V10.4H3z"/></svg>`;
+  const judgeSvg = `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2.4v11.2M4.4 4h7.2M3.2 13.2h9.6"/><path d="M4.4 4 2.4 8.2a2 2 0 0 0 4 0L4.4 4ZM11.6 4 9.6 8.2a2 2 0 0 0 4 0L11.6 4Z"/></svg>`;
 
   let html = '<div class="dt-sec-head"><span class="dt-sec-title">How it ran</span></div>';
   html += '<div class="dt-pipe">';
@@ -848,8 +849,18 @@ function renderPipeline(traces, taskId) {
 
     if (t.output_summary && t.output_summary !== 'null') html += `<div class="dt-step-out">${escapeHtml(String(t.output_summary))}</div>`;
 
+    // Saved notes — attribute by author. The LLM judge writes evaluation
+    // scores with reasoning comments onto these traces; only genuine human
+    // annotations are "your note". Everything else is the judge's rationale.
     (t.scores || []).filter(s => s.comment).forEach(s => {
-      html += `<div class="dt-saved-note"><span class="who">your note</span>${escapeHtml(s.comment)}</div>`;
+      const src = String(s.source || '').toUpperCase();
+      const isHuman = s.name === 'human-feedback' || s.name === 'human' || src === 'ANNOTATION';
+      if (isHuman) {
+        html += `<div class="dt-saved-note mine"><span class="who">Your note</span>${escapeHtml(s.comment)}</div>`;
+      } else {
+        const verdict = (s.value != null) ? ` · ${s.value}/10` : '';
+        html += `<div class="dt-saved-note judge"><span class="who">${judgeSvg}Judge${verdict}</span>${escapeHtml(s.comment)}</div>`;
+      }
     });
 
     html += `<div class="dt-anno" id="annot-${i}"><textarea id="annot-input-${i}" placeholder="What was off — or what to keep doing?"></textarea><div class="dt-anno-actions"><button class="btn btn-quiet" onclick="submitAnnotation('${taskId}','${t.trace_id}','annot-input-${i}')">Save note</button><button class="btn btn-quiet" onclick="toggleAnnotation('annot-${i}')">Cancel</button></div></div>`;
@@ -901,8 +912,8 @@ async function submitAnnotation(taskId, traceId, inputId) {
     // Show the saved note inline (feels real without a round-trip refresh)
     const box = input.closest('.dt-anno');
     const note = document.createElement('div');
-    note.className = 'dt-saved-note';
-    note.innerHTML = `<span class="who">your note</span>${escapeHtml(comment)}`;
+    note.className = 'dt-saved-note mine';
+    note.innerHTML = `<span class="who">Your note</span>${escapeHtml(comment)}`;
     box.parentNode.insertBefore(note, box);
     input.value = '';
     box.classList.remove('open');
