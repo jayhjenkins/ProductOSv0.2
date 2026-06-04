@@ -165,6 +165,21 @@ def handle_list_tasks(handler, query_params):
         _error_response(handler, f"Failed to list tasks: {e}", status=500)
 
 
+def handle_list_activity(handler, query_params):
+    """GET /api/activity — Return archived (completed/cancelled) tasks as JSON."""
+    raw_limit = query_params.get("limit", ["200"])[0]
+    try:
+        limit = int(raw_limit)
+    except (TypeError, ValueError):
+        limit = 200
+
+    try:
+        tasks = task_lib.list_archived(limit=limit)
+        _json_response(handler, tasks)
+    except Exception as e:
+        _error_response(handler, f"Failed to list activity: {e}", status=500)
+
+
 def handle_get_task(handler, task_id):
     """GET /api/tasks/{id} — Return full task detail with parsed activity log."""
     try:
@@ -1096,6 +1111,11 @@ class TaskServerHandler(SimpleHTTPRequestHandler):
         # ─── Task API routes ───────────────────────────────────────────
         if path == "/api/tasks" and method == "GET":
             handle_list_tasks(self, query_params)
+            return True
+
+        # Archived/completed tasks (Activity surface)
+        if path == "/api/activity" and method == "GET":
+            handle_list_activity(self, query_params)
             return True
 
         # Match /api/tasks/{id}/dispatch

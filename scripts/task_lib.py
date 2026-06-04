@@ -451,6 +451,46 @@ def list_tasks(queue=None, status=None, domain=None, priority=None,
     return results
 
 
+def list_archived(limit=200):
+    """Walk the archive directory, parse frontmatter, return light task dicts.
+
+    Returns a list of dicts (no markdown bodies) for completed/cancelled tasks
+    that have been moved to _archive/YYYY-MM/. Sorted by 'updated' descending
+    (newest first) and capped to `limit` items.
+    """
+    results = []
+
+    if not os.path.isdir(ARCHIVE_DIR):
+        return results
+
+    for root, dirs, files in os.walk(ARCHIVE_DIR):
+        for fname in files:
+            if not fname.startswith("TASK-") or not fname.endswith(".md"):
+                continue
+            filepath = os.path.join(root, fname)
+            try:
+                fm, _ = _parse_task_file(filepath)
+            except Exception:
+                continue  # skip malformed files
+
+            results.append({
+                "id": fm.get("id", fname.replace(".md", "")),
+                "title": fm.get("title", ""),
+                "queue": fm.get("queue"),
+                "status": fm.get("status"),
+                "domain": fm.get("domain"),
+                "updated": fm.get("updated"),
+                "agent_output": fm.get("agent_output"),
+                "sharepoint_url": fm.get("sharepoint_url"),
+                "source_meeting": fm.get("source_meeting"),
+            })
+
+    # Sort by updated descending (newest first); missing/None values sort last
+    results.sort(key=lambda t: t["updated"] or "", reverse=True)
+
+    return results[:limit]
+
+
 def update_task(task_id, changes=None, comment=None, actor="human"):
     """Update a task's frontmatter fields and/or append an activity log entry.
 
