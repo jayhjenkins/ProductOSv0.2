@@ -6,6 +6,19 @@
 
 // ─── Modal ──────────────────────────────────────────────────────────
 
+// Shorten an artifact path to read relative to the PM-OS root. Output files
+// always live under the PM-OS folder structure (locally as datasets/…, mirrored
+// to OneDrive as …/PM-OS/…), so the long absolute prefix is just noise. Both
+// the Obsidian (.md) and Word (.docx) tiles end up showing product/agent-output/…
+function shortArtifactPath(p) {
+  if (!p) return '';
+  let s = String(p).replace(/\\/g, '/');
+  const m = s.match(/\/(?:pm[-_ ]?os)\//i);   // OneDrive mirror or absolute repo path
+  if (m) s = s.slice(m.index + m[0].length);
+  s = s.replace(/^datasets\//i, '');          // drop the local datasets/ wrapper
+  return s;
+}
+
 async function openTask(taskId) {
   currentTaskId = taskId;
   const overlay = document.getElementById('modal-overlay');
@@ -52,7 +65,7 @@ async function openTask(taskId) {
     if (task.agent_output) {
       const v = String(task.agent_output).trim();
       if (v.endsWith('.md')) {
-        artifacts.push({ icon: 'obsidian', cls: '', kind: 'Obsidian', name: v.split('/').pop(), path: v, href: obsidianUri(v), label: 'Open in Obsidian', external: false });
+        artifacts.push({ icon: 'obsidian', cls: '', kind: 'Obsidian', name: v.split('/').pop(), path: shortArtifactPath(v), href: obsidianUri(v), label: 'Open in Obsidian', external: false });
       } else {
         const mu = v.match(/https?:\/\/[^\s)]+/);
         if (mu) artifacts.push({ icon: 'output', cls: '', kind: 'Link', name: 'Agent output', path: mu[0].replace(/^https?:\/\//, ''), href: mu[0], label: 'Open', external: true });
@@ -61,7 +74,7 @@ async function openTask(taskId) {
     }
     if (task.sharepoint_url || task.sharepoint_path) {
       const p = task.sharepoint_path || '';
-      artifacts.push({ icon: 'doc', cls: 'doc', kind: 'Word', name: p ? p.split('/').pop() : 'Word document', path: p || 'Word Online', href: task.sharepoint_url || `/open?file=${encodeURIComponent(task.sharepoint_path)}`, label: 'Open in Word', external: !!task.sharepoint_url });
+      artifacts.push({ icon: 'doc', cls: 'doc', kind: 'Word', name: p ? p.split('/').pop() : 'Word document', path: p ? shortArtifactPath(p) : 'Word Online', href: task.sharepoint_url || `/open?file=${encodeURIComponent(task.sharepoint_path)}`, label: 'Open in Word', external: !!task.sharepoint_url });
     }
     if (artifacts.length) {
       html += `<div class="dt-output-wrap"><div class="dt-art-grid">`;
