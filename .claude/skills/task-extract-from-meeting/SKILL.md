@@ -66,9 +66,16 @@ These map to existing PM-OS workflows. When creating agent tasks, note the relev
 
 **Important:** End-of-task human review does NOT make something `collab`. Every agent task ends with Jay reviewing the output before it's used — that's the baseline, not a queue distinction. If the agent's work is self-contained (produce a draft, do research, write a doc) and Jay is the one who sends/shares/acts on it afterward, it's `agent`, not `collab`. "Draft X and send to Y" = agent drafts → Jay reviews → Jay sends. The "send to Y" is Jay's step, so the task is `agent`.
 
+### Route to `collab` with `--task-type send-message` when:
+
+- **The task is to communicate with a person** — "talk to Will about X", "share this with Brandon", "forward the issue to the responsible PM", "loop in / reach out to / ping someone". The primary action is conveying something to a person, not producing an artifact and not a full meeting.
+- This is the **lighter, communicative** case. "Talk to [person]" is a message, **not** a meeting — reserve `schedule-meeting` for the heavier, explicitly-framed engagements below.
+- Capture the **recipient(s)** and **what to convey** in `--description`. (No `meeting_*` fields.)
+- Distinct from "draft X and send to Y" (see the Important note above): that's an `agent` task where Jay sends the artifact afterward. A `send-message` task *is* the communication itself.
+
 ### Route to `collab` with `--task-type schedule-meeting` when:
 
-- **Jay needs to schedule a meeting** — "I'll set up a sync with Brandon", "let's find a time to meet", "schedule a call with the team next week"
+- **Jay needs to schedule a meeting** — the heavier, explicitly-framed case: "I'll set up a sync with Brandon", "let's find a time to meet", "schedule a call with the team", "working session", "demo this for the team". A lighter "talk to / share with / forward to [person]" is a **send-message**, not a meeting.
 - Extract: attendee names (agent resolves emails via MCP/calendar search), time preferences ("next week", "Thursday afternoon"), meeting purpose, suggested title
 - Use `--meeting-attendees` (comma-separated emails or names as placeholder), `--meeting-duration` (minutes), `--meeting-title`, `--meeting-description`
 - **Check the transcript's `participant_emails` frontmatter field first** — it maps participant names to corporate emails (resolved at ingest via Microsoft Graph). Use the email from there when available.
