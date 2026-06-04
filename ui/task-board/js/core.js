@@ -5,17 +5,73 @@ let currentTaskId = null;
 
 // ─── Toast Notifications ─────────────────────────────────────────────
 function toast(msg, type = 'error', duration = 4000) {
-  // No confirmation pop-overs — a click is its own confirmation. Only surface
+  // No confirmation banners — a click is its own confirmation. Only surface
   // real problems (errors), and even those stay quiet and dismissible.
   if (type !== 'error') return;
   const container = document.getElementById('toast-container');
+  if (!container) return;
   const el = document.createElement('div');
   el.className = `toast toast-${type}`;
+  el.setAttribute('role', 'alert');
   el.textContent = msg;
   el.onclick = () => dismiss(el);
   container.appendChild(el);
   function dismiss(t) { t.classList.add('toast-out'); setTimeout(() => t.remove(), 200); }
   setTimeout(() => { if (el.parentNode) dismiss(el); }, duration);
+}
+
+// ─── Confirm dialog ──────────────────────────────────────────────────
+// One styled, accessible confirmation for the whole app. Returns a Promise
+// that resolves true (confirmed) / false (cancelled). Enter confirms, Esc or
+// a backdrop click cancels, and focus is trapped between the two buttons and
+// restored to the trigger on close.
+function confirmAction({ title = 'Are you sure?', message = '', confirmLabel = 'Confirm', cancelLabel = 'Cancel', danger = false } = {}) {
+  return new Promise(resolve => {
+    const overlay = document.getElementById('confirm-overlay');
+    if (!overlay) { resolve(window.confirm(message || title)); return; }
+    const titleEl = document.getElementById('confirm-title');
+    const msgEl = document.getElementById('confirm-msg');
+    const okBtn = document.getElementById('confirm-ok');
+    const cancelBtn = document.getElementById('confirm-cancel');
+
+    titleEl.textContent = title;
+    msgEl.textContent = message;
+    msgEl.style.display = message ? '' : 'none';
+    okBtn.textContent = confirmLabel;
+    cancelBtn.textContent = cancelLabel;
+    okBtn.className = 'btn ' + (danger ? 'btn-danger' : 'btn-primary');
+
+    const prevFocus = document.activeElement;
+    overlay.classList.add('active');
+    okBtn.focus();
+
+    function cleanup(result) {
+      overlay.classList.remove('active');
+      okBtn.removeEventListener('click', onOk);
+      cancelBtn.removeEventListener('click', onCancel);
+      overlay.removeEventListener('mousedown', onBackdrop);
+      document.removeEventListener('keydown', onKey, true);
+      if (prevFocus && prevFocus.focus) prevFocus.focus();
+      resolve(result);
+    }
+    function onOk() { cleanup(true); }
+    function onCancel() { cleanup(false); }
+    function onBackdrop(e) { if (e.target === overlay) cleanup(false); }
+    function onKey(e) {
+      if (e.key === 'Enter') { e.preventDefault(); e.stopPropagation(); cleanup(true); }
+      else if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); cleanup(false); }
+      else if (e.key === 'Tab') {
+        e.preventDefault();
+        const order = [cancelBtn, okBtn];
+        const i = order.indexOf(document.activeElement);
+        order[(i + (e.shiftKey ? -1 : 1) + order.length) % order.length].focus();
+      }
+    }
+    okBtn.addEventListener('click', onOk);
+    cancelBtn.addEventListener('click', onCancel);
+    overlay.addEventListener('mousedown', onBackdrop);
+    document.addEventListener('keydown', onKey, true);
+  });
 }
 
 let emailCache = null; // { "Name": "email@co.com", ... }

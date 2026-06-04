@@ -336,15 +336,13 @@ async function markDone() {
 
 async function markDoneAndDelete() {
   if (!currentTaskId) return;
-  const btn = document.getElementById('btn-done-delete');
-  if (btn && !btn.dataset.armed) {
-    btn.dataset.armed = 'true';
-    btn.textContent = 'Click again to confirm delete';
-    btn.classList.add('btn-danger');
-    setTimeout(() => { if (btn && btn.dataset.armed) { delete btn.dataset.armed; btn.textContent = 'Approve & delete'; btn.classList.remove('btn-danger'); } }, 3000);
-    return;
-  }
-  if (btn) delete btn.dataset.armed;
+  const ok = await confirmAction({
+    title: 'Approve & delete?',
+    message: 'This approves the task and permanently removes it from the board. This can’t be undone.',
+    confirmLabel: 'Approve & delete',
+    danger: true,
+  });
+  if (!ok) return;
   try {
     const res = await fetch(`${API}/tasks/${currentTaskId}/done-and-delete`, { method: 'POST' });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -380,7 +378,7 @@ async function startAgent(taskId) {
   const btn = document.getElementById('btn-start-agent');
   if (btn) {
     btn.disabled = true;
-    btn.textContent = 'Dispatching...';
+    btn.textContent = 'Dispatching…';
   }
 
   try {
@@ -390,13 +388,13 @@ async function startAgent(taskId) {
       throw new Error(data.error || `HTTP ${res.status}`);
     }
     // Refresh modal to show in-progress state
-    if (btn) btn.textContent = 'Agent Started';
+    if (btn) btn.textContent = 'Agent started';
     setTimeout(() => { if (currentTaskId === taskId) openTask(taskId); fetchTasks(); }, 2000);
   } catch (err) {
     toast(`Error dispatching agent: ${err.message}`);
     if (btn) {
       btn.disabled = false;
-      btn.textContent = 'Start Agent';
+      btn.textContent = 'Start agent';
     }
   }
 }
@@ -404,19 +402,16 @@ async function startAgent(taskId) {
 // ─── Rerun Agent ─────────────────────────────────────────────────────
 
 async function rerunAgent(taskId) {
+  const ok = await confirmAction({
+    title: 'Rerun this agent?',
+    message: 'The current output will be discarded and the agent will start over from the task brief.',
+    confirmLabel: 'Rerun agent',
+  });
+  if (!ok) return;
   const btn = document.getElementById('btn-rerun-agent');
-  // Two-click confirm: first click arms, second click fires
-  if (btn && !btn.dataset.armed) {
-    btn.dataset.armed = 'true';
-    btn.textContent = 'Click again to confirm';
-    btn.classList.add('btn-danger');
-    setTimeout(() => { if (btn.dataset.armed) { delete btn.dataset.armed; btn.textContent = 'Rerun agent'; btn.classList.remove('btn-danger'); } }, 3000);
-    return;
-  }
   if (btn) {
-    delete btn.dataset.armed;
     btn.disabled = true;
-    btn.textContent = 'Rerunning...';
+    btn.textContent = 'Rerunning…';
   }
 
   try {
@@ -425,7 +420,7 @@ async function rerunAgent(taskId) {
       const data = await res.json().catch(() => ({}));
       throw new Error(data.error || `HTTP ${res.status}`);
     }
-    if (btn) btn.textContent = 'Agent Restarted';
+    if (btn) btn.textContent = 'Agent restarted';
     setTimeout(() => { if (currentTaskId === taskId) openTask(taskId); fetchTasks(); }, 2000);
   } catch (err) {
     toast(`Error rerunning agent: ${err.message}`);
@@ -478,7 +473,7 @@ async function scheduleMeeting(taskId) {
   const btn = document.getElementById('btn-create-meeting');
   if (btn) {
     btn.disabled = true;
-    btn.textContent = 'Creating...';
+    btn.textContent = 'Creating…';
   }
 
   // Gather current attendees from chips
@@ -520,7 +515,7 @@ async function scheduleMeeting(taskId) {
     toast(`Error creating meeting: ${err.message}`);
     if (btn) {
       btn.disabled = false;
-      btn.textContent = 'Create Meeting';
+      btn.textContent = 'Create meeting';
     }
   }
 }
@@ -949,18 +944,22 @@ function parseJiraDraft(body) {
 }
 
 async function publishToJira(taskId) {
-  if (!confirm('Publish this draft to Jira?')) return;
+  const ok = await confirmAction({
+    title: 'Publish to Jira?',
+    message: 'This creates a Jira issue from the current draft.',
+    confirmLabel: 'Publish',
+  });
+  if (!ok) return;
   const btn = document.getElementById('btn-publish-jira');
-  if (btn) { btn.disabled = true; btn.textContent = 'Publishing...'; }
+  if (btn) { btn.disabled = true; btn.textContent = 'Publishing…'; }
   try {
     const res = await fetch(`${API}/tasks/${taskId}/publish-jira`, { method: 'POST' });
     const data = await res.json();
     if (data.error) throw new Error(data.error);
-    alert(`Published! ${data.issue_key}: ${data.issue_url}`);
     fetchTasks();
     closeModal();
   } catch (err) {
-    alert('Publish failed: ' + err.message);
+    toast(`Publish failed: ${err.message}`);
     if (btn) { btn.disabled = false; btn.textContent = 'Publish to Jira'; }
   }
 }

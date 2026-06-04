@@ -330,19 +330,18 @@ async function toggleCronJob(jobId) {
 
 async function runCronJob(jobId) {
   const job = cronJobs.find(j => j.id === jobId);
+  const ok = await confirmAction({
+    title: 'Run this job now?',
+    message: job && job.name ? `“${job.name}” will run immediately and create a task.` : 'This job will run immediately and create a task.',
+    confirmLabel: 'Run now',
+  });
+  if (!ok) return;
   const btn = document.getElementById(`cron-run-${jobId}`);
-  if (btn && !btn.dataset.armed) {
-    btn.dataset.armed = 'true';
-    btn.textContent = 'Confirm run?';
-    setTimeout(() => { if (btn.dataset.armed) { delete btn.dataset.armed; btn.textContent = 'Run now'; } }, 3000);
-    return;
-  }
-  if (btn) { delete btn.dataset.armed; btn.textContent = 'Running...'; btn.disabled = true; }
+  if (btn) { btn.textContent = 'Running…'; btn.disabled = true; }
   try {
     const res = await fetch(`${API}/cron/${jobId}/run`, {method: 'POST'});
     const data = await res.json();
     if (data.error) throw new Error(data.error);
-    toast(`Created ${data.task_id}. Check the Board tab.`, 'success');
     fetchCronJobs();
   } catch (err) {
     toast('Run failed: ' + err.message);
@@ -350,14 +349,14 @@ async function runCronJob(jobId) {
 }
 
 async function deleteCronJob(jobId) {
-  const btn = document.getElementById(`cron-del-${jobId}`);
-  if (btn && !btn.dataset.armed) {
-    btn.dataset.armed = 'true';
-    btn.textContent = 'Confirm delete?';
-    setTimeout(() => { if (btn.dataset.armed) { delete btn.dataset.armed; btn.textContent = 'Delete'; } }, 3000);
-    return;
-  }
-  if (btn) delete btn.dataset.armed;
+  const job = cronJobs.find(j => j.id === jobId);
+  const ok = await confirmAction({
+    title: 'Delete this job?',
+    message: job && job.name ? `“${job.name}” will stop running and be removed. This can’t be undone.` : 'This recurring job will stop running and be removed. This can’t be undone.',
+    confirmLabel: 'Delete',
+    danger: true,
+  });
+  if (!ok) return;
   try {
     await fetch(`${API}/cron/${jobId}/delete`, {method: 'POST'});
     fetchCronJobs();
