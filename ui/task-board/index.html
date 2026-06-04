@@ -902,6 +902,33 @@
   .modal-actions .btn svg { width: 14px; height: 14px; }
   .btn-quiet { background: transparent; border-color: transparent; color: var(--text-muted); }
   .btn-quiet:hover { background: var(--surface-hover); border-color: var(--border-soft); color: var(--text); }
+
+  /* ── Confirm dialog — one shared, styled confirmation ────────────── */
+  .confirm-overlay {
+    display: none; position: fixed; inset: 0; z-index: 300;
+    background: color-mix(in oklab, var(--bg-deep) 72%, transparent);
+    backdrop-filter: blur(3px);
+    justify-content: center; align-items: center; padding: 24px;
+  }
+  .confirm-overlay.active { display: flex; animation: fade-in var(--ease); }
+  .confirm-box {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 14px; width: 100%; max-width: 420px;
+    padding: 22px 24px 18px;
+    box-shadow: 0 40px 90px -40px rgba(0,0,0,0.85);
+    animation: rise var(--ease);
+  }
+  .confirm-title { font-family: 'Spectral', serif; font-size: 18px; font-weight: 500; color: var(--text); line-height: 1.35; margin-bottom: 8px; }
+  .confirm-msg { font-size: 13.5px; color: var(--text-muted); line-height: 1.6; margin-bottom: 20px; text-wrap: pretty; }
+  .confirm-actions { display: flex; align-items: center; justify-content: flex-end; gap: 9px; }
+  .confirm-box .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .confirm-hint { margin-right: auto; font-size: 11px; color: var(--text-dim); display: inline-flex; align-items: center; gap: 5px; }
+  .confirm-hint kbd {
+    font-family: inherit; font-size: 10px; color: var(--text-muted);
+    background: var(--surface-hover); border: 1px solid var(--border-soft);
+    border-radius: 5px; padding: 1px 5px; line-height: 1.4;
+  }
+  @media (max-width: 460px) { .confirm-hint { display: none; } }
 </style>
 </head>
 <body>
@@ -956,6 +983,19 @@
     </div>
     <div class="modal-body" id="modal-body"></div>
     <div class="modal-actions" id="modal-actions"></div>
+  </div>
+</div>
+
+<!-- Confirm Dialog (shared, app-wide) -->
+<div class="confirm-overlay" id="confirm-overlay" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
+  <div class="confirm-box">
+    <h3 class="confirm-title" id="confirm-title"></h3>
+    <p class="confirm-msg" id="confirm-msg"></p>
+    <div class="confirm-actions">
+      <span class="confirm-hint"><kbd>↵</kbd> confirm · <kbd>esc</kbd> cancel</span>
+      <button class="btn btn-quiet" id="confirm-cancel">Cancel</button>
+      <button class="btn btn-primary" id="confirm-ok">Confirm</button>
+    </div>
   </div>
 </div>
 
