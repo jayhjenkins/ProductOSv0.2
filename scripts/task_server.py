@@ -175,6 +175,8 @@ def handle_list_activity(handler, query_params):
 
     try:
         tasks = task_lib.list_archived(limit=limit)
+        for t in tasks:
+            _enrich_sharepoint_url(t)
         _json_response(handler, tasks)
     except Exception as e:
         _error_response(handler, f"Failed to list activity: {e}", status=500)

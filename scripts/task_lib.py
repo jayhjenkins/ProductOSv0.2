@@ -481,6 +481,7 @@ def list_archived(limit=200):
                 "domain": fm.get("domain"),
                 "updated": fm.get("updated"),
                 "agent_output": fm.get("agent_output"),
+                "sharepoint_path": fm.get("sharepoint_path"),
                 "sharepoint_url": fm.get("sharepoint_url"),
                 "source_meeting": fm.get("source_meeting"),
             })
