@@ -2,6 +2,7 @@
 
 async function checkLangfuseHealth() {
   const dot = document.getElementById('lf-status-dot');
+  if (!dot) return;
   try {
     const res = await fetch(`${API}/langfuse/health`);
     const data = await res.json();

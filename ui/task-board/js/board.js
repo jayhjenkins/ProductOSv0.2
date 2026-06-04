@@ -15,26 +15,10 @@ async function fetchTasks() {
 
 function renderStats() {
   const stats = document.getElementById('stats');
-  const byQueue = {};
-  let needsAttention = 0;
-
-  allTasks.forEach(t => {
-    byQueue[t.queue] = (byQueue[t.queue] || 0) + 1;
-    if (t.agent_status === 'needs-human' || t.agent_status === 'complete') {
-      needsAttention++;
-    }
-  });
-
-  let html = '';
-  const queueLabels = { human: 'human', collab: 'supervised', agent: 'agent', waiting: 'waiting' };
-  for (const q of ['human', 'collab', 'agent', 'waiting']) {
-    html += `<span class="stat-badge">${queueLabels[q]}: ${byQueue[q] || 0}</span>`;
-  }
-  if (needsAttention > 0) {
-    html += `<span class="stat-badge attention">${needsAttention} need attention</span>`;
-  }
-  html += `<span class="stat-badge">total: ${allTasks.length}</span>`;
-  stats.innerHTML = html;
+  if (!stats) return;
+  // Quiet, non-alarming header: just the day. No counts — counts breed avoidance.
+  const today = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+  stats.innerHTML = `<span class="stat-quiet">${today}</span>`;
 }
 
 function renderBoard() {
@@ -92,54 +76,110 @@ function renderBoard() {
   board.innerHTML = html;
 }
 
+// ─── Card (calm, decluttered) ───────────────────────────────────────
+// Keeps the two signals that matter — which queue/type the card is, and
+// the source meeting it came from — and pulls the two most-common actions
+// (Mark done · Open output) onto the card face. Priority is a quiet dot;
+// domain is quiet text; cron-born tasks get a calm `cron` chip.
+
+const QUEUE_META = {
+  human:   { cls: 'q-human',   label: 'human',      icon: 'human' },
+  collab:  { cls: 'q-collab',  label: 'supervised', icon: 'collab' },
+  agent:   { cls: 'q-agent',   label: 'agent',      icon: 'agent' },
+  waiting: { cls: 'q-waiting', label: 'waiting',    icon: 'waiting' },
+};
+
+function statusMark(task) {
+  switch (task.agent_status) {
+    case 'running':     return '<span class="status-mark" title="Agent working"><span class="mark-running"></span></span>';
+    case 'needs-human': return `<span class="status-mark" style="color:var(--warning)" title="Needs your input">${svgIcon('needsHuman')}</span>`;
+    case 'complete':    return `<span class="status-mark" style="color:var(--success)" title="Ready for review">${svgIcon('complete')}</span>`;
+    case 'failed':      return `<span class="status-mark" style="color:var(--danger)" title="Agent stopped">${svgIcon('failed')}</span>`;
+    default:            return '';
+  }
+}
+
+function outputLink(task) {
+  if (task.agent_output) {
+    const v = String(task.agent_output).trim();
+    if (v.endsWith('.md')) return { href: obsidianUri(v), label: 'Open output', external: false };
+    const m = v.match(/https?:\/\/[^\s)]+/);
+    if (m) return { href: m[0], label: 'Open output', external: true };
+  }
+  if (task.sharepoint_url) return { href: task.sharepoint_url, label: 'Open in Word', external: true };
+  if (task.sharepoint_path) return { href: `/open?file=${encodeURIComponent(task.sharepoint_path)}`, label: 'Open in Word', external: false };
+  return null;
+}
+
+function isCronTask(task) {
+  return !!((task.tags && task.tags.includes('cron')) || (task.body && /<!--\s*CRON\b/.test(task.body)));
+}
+
+// Card-face quick action — marks done without opening the modal.
+function quickDone(id, ev) {
+  if (ev) ev.stopPropagation();
+  fetch(`${API}/tasks/${id}/done`, { method: 'POST' })
+    .then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); toast('Marked done. Nicely cleared.', 'success'); fetchTasks(); })
+    .catch(err => toast(`Could not mark done: ${err.message}`));
+}
+
 function renderCard(task, queueName) {
-  const priClass = `badge-${task.priority}`;
-  let icons = '';
+  const q = QUEUE_META[task.queue] || QUEUE_META[queueName] || QUEUE_META.human;
+  const prioClass = `prio-${task.priority || 'low'}`;
+  const today = new Date().toISOString().slice(0, 10);
 
-  // Agent status icons
-  if (task.agent_status === 'running') icons += '<span class="agent-icon" title="Agent running">&#129302;</span>';
-  else if (task.agent_status === 'needs-human') icons += '<span class="agent-icon" title="Needs human input">&#10067;</span>';
-  else if (task.agent_status === 'complete') icons += '<span class="agent-icon" title="Agent complete">&#9989;</span>';
-  else if (task.agent_status === 'failed') icons += '<span class="agent-icon" title="Agent failed">&#10060;</span>';
+  // Head — queue/type chip (the "what kind of card is this") + status mark + id
+  let head = `<div class="card-head">`;
+  head += `<span class="card-queue">${svgIcon(q.icon)}${q.label}</span>`;
+  head += `<span class="card-head-right">${statusMark(task)}<span class="card-id">${task.id}</span></span>`;
+  head += `</div>`;
 
-  // Schedule-meeting indicator
-  if (task.task_type === 'schedule-meeting') icons += '<span class="agent-icon" title="Schedule meeting" style="font-size:12px;">&#128197;</span>';
-  // Jira draft indicator
-  if (task.body && task.body.includes('<!-- JIRA_DRAFT -->')) icons += '<span class="agent-icon" title="Jira draft ready" style="font-size:12px;">&#127915;</span>';
+  // Title — with a single quiet priority dot
+  const title = `<div class="card-title"><span class="prio-dot ${prioClass}" title="${task.priority || 'low'} priority"></span><span>${escapeHtml(task.title)}</span></div>`;
 
-  // Word doc sync indicator
-  if (task.sharepoint_url || task.sharepoint_path) icons += '<span class="agent-icon" title="Synced to Word/SharePoint" style="font-size:11px;font-weight:700;color:var(--accent);">W</span>';
-
-  let meta = `<span class="badge ${priClass}">${task.priority}</span>`;
-  if (task.domain) meta += `<span class="badge badge-domain">${task.domain}</span>`;
+  // Context — source meeting (elevated) + domain (quiet)
+  const ctxParts = [];
   const mtg = meetingName(task.source_meeting);
-  if (mtg) meta += `<span class="badge badge-meeting" title="${escapeHtml(task.source_meeting)}">${escapeHtml(mtg)}</span>`;
+  if (mtg) ctxParts.push(`<span class="card-from" title="From: ${escapeHtml(task.source_meeting)}">${svgIcon('meeting')}<span>${escapeHtml(mtg)}</span></span>`);
+  if (task.domain) ctxParts.push(`<span class="card-domain">${escapeHtml(task.domain)}</span>`);
+  const context = ctxParts.length ? `<div class="card-context">${ctxParts.join('<span class="sep">·</span>')}</div>` : '';
 
-  if (queueName === 'waiting') {
-    if (task.waiting_on) meta += `<span class="badge badge-waiting">${task.waiting_on}</span>`;
+  // Signals — only what's present, calm
+  const signals = [];
+  if (task.queue === 'waiting') {
+    if (task.waiting_on) signals.push(`<span class="chip chip-waiting">${svgIcon('hourglass')}${escapeHtml(task.waiting_on)}</span>`);
     if (task.waiting_expected) {
-      const today = new Date().toISOString().slice(0, 10);
-      const isOverdue = String(task.waiting_expected) < today;
-      const cls = isOverdue ? 'badge-overdue' : 'badge-due';
-      const label = isOverdue ? `OVERDUE (${task.waiting_expected})` : `exp: ${task.waiting_expected}`;
-      meta += `<span class="badge ${cls}">${label}</span>`;
+      const overdue = String(task.waiting_expected) < today;
+      signals.push(overdue
+        ? `<span class="chip chip-overdue">${svgIcon('overdue')}overdue · ${task.waiting_expected}</span>`
+        : `<span class="chip chip-due">${svgIcon('due')}by ${task.waiting_expected}</span>`);
     }
   } else if (task.due) {
-    const today = new Date().toISOString().slice(0, 10);
-    const isOverdue = String(task.due) < today;
-    const cls = isOverdue ? 'badge-overdue' : 'badge-due';
-    const label = isOverdue ? `OVERDUE (${task.due})` : `due: ${task.due}`;
-    meta += `<span class="badge ${cls}">${label}</span>`;
+    const overdue = String(task.due) < today;
+    signals.push(overdue
+      ? `<span class="chip chip-overdue">${svgIcon('overdue')}overdue · ${task.due}</span>`
+      : `<span class="chip chip-due">${svgIcon('due')}due ${task.due}</span>`);
   }
+  if (task.task_type === 'schedule-meeting') signals.push(`<span class="chip chip-meeting">${svgIcon('meeting')}schedule</span>`);
+  if (task.body && task.body.includes('<!-- JIRA_DRAFT -->')) signals.push(`<span class="chip chip-cron" style="color:var(--accent);background:var(--accent-soft)">${svgIcon('jira')}jira draft</span>`);
+  if (isCronTask(task)) signals.push(`<span class="chip chip-cron">${svgIcon('cron')}cron</span>`);
+  if (task.judge_score != null) {
+    const js = Number(task.judge_score);
+    const band = js >= 8 ? 'good' : (js >= 5 ? 'mid' : 'low');
+    signals.push(`<span class="chip chip-judge chip-judge-${band}" title="${escapeHtml(task.judge_why || '')}">⚖ ${js}/10</span>`);
+  }
+  const signalsHtml = signals.length ? `<div class="card-signals">${signals.join('')}</div>` : '';
 
-  return `
-    <div class="card" onclick="openTask('${task.id}')">
-      <div class="card-top">
-        <span class="card-id">${task.id}</span>
-        <span class="card-icons">${icons}</span>
-      </div>
-      <div class="card-title">${escapeHtml(task.title)}</div>
-      <div class="card-meta">${meta}</div>
-    </div>
-  `;
+  // Actions — pulled forward: Mark done + Open output
+  const running = task.agent_status === 'running';
+  const out = outputLink(task);
+  const actions = [];
+  if (!running) actions.push(`<button class="card-action primary" onclick="quickDone('${task.id}', event)">${svgIcon('done')}Mark done</button>`);
+  if (out) {
+    const ext = out.external ? ' target="_blank" rel="noopener"' : '';
+    actions.push(`<a class="card-action" href="${escapeHtml(out.href)}"${ext} onclick="event.stopPropagation()">${svgIcon('output')}${out.label}</a>`);
+  }
+  const actionsHtml = actions.length ? `<div class="card-actions">${actions.join('')}</div>` : '';
+
+  return `<div class="card ${q.cls}" onclick="openTask('${task.id}')">${head}${title}${context}${signalsHtml}${actionsHtml}</div>`;
 }

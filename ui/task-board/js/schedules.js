@@ -21,61 +21,60 @@ async function fetchCronJobs() {
 
 function renderCronList() {
   const view = document.getElementById('cron-view');
-  let html = `<div class="cron-header">
-    <h2>Recurring Jobs</h2>
-    <button class="cron-btn" onclick="showCronCreate()">+ New Cron Job</button>
+  let html = `<div class="cron-head">
+    <div>
+      <h3>Recurring Jobs</h3>
+      <p class="cron-head-sub">Standing jobs that quietly create tasks on a schedule.</p>
+    </div>
+    <button class="cron-btn" onclick="showCronCreate()">New job</button>
   </div>`;
 
   if (cronJobs.length === 0) {
     html += `<div class="cron-empty">
-      <div style="font-size:24px;margin-bottom:8px">No recurring jobs yet</div>
-      <div>Create a cron job to automate recurring agent tasks</div>
+      <div style="font-size:20px;margin-bottom:6px;color:var(--text)">Nothing scheduled yet</div>
+      <div>Create a job to have an agent do recurring work for you.</div>
     </div>`;
     view.innerHTML = html;
     return;
   }
 
+  // Quiet relative date, e.g. "Mon, Jun 8" — the time already lives in the plain-English line
+  const fmt = ts => ts ? new Date(ts).toLocaleString('en-US', {weekday:'short',month:'short',day:'numeric'}) : null;
+
   html += '<div class="cron-cards">';
   for (const job of cronJobs) {
-    const isDisabled = !job.enabled;
-    const now = new Date();
-    const isExpiring = job.expires && ((new Date(job.expires) - now) / 86400000) < 7;
-    const cardClass = isDisabled ? 'disabled' : (isExpiring ? 'expiring' : '');
-
-    const nextRun = job.next_run ? new Date(job.next_run).toLocaleString('en-US', {weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}) : '—';
-    const lastRun = job.last_run ? new Date(job.last_run).toLocaleString('en-US', {weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}) : 'Never';
+    const isOff = !job.enabled;
+    const schedule = esc(job.cron_human || job.cron_expr);
+    const nextRun = fmt(job.next_run);
+    const lastRun = fmt(job.last_run);
     const latestTask = job.task_history?.length ? job.task_history[job.task_history.length - 1] : null;
 
-    html += `<div class="cron-card ${cardClass}">
+    // Foot — quiet, only what helps: when it next runs (or paused) and when it last ran
+    const foot = [];
+    foot.push(isOff ? `<span>Paused</span>` : (nextRun ? `<span>Next ${nextRun}</span>` : `<span>Schedule set</span>`));
+    foot.push(`<span>${lastRun ? `Last ran ${lastRun}` : `Hasn’t run yet`}</span>`);
+    if (job.expires) {
+      const days = (new Date(job.expires) - new Date()) / 86400000;
+      const ends = new Date(job.expires).toLocaleDateString('en-US', {month:'short',day:'numeric'});
+      foot.push(`<span class="${days < 7 ? 'cron-card-expires' : ''}">Ends ${ends}</span>`);
+    }
+
+    html += `<div class="cron-card card ${isOff ? 'is-off' : ''}">
       <div class="cron-card-top">
-        <div>
-          <span class="cron-card-id">${job.id}</span>
-          <span class="cron-card-name">${esc(job.name)}</span>
-        </div>
-        <label class="cron-toggle" title="${job.enabled ? 'Disable' : 'Enable'}">
+        <span class="cron-card-name">${esc(job.name)}</span>
+        <label class="cron-toggle" title="${job.enabled ? 'Turn off' : 'Turn on'}">
           <input type="checkbox" ${job.enabled ? 'checked' : ''} onchange="toggleCronJob('${job.id}')">
           <span class="cron-toggle-slider"></span>
         </label>
       </div>
-      <div class="cron-card-schedule">
-        ${esc(job.cron_human || job.cron_expr)}
-        <code>${esc(job.cron_expr)}</code>
-        ${job.expires ? `<span class="cron-card-expires">Expires: ${new Date(job.expires).toLocaleDateString()}</span>` : ''}
-      </div>
-      <div class="cron-card-meta">
-        <span>Next: ${nextRun}</span>
-        <span>Last: ${lastRun}</span>
-        <span>Runs: ${job.run_count || 0}</span>
-        ${latestTask ? `<span>Latest: <a href="#" onclick="switchTab('now');setTimeout(()=>openTask('${latestTask}'),300);return false">${latestTask}</a></span>` : ''}
-      </div>
+      <div class="cron-card-when">${svgIcon('cron')}<span>${schedule}</span></div>
+      <div class="cron-card-foot">${foot.join('<span class="sep">·</span>')}</div>
       <div class="cron-card-actions">
-        <button class="cron-btn small secondary" id="cron-run-${job.id}" onclick="runCronJob('${job.id}')">Run Now</button>
-        <button class="cron-btn small secondary" onclick="editCronJob('${job.id}')">Edit</button>
-        <button class="cron-btn small danger" id="cron-del-${job.id}" onclick="deleteCronJob('${job.id}')">Delete</button>
+        <button class="card-action primary" id="cron-run-${job.id}" onclick="runCronJob('${job.id}')">Run now</button>
+        <button class="card-action" onclick="editCronJob('${job.id}')">Edit</button>
+        <button class="card-action danger" id="cron-del-${job.id}" onclick="deleteCronJob('${job.id}')">Delete</button>
+        ${latestTask ? `<a class="card-action cron-latest" href="#" onclick="switchTab('now');setTimeout(()=>openTask('${latestTask}'),300);return false">${svgIcon('output')}Latest run</a>` : ''}
       </div>
-      ${job.task_history?.length > 1 ? `<div class="cron-history" id="history-${job.id}">
-        <a href="#" onclick="toggleCronHistory('${job.id}');return false">Show ${job.task_history.length} task history</a>
-      </div>` : ''}
     </div>`;
   }
   html += '</div>';
@@ -87,14 +86,10 @@ function esc(s) { if (!s) return ''; const d = document.createElement('div'); d.
 function showCronCreate() {
   const view = document.getElementById('cron-view');
   cronRawInput = '';
-  let examplesHtml = CRON_EXAMPLES.map(ex =>
-    `<span class="cron-example-chip" onclick="document.getElementById('cron-input').value=this.textContent">${esc(ex)}</span>`
-  ).join('');
 
   view.innerHTML = `<div class="cron-create">
-    <h3>New Cron Job <button class="cron-btn small secondary" onclick="fetchCronJobs()">Cancel</button></h3>
-    <textarea class="cron-textarea" id="cron-input" placeholder="Describe what you want to happen and when...&#10;&#10;Example: Every Monday morning, go through Zendesk tickets from the past 7 days and give me a report on product feedback themes. Use the Databricks MCP to query zendesk.ticket. Write output to datasets/product/agent-output/weekly-zendesk-{date}.md"></textarea>
-    <div class="cron-examples">${examplesHtml}</div>
+    <h3>New job <button class="cron-btn small secondary" onclick="fetchCronJobs()">Cancel</button></h3>
+    <textarea class="cron-textarea" id="cron-input" placeholder="Describe what you want to happen and when, in plain English.&#10;&#10;e.g. Every Monday morning, go through Zendesk tickets from the past 7 days and give me a report on product feedback themes."></textarea>
     <div class="cron-parse-actions">
       <button class="cron-btn" id="cron-parse-btn" onclick="parseCronInput()">Parse &rarr;</button>
       <span id="cron-parse-status"></span>
@@ -339,7 +334,7 @@ async function runCronJob(jobId) {
   if (btn && !btn.dataset.armed) {
     btn.dataset.armed = 'true';
     btn.textContent = 'Confirm run?';
-    setTimeout(() => { if (btn.dataset.armed) { delete btn.dataset.armed; btn.textContent = 'Run Now'; } }, 3000);
+    setTimeout(() => { if (btn.dataset.armed) { delete btn.dataset.armed; btn.textContent = 'Run now'; } }, 3000);
     return;
   }
   if (btn) { delete btn.dataset.armed; btn.textContent = 'Running...'; btn.disabled = true; }

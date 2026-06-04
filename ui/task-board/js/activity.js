@@ -29,7 +29,17 @@ async function renderActivity() {
              placeholder="Filter by id, title, domain, queue…"
              oninput="_renderActivityRows(this.value)">
     </div>
-    <div id="activity-rows"></div>
+    <div class="activity-table">
+      <div class="activity-head">
+        <span>Date</span>
+        <span>ID</span>
+        <span>Title</span>
+        <span>Type</span>
+        <span>Domain</span>
+        <span>Output</span>
+      </div>
+      <div class="activity-rows" id="activity-rows"></div>
+    </div>
   `;
 
   _renderActivityRows('');
@@ -57,28 +67,31 @@ function _renderActivityRows(filterStr) {
 
 function _renderActivityRow(t) {
   const queue = t.queue || '';
-  const queueClass = ['human', 'agent', 'collab', 'waiting'].includes(queue)
-    ? `badge-queue-${queue}` : 'badge-domain';
-  const queueBadge = queue
-    ? `<span class="badge ${queueClass}">${escapeHtml(queue)}</span>` : '';
-  const domainBadge = t.domain
-    ? `<span class="badge badge-domain">${escapeHtml(t.domain)}</span>` : '';
+  const typeClass = ['human', 'agent', 'collab', 'waiting'].includes(queue) ? `atype-${queue}` : '';
+  const typeCell = queue
+    ? `<span class="activity-type ${typeClass}">${escapeHtml(queue)}</span>`
+    : `<span class="activity-type activity-empty-cell">—</span>`;
+  const domainCell = t.domain
+    ? `<span class="activity-domain">${escapeHtml(t.domain)}</span>`
+    : `<span class="activity-domain activity-empty-cell">—</span>`;
 
-  let link = '';
+  let link;
   if (t.agent_output) {
     link = `<a class="activity-link" href="${obsidianUri(t.agent_output)}" title="Open in Obsidian">Open output</a>`;
   } else if (t.sharepoint_url) {
     link = `<a class="activity-link" href="${escapeHtml(t.sharepoint_url)}" target="_blank" rel="noopener" title="Open in Word Online">Open output</a>`;
+  } else {
+    link = `<span class="activity-link activity-empty-cell">—</span>`;
   }
 
   return `
-    <div class="activity-row">
+    <div class="activity-row card">
       <span class="activity-date">${escapeHtml(formatDate(t.updated))}</span>
       <span class="activity-id">${escapeHtml(t.id || '')}</span>
       <span class="activity-title">${escapeHtml(t.title || '')}</span>
-      ${queueBadge}
-      ${domainBadge}
-      <span class="activity-link-slot">${link}</span>
+      ${typeCell}
+      ${domainCell}
+      ${link}
     </div>
   `;
 }

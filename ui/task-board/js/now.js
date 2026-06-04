@@ -17,7 +17,7 @@ function sortByPriority(tasks) {
 
 function renderNowSection(title, tasks, emptyText) {
   let html = `<section class="now-section">`;
-  html += `<div class="now-section-header"><span>${title}</span><span class="now-count">${tasks.length}</span></div>`;
+  html += `<div class="now-section-header"><span>${title}</span></div>`;
   html += `<div class="now-section-body">`;
   if (tasks.length === 0) {
     html += `<div class="now-empty">${emptyText}</div>`;
@@ -42,19 +42,19 @@ function renderNow() {
 
   let html = '';
   html += renderNowSection(
-    `Review &middot; artifacts you own`, lanes.review,
+    `Review`, lanes.review,
     'Nothing to review.');
   html += renderNowSection(
-    `Decide &middot; supervised actions`, lanes.decide,
+    `Decide`, lanes.decide,
     'Nothing waiting on your approval.');
   html += renderNowSection(
-    `People &middot; follow-ups &amp; waiting`, lanes.people,
+    `People`, lanes.people,
     'Inbox zero.');
 
-  // Agent queue — collapsed by default, running cards show 🤖 via renderCard
+  // Agent queue — collapsed by default, running cards show their mark via renderCard
   const aq = lanes['agent-queue'];
   html += `<details class="now-section now-agent-queue">`;
-  html += `<summary class="now-section-header"><span>Agent queue &middot; running &amp; not-yet-started (${aq.length})</span></summary>`;
+  html += `<summary class="now-section-header"><span>Agent queue</span></summary>`;
   html += `<div class="now-section-body">`;
   if (aq.length === 0) {
     html += `<div class="now-empty">Agent queue is empty.</div>`;
