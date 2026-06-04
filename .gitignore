@@ -43,5 +43,48 @@ datasets/meetings/*
 datasets/meetings/*/*
 !datasets/meetings/*/*/.gitkeep
 
+# Tasks folder: keep queue structure, ignore all task content
+datasets/tasks/*
+!datasets/tasks/.gitkeep
+!datasets/tasks/*/
+!datasets/tasks/*/.gitkeep
+datasets/tasks/*/*
+!datasets/tasks/*/*/.gitkeep
+
+# Cron folder: keep structure, ignore job definitions and outputs
+datasets/cron/*
+!datasets/cron/.gitkeep
+!datasets/cron/*/
+!datasets/cron/*/.gitkeep
+datasets/cron/*/*
+!datasets/cron/*/*/.gitkeep
+
+# People folder: keep structure, ignore people data (e.g. email cache)
+datasets/people/*
+!datasets/people/.gitkeep
+
+# Recruiting folder: keep structure and templates, ignore candidate data
+datasets/recruiting/*
+!datasets/recruiting/.gitkeep
+!datasets/recruiting/*/
+!datasets/recruiting/*/.gitkeep
+datasets/recruiting/*/*
+!datasets/recruiting/templates/
+!datasets/recruiting/*/*/.gitkeep
+
+# Evals folder: keep category structure, ignore eval runs and golden datasets
+datasets/evals/*
+!datasets/evals/.gitkeep
+!datasets/evals/*/
+!datasets/evals/*/.gitkeep
+datasets/evals/*/*
+!datasets/evals/*/*/.gitkeep
+
+# Reference folder: ignore personal reference content, but keep the voice guide
+# (reusable scaffolding — others can adapt it to their own voice)
+datasets/reference/*
+!datasets/reference/.gitkeep
+!datasets/reference/jay-voice.md
+
 # Docs folder: exclude from git (implementation notes, not part of system)
 docs/
