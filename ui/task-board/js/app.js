@@ -5,8 +5,8 @@ function switchTab(tabName) {
   document.querySelectorAll('.topbar-tab').forEach(el => el.classList.remove('active'));
   document.getElementById(`tab-${tabName}`).classList.add('active');
   document.querySelector(`.topbar-tab[data-tab="${tabName}"]`).classList.add('active');
-  if (tabName === 'prompts') fetchPrompts();
-  if (tabName === 'cron') fetchCronJobs();
+  if (tabName === 'engine') fetchPrompts();
+  if (tabName === 'schedules') fetchCronJobs();
 }
 
 // Close modal on overlay click

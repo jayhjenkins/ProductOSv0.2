@@ -1203,26 +1203,36 @@
 <div class="topbar">
   <h1>PM-OS Task Board</h1>
   <div class="topbar-tabs">
-    <button class="topbar-tab active" data-tab="board" onclick="switchTab('board')">Board</button>
-    <button class="topbar-tab" data-tab="cron" onclick="switchTab('cron')">Cron</button>
-    <button class="topbar-tab" data-tab="prompts" onclick="switchTab('prompts')">Agents <span class="lf-status unknown" id="lf-status-dot" title="LangFuse status"></span></button>
+    <button class="topbar-tab active" data-tab="now" onclick="switchTab('now')">Now</button>
+    <button class="topbar-tab" data-tab="activity" onclick="switchTab('activity')">Activity</button>
+    <button class="topbar-tab" data-tab="quality" onclick="switchTab('quality')">Quality</button>
+    <button class="topbar-tab" data-tab="engine" onclick="switchTab('engine')">Engine <span class="lf-status unknown" id="lf-status-dot" title="LangFuse status"></span></button>
+    <button class="topbar-tab" data-tab="schedules" onclick="switchTab('schedules')">Schedules</button>
   </div>
   <div class="topbar-stats" id="stats"></div>
 </div>
 
-<div id="tab-board" class="tab-content active">
+<div id="tab-now" class="tab-content active">
   <div class="board" id="board">
     <div class="loading">Loading tasks...</div>
   </div>
 </div>
 
-<div id="tab-prompts" class="tab-content">
+<div id="tab-activity" class="tab-content">
+  <div class="loading">Activity — coming in a later phase.</div>
+</div>
+
+<div id="tab-quality" class="tab-content">
+  <div class="loading">Quality — coming in a later phase.</div>
+</div>
+
+<div id="tab-engine" class="tab-content">
   <div class="prompts-view" id="prompts-view">
     <div class="loading">Loading prompts...</div>
   </div>
 </div>
 
-<div id="tab-cron" class="tab-content">
+<div id="tab-schedules" class="tab-content">
   <div class="cron-view" id="cron-view">
     <div class="loading">Loading cron jobs...</div>
   </div>

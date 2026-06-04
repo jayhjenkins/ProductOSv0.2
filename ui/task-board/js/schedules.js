@@ -66,7 +66,7 @@ function renderCronList() {
         <span>Next: ${nextRun}</span>
         <span>Last: ${lastRun}</span>
         <span>Runs: ${job.run_count || 0}</span>
-        ${latestTask ? `<span>Latest: <a href="#" onclick="switchTab('board');setTimeout(()=>openTask('${latestTask}'),300);return false">${latestTask}</a></span>` : ''}
+        ${latestTask ? `<span>Latest: <a href="#" onclick="switchTab('now');setTimeout(()=>openTask('${latestTask}'),300);return false">${latestTask}</a></span>` : ''}
       </div>
       <div class="cron-card-actions">
         <button class="cron-btn small secondary" id="cron-run-${job.id}" onclick="runCronJob('${job.id}')">Run Now</button>
@@ -381,7 +381,7 @@ function toggleCronHistory(jobId) {
     el.dataset.expanded = 'false';
   } else {
     const links = history.slice().reverse().map(tid =>
-      `<a href="#" onclick="switchTab('board');setTimeout(()=>openTask('${tid}'),300);return false">${tid}</a>`
+      `<a href="#" onclick="switchTab('now');setTimeout(()=>openTask('${tid}'),300);return false">${tid}</a>`
     ).join(', ');
     el.innerHTML = `<a href="#" onclick="toggleCronHistory('${jobId}');return false">Hide history</a><br>${links}`;
     el.dataset.expanded = 'true';
