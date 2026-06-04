@@ -253,7 +253,9 @@ def handle_quality(handler):
         gkey = _task_type_of(t)
         g = groups.setdefault(gkey, {
             "task_type": gkey, "count": 0, "scores": [], "scored_at": [],
-            "dimensions": {"context": [], "reasoning": [], "evidence": [], "format": []},
+            # Dimension keys are kind-specific (document vs message); collect
+            # whatever keys appear so the scoreboard isn't locked to one set.
+            "dimensions": {},
             "phase": "Shadow", "agree": 0, "disagree": 0,
         })
         try:
@@ -265,10 +267,10 @@ def handle_quality(handler):
         g["scored_at"].append(t.get("judge_scored_at") or "")
         dims = t.get("judge_dimensions") or {}
         if isinstance(dims, dict):
-            for k in g["dimensions"]:
-                if dims.get(k) is not None:
+            for k, v in dims.items():
+                if v is not None:
                     try:
-                        g["dimensions"][k].append(float(dims[k]))
+                        g["dimensions"].setdefault(k, []).append(float(v))
                     except (TypeError, ValueError):
                         pass
 

@@ -266,6 +266,41 @@ def register_judge_rubric(langfuse, dry_run=False):
                 print(f"    Error: {e}")
 
 
+def register_voice(langfuse, dry_run=False):
+    """Register Jay's voice guide (judge-voice-jay) from datasets/reference/jay-voice.md.
+
+    The on-disk file is the editable source of truth; this pushes its body to
+    LangFuse so the judge can fetch a versioned copy (composed into the message rubric).
+    """
+    from judge import VOICE_FILE
+
+    name = "judge-voice-jay"
+    if not os.path.isfile(VOICE_FILE):
+        print(f"  Skipping {name}: {VOICE_FILE} not found")
+        return
+    with open(VOICE_FILE, "r", encoding="utf-8") as f:
+        text = f.read()
+
+    print(f"  {'[DRY-RUN] ' if dry_run else ''}Registering: {name}")
+    if dry_run:
+        print(f"    Length: {len(text)} chars")
+        return
+    try:
+        langfuse.create_prompt(
+            name=name,
+            prompt=text,
+            config={"source": "datasets/reference/jay-voice.md"},
+            labels=["production"],
+            type="text",
+        )
+        print(f"    Registered (production)")
+    except Exception as e:
+        if "already exists" in str(e).lower() or "409" in str(e):
+            print(f"    Already exists (skipped)")
+        else:
+            print(f"    Error: {e}")
+
+
 def main():
     parser = argparse.ArgumentParser(description="Register PM-OS prompts in LangFuse")
     parser.add_argument("--dry-run", action="store_true", help="Show what would be registered")
@@ -311,6 +346,8 @@ def main():
     if register_all or args.judge:
         print("\n[Judge Rubric]")
         register_judge_rubric(langfuse, dry_run=args.dry_run)
+        print("\n[Judge Voice]")
+        register_voice(langfuse, dry_run=args.dry_run)
 
     if not args.dry_run and langfuse:
         from langfuse_client import flush

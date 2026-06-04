@@ -47,12 +47,28 @@ function _qSpark(g) {
   </svg>`;
 }
 
-// One compact dimension chart: four short vertical bars sharing a baseline,
-// so differences read at a glance instead of four similar horizontal lines.
+// One compact dimension chart: short vertical bars sharing a baseline, so
+// differences read at a glance. Dimension keys are kind-specific (documents use
+// context/reasoning/evidence/format; messages use voice/format/fulfils_ask/
+// clarity), so render whatever keys the group carries, in a sensible order.
+const _Q_DIM_LABELS = {
+  context: 'Context', reasoning: 'Reasoning', evidence: 'Evidence', format: 'Format',
+  voice: 'Voice', fulfils_ask: 'Fulfils ask', clarity: 'Clarity',
+};
+const _Q_DIM_ORDER = ['context', 'reasoning', 'evidence', 'format', 'voice', 'fulfils_ask', 'clarity'];
+function _qLabel(k) {
+  return _Q_DIM_LABELS[k] || k.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+}
 function _qDims(dims) {
   if (!dims) return '';
-  const order = [['context', 'Context'], ['reasoning', 'Reasoning'], ['evidence', 'Evidence'], ['format', 'Format']];
-  const cols = order.filter(([k]) => dims[k] != null).map(([k, label]) => {
+  const keys = Object.keys(dims).filter(k => dims[k] != null);
+  if (!keys.length) return '';
+  keys.sort((a, b) => {
+    const ia = _Q_DIM_ORDER.indexOf(a), ib = _Q_DIM_ORDER.indexOf(b);
+    return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib);
+  });
+  const cols = keys.map(k => {
+    const label = _qLabel(k);
     const pct = Math.max(8, Math.min(100, dims[k] * 10));
     return `<div class="q-dcol" title="${label}: ${dims[k]}/10">
       <span class="q-dval">${dims[k]}</span>

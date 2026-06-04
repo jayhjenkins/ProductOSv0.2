@@ -37,6 +37,7 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 PM_OS_DIR = os.path.dirname(SCRIPT_DIR)
 LOG_DIR = os.path.join(PM_OS_DIR, "logs")
 ENV_FILE = os.path.join(PM_OS_DIR, ".env.langfuse")
+VOICE_FILE = os.path.join(PM_OS_DIR, "datasets", "reference", "jay-voice.md")
 
 sys.path.insert(0, SCRIPT_DIR)
 import task_lib  # noqa: E402
@@ -82,26 +83,34 @@ Return ONLY a single JSON object, no prose around it, no markdown fences:
 
 
 DEFAULT_RUBRIC_MESSAGE = """You are the PM-OS shadow judge. You score a DRAFTED MESSAGE a worker agent \
-prepared for the user to send (Teams or email), judging whether it does what the task asked.
+prepared for Jay to send, judging whether Jay could send it as-is. A draft usually contains BOTH a \
+Teams / short version AND an email version — judge both.
 
-Score 1-10 as a demanding chief of staff deciding whether the user could send this with at most a \
-quick glance. Weigh:
-- fulfils the ask — does it accomplish what the task asked (the right request, question, or update)?
-- right recipient & framing — addressed to the right person and pitched correctly for them?
-- clarity & completeness — clear, self-contained, no placeholders or loose ends?
-- tone & length — appropriate, concise, and fit for the channel; not stiff or over-long for a quick note.
+A JAY'S VOICE GUIDE is provided below the task. Use it as the standard for the `voice` and `format` \
+dimensions — the message should sound like Jay and follow his channel conventions, not generic "good writing".
+
+Score on a 1-10 integer scale across four dimensions:
+- voice       — does it sound like Jay per the voice guide (direct, plain, warm-but-efficient, no em dashes, \
+his asks and rhythm)? Both the Teams and email versions.
+- format      — channel-fit per the guide: the Teams version tight, low-caps, minimal greeting/sign-off; the \
+email version subject + greeting + close, 1-3 sentence paragraphs, skimmable. Name the weaker channel.
+- fulfils_ask — does it make the actual request the task asked, to the right recipient, framed for them?
+- clarity     — clear, self-contained, sendable; no placeholders, loose ends, or buried ask.
 
 Do NOT penalize a message for lacking citations, footnotes, or verbatim source quotes — it is a message, \
-not a document. Judge it as something a person will actually send.
+not a document. Judge it as something Jay will actually send.
 
+Then give an overall score (1-10) for whether Jay could send it with at most a quick glance. \
 Calibration: 9-10 = send as-is. 7-8 = send after a small tweak. 5-6 = usable but needs real edits. \
 3-4 = significant rework. 1-2 = off-target.
 
-Write the rationale as ONE substantive paragraph (3-5 sentences): what works, the weakest point, and what \
-would make it sendable. Specific and measured — no superlatives, no filler.
+Write the rationale as ONE substantive paragraph (3-5 sentences): name the weakest and strongest \
+dimension, call out which channel version is weaker if they differ, and say what would make it sendable. \
+Specific and measured — no superlatives, no filler.
 
 Return ONLY a single JSON object, no prose around it, no markdown fences:
-{"score": <1-10 int>, "why": "<one paragraph>"}"""
+{"score": <1-10 int>, "dimensions": {"voice": <1-10>, "format": <1-10>, "fulfils_ask": <1-10>, \
+"clarity": <1-10>}, "why": "<one paragraph>"}"""
 
 
 DEFAULT_RUBRIC_MEETING = """You are the PM-OS shadow judge. You score a SCHEDULED MEETING a worker agent \
@@ -132,8 +141,22 @@ RUBRICS = {
     "meeting": ("judge-rubric-meeting", DEFAULT_RUBRIC_MEETING),
 }
 
+# Per-kind dimension keys the verdict carries (meeting = none; paragraph only).
+DIMENSIONS_BY_KIND = {
+    "document": ["context", "reasoning", "evidence", "format"],
+    "message": ["voice", "format", "fulfils_ask", "clarity"],
+    "meeting": [],
+}
+
 # Back-compat alias (langfuse_setup imported DEFAULT_RUBRIC for the v1 prompt).
 DEFAULT_RUBRIC = DEFAULT_RUBRIC_DOCUMENT
+
+# Minimal inline fallback if the voice file and LangFuse are both unavailable.
+DEFAULT_VOICE = (
+    "Jay's voice: direct, plain, warm but efficient. No em dashes. Lead with the ask. "
+    "Teams = tight, low caps, minimal greeting/sign-off. Email = subject + greeting + close, "
+    "1-3 sentence paragraphs, ask up front."
+)
 
 
 # ── Helpers ─────────────────────────────────────────────────────────────────
@@ -208,6 +231,31 @@ def fetch_rubric(kind):
     return default, f"inline:{kind}"
 
 
+def fetch_voice():
+    """Return (voice_text, source_label) for Jay's voice guide.
+
+    Prefer the LangFuse prompt (`judge-voice-jay`); fall back to reading the
+    on-disk source of truth; final fallback is a minimal inline default.
+    """
+    try:
+        from langfuse_client import fetch_prompt
+        p = fetch_prompt("judge-voice-jay")
+        if p is not None:
+            text = p.prompt if hasattr(p, "prompt") else None
+            version = getattr(p, "version", None)
+            if text:
+                return text, f"langfuse:judge-voice-jay:v{version}" if version else "langfuse:judge-voice-jay"
+    except Exception as e:
+        log(f"voice fetch from LangFuse failed ({e}); falling back to file")
+    try:
+        if os.path.isfile(VOICE_FILE):
+            with open(VOICE_FILE, "r", encoding="utf-8", errors="replace") as f:
+                return f.read(), "file:jay-voice.md"
+    except OSError:
+        pass
+    return DEFAULT_VOICE, "inline"
+
+
 def detect_kind(fm):
     """Classify the deliverable form. Returns 'meeting' | 'message' | 'document' | None.
 
@@ -279,7 +327,7 @@ KIND_EVIDENCE_LABEL = {
 }
 
 
-def build_prompt(kind, rubric, task_fm, body, evidence, log_tail):
+def build_prompt(kind, rubric, task_fm, body, evidence, log_tail, voice=None):
     title = task_fm.get("title", "")
     domain = task_fm.get("domain", "—")
     task_type = task_fm.get("task_type") or "—"
@@ -289,6 +337,9 @@ def build_prompt(kind, rubric, task_fm, body, evidence, log_tail):
         f"Title: {title}\nDomain: {domain}\nType: {task_type}",
         "\nTask description:\n" + (body.strip() or "(none)"),
     ]
+    # The voice guide is the standard for the message rubric's voice/format dims.
+    if kind == "message" and voice:
+        parts.append("\n=== JAY'S VOICE GUIDE (the standard for voice & format) ===\n" + voice)
     # The execution-trace tail helps for documents; meetings/messages are judged
     # on the deliverable itself, so skip the noise there.
     if log_tail and kind == "document":
@@ -331,8 +382,11 @@ def run_claude(prompt):
     return out
 
 
-def parse_verdict(text):
-    """Extract and validate the verdict JSON from the model's text."""
+def parse_verdict(text, kind):
+    """Extract and validate the verdict JSON from the model's text.
+
+    Dimension keys are kind-specific (DIMENSIONS_BY_KIND); meeting verdicts carry none.
+    """
     if not text:
         return None
     obj = None
@@ -364,7 +418,7 @@ def parse_verdict(text):
         return None
     dims_in = obj.get("dimensions") or {}
     dimensions = {}
-    for k in ("context", "reasoning", "evidence", "format"):
+    for k in DIMENSIONS_BY_KIND.get(kind, []):
         cv = clamp(dims_in.get(k)) if isinstance(dims_in, dict) else None
         if cv is not None:
             dimensions[k] = cv
@@ -474,11 +528,15 @@ def judge_task(task_id):
         return 0
 
     rubric, rubric_version = fetch_rubric(kind)
-    prompt = build_prompt(kind, rubric, fm, body, evidence, read_log_tail(task_id))
+    voice = voice_version = None
+    if kind == "message":
+        voice, voice_version = fetch_voice()
+    prompt = build_prompt(kind, rubric, fm, body, evidence, read_log_tail(task_id), voice=voice)
 
-    log(f"scoring {task_id} [{kind}] ({note}, rubric {rubric_version})")
+    vlabel = f", voice {voice_version}" if voice_version else ""
+    log(f"scoring {task_id} [{kind}] ({note}, rubric {rubric_version}{vlabel})")
     text = run_claude(prompt)
-    verdict = parse_verdict(text)
+    verdict = parse_verdict(text, kind)
     if verdict is None:
         log(f"could not parse a verdict for {task_id}; leaving unscored")
         return 0
