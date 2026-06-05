@@ -1,0 +1,150 @@
+/* ═══════════════════════════════════════════════════════════════════════
+   MOOD · Breathe   —   Soft Aurora · a visual exhale
+   Pastel light. No hard edges, no structure — just gentle gradients drifting
+   through pastel space. Frosted-glass surfaces float over a wash of pink,
+   lavender, mint and sky, while big soft blobs drift slowly in the margins.
+
+   Like the other moods this is TOKEN-FIRST. The only non-token rules are at
+   the very bottom: a purely-cosmetic ambient-motion layer (two pseudo-element
+   blob fields that drift) plus a touch of frosted blur. They change LOOK only
+   — every interaction (proximity warmth, modals, routing, refresh) is
+   untouched. The *-soft tints and legacy *-bg aliases derive in index.html's
+   :root; never repeat them here.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+[data-theme="breathe"] {
+  /* ── Type (soft, rounded, calm) ───────────────────────────────────── */
+  --font-sans:  'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+  --font-serif: 'Nunito', 'Segoe UI', Helvetica, Arial, sans-serif;
+
+  /* ── Surfaces (frosted white glass over the pastel wash) ──────────── */
+  --bg:            rgba(255, 255, 255, 0.34);
+  --bg-deep:       rgba(244, 236, 248, 0.55);
+  --surface:       rgba(255, 255, 255, 0.74);   /* modals / inputs / lane glass */
+  --surface-hover: rgba(255, 255, 255, 0.90);   /* hovered / raised state        */
+  --card-bg:       rgba(255, 255, 255, 0.52);    /* task-card face — frosted       */
+  --border:        rgba(120, 104, 158, 0.16);
+  --border-soft:   rgba(120, 104, 158, 0.09);
+
+  /* ── Text (muted purple-grey — soft against the wash) ─────────────── */
+  --text:       oklch(0.430 0.038 300);
+  --text-muted: oklch(0.560 0.032 300);
+  --text-dim:   oklch(0.670 0.026 300);
+
+  /* ── Accents (pastel — shared lightness/chroma, varied hue) ───────── */
+  --accent:     oklch(0.760 0.075 295);   /* lavender / periwinkle */
+  --accent-ink: oklch(0.360 0.070 295);   /* deep ink that reads ON the accent */
+  --success:    oklch(0.795 0.072 168);   /* mint   */
+  --warning:    oklch(0.820 0.078 78);    /* peach  */
+  --danger:     oklch(0.760 0.080 18);    /* rose   */
+
+  /* ── Queue / type hues (pastel, distinct) ─────────────────────────── */
+  --q-agent:    oklch(0.760 0.075 295);   /* lavender */
+  --q-collab:   oklch(0.805 0.078 62);    /* peach    */
+  --q-human:    oklch(0.775 0.075 242);   /* sky      */
+  --q-waiting:  oklch(0.730 0.022 300);   /* soft grey */
+
+  /* ── Priority dots ────────────────────────────────────────────────── */
+  --prio-critical: oklch(0.730 0.090 18);   /* rose  */
+  --prio-high:     oklch(0.805 0.086 72);    /* peach */
+  --prio-medium:   oklch(0.770 0.080 242);   /* sky   */
+  --prio-low:      oklch(0.710 0.024 300);   /* grey  */
+
+  /* ── Shape & motion (no hard edges · slow, gentle easing) ─────────── */
+  --r-card:  22px;
+  --r-lane:  28px;
+  --r-badge: 999px;
+  --r-btn:   999px;
+  --ease:    0.6s cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* ── App background — the static pastel wash ──────────────────────────
+     Pink/lavender up top, a warm-white core, mint + sky settling toward the
+     bottom (the drifting blobs that live ON this come from the pseudo-element
+     layers at the foot of this file). ──────────────────────────────── */
+  --app-bg:
+    radial-gradient(1300px 1000px at 16% -6%, #f7dcef 0%, transparent 56%),
+    radial-gradient(1100px 900px at 88% 6%,  #e8def8 0%, transparent 55%),
+    radial-gradient(1200px 1000px at 50% 52%, #fdeede 0%, transparent 62%),
+    radial-gradient(1200px 1050px at 8% 106%, #d8f4e7 0%, transparent 58%),
+    radial-gradient(1300px 1050px at 94% 102%, #def0fb 0%, transparent 58%),
+    #f4ecf6;
+
+  /* the ambient drift uses the pseudo-element layers below, so no grain here */
+  --paper: none;
+  --paper-opacity: 0;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   AMBIENT MOTION — soft drifting blobs   (cosmetic only · LOOK, not UX)
+   Two fixed pseudo-element fields, each carrying a few large pastel blobs,
+   drift on long out-of-phase loops so nothing ever lines up or demands
+   attention. They sit behind all content (z-index 0; content is z-index 2)
+   and through the frosted top-bar / cards. Honors reduced-motion.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+[data-theme="breathe"] body::before,
+[data-theme="breathe"] body::after {
+  content: '';
+  position: fixed;
+  inset: -25%;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 1;
+  filter: blur(26px);
+  will-change: transform;
+}
+
+/* field A — pink · lavender · mint */
+[data-theme="breathe"] body::before {
+  background-image:
+    radial-gradient(42vw 38vw at 22% 26%, rgba(246, 200, 234, 0.62) 0%, transparent 70%),
+    radial-gradient(38vw 36vw at 74% 16%, rgba(216, 204, 247, 0.56) 0%, transparent 70%),
+    radial-gradient(40vw 38vw at 84% 74%, rgba(206, 240, 224, 0.54) 0%, transparent 70%);
+  animation: breathe-drift-a 34s ease-in-out infinite;
+}
+
+/* field B — sky · peach · violet (slower, opposite phase) */
+[data-theme="breathe"] body::after {
+  background-image:
+    radial-gradient(46vw 42vw at 12% 80%, rgba(206, 233, 248, 0.56) 0%, transparent 70%),
+    radial-gradient(36vw 34vw at 56% 58%, rgba(251, 226, 206, 0.50) 0%, transparent 72%),
+    radial-gradient(38vw 36vw at 92% 36%, rgba(233, 211, 246, 0.50) 0%, transparent 72%);
+  animation: breathe-drift-b 47s ease-in-out infinite;
+}
+
+@keyframes breathe-drift-a {
+  0%   { transform: translate3d(0, 0, 0)        scale(1);    }
+  33%  { transform: translate3d(3.5%, -2.5%, 0) scale(1.07); }
+  66%  { transform: translate3d(-2.5%, 2%, 0)   scale(1.03); }
+  100% { transform: translate3d(0, 0, 0)        scale(1);    }
+}
+
+@keyframes breathe-drift-b {
+  0%   { transform: translate3d(0, 0, 0)        scale(1.05); }
+  33%  { transform: translate3d(-3%, 2.5%, 0)   scale(1);    }
+  66%  { transform: translate3d(2.5%, -2%, 0)   scale(1.08); }
+  100% { transform: translate3d(0, 0, 0)        scale(1.05); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-theme="breathe"] body::before,
+  [data-theme="breathe"] body::after { animation: none; }
+}
+
+/* ── Frosted glass · the floating, weightless feel ──────────────────────
+   A light backdrop blur on the raised surfaces so the drifting colour reads
+   THROUGH them. Cosmetic only — structure and behaviour are unchanged. */
+[data-theme="breathe"] .card,
+[data-theme="breathe"] .modal,
+[data-theme="breathe"] .mood-menu {
+  backdrop-filter: blur(14px) saturate(1.15);
+  -webkit-backdrop-filter: blur(14px) saturate(1.15);
+}
+[data-theme="breathe"] .topbar {
+  backdrop-filter: blur(16px) saturate(1.2);
+  -webkit-backdrop-filter: blur(16px) saturate(1.2);
+}
+/* soft, edgeless lift instead of hard hairlines */
+[data-theme="breathe"] .card {
+  box-shadow: 0 14px 40px -26px rgba(92, 74, 130, 0.45);
+}

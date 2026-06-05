@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>PM-OS Task Board</title>
+<link rel="icon" id="app-favicon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32'%3E%3Crect x='6' y='6' width='20' height='20' rx='3' ry='12' transform='rotate(-12 16 16)' fill='%237a9e6d'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=Mulish:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -14,6 +15,9 @@
      Full recipe in themes/README.md. ──────────────────────────────── -->
 <link rel="stylesheet" href="/themes/organic.css">
 <link rel="stylesheet" href="/themes/modafinil.css">
+<link rel="stylesheet" href="/themes/breathe.css">
+<link rel="stylesheet" href="/themes/vantaca.css">
+<link rel="stylesheet" href="/themes/karesansui.css">
 <script>
   // Apply the saved mood before first paint so there's no flash of a wrong palette.
   document.documentElement.dataset.theme = localStorage.getItem('pmos-mood') || 'organic';
@@ -64,6 +68,21 @@
   }
 
   ::selection { background: color-mix(in oklab, var(--accent) 32%, transparent); }
+
+  /* ── Mood meld ───────────────────────────────────────────────────────
+     When the mood changes, applyMood() (js/themes.js) wraps the swap in a
+     View Transition. These rules tune that built-in cross-fade: one gentle,
+     even dissolve of the whole page — snappy but never abrupt. Reduced-motion
+     users get an instant swap instead. */
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 0.42s;
+    animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    ::view-transition-old(root),
+    ::view-transition-new(root) { animation: none; }
+  }
 
   /* ─── Top Bar ──────────────────────────────────────────────────────── */
   .topbar {

@@ -1,0 +1,137 @@
+/* ═══════════════════════════════════════════════════════════════════════
+   MOOD · Vantaca   —   Corporate SaaS · Vantaca brand
+   A clean, light, professional SaaS palette built from the Vantaca brand:
+   navy ink, a blue primary, an emerald-green secondary, on white + light-grey
+   surfaces with crisp hairline borders and a subtle card lift. The classic
+   trustworthy enterprise look — restrained, legible, no flourishes.
+
+   Brand swatches: Navy #0a1d2e · Blue #196cc4 · Green #06b67a · Dark #0f2a42
+                   Light #f8f9fb · White #ffffff
+
+   Token-only, like every mood. The *-soft tints and legacy *-bg aliases
+   derive in index.html's :root; the only non-token rules (bottom of file) are
+   cosmetic card/surface shadows for the SaaS "raised card" feel — LOOK only,
+   behaviour untouched.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+[data-theme="vantaca"] {
+  /* ── Type (clean geometric SaaS sans; no serif) ───────────────────── */
+  --font-sans:  'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+  --font-serif: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+
+  /* ── Surfaces (white cards on a light-grey page) ──────────────────── */
+  --bg:            #f5f7f9;   /* page                         */
+  --bg-deep:       #eceff3;   /* deepest wells / inputs base  */
+  --surface:       #ffffff;   /* panels · modals · lanes      */
+  --surface-hover: #f0f3f7;   /* hovered / raised state       */
+  --card-bg:       #ffffff;   /* task-card face               */
+  --border:        #dbe1e9;   /* hairline                     */
+  --border-soft:   #e8ecf1;   /* quieter hairline             */
+
+  /* ── Text (navy → slate → grey) ───────────────────────────────────── */
+  --text:       #0a1d2e;
+  --text-muted: #51637a;
+  --text-dim:   #8492a4;
+
+  /* ── Accents (Vantaca blue lead · emerald success) ────────────────── */
+  --accent:     #196cc4;   /* brand blue            */
+  --accent-ink: #ffffff;   /* text/icon ON the blue */
+  --success:    #06b67a;   /* brand green           */
+  --warning:    #e0991f;   /* amber (status)        */
+  --danger:     #d64545;   /* red (status)          */
+
+  /* ── Queue / type hues (distinct, on-brand) ───────────────────────── */
+  --q-agent:    #196cc4;   /* blue   */
+  --q-collab:   #06b67a;   /* green  */
+  --q-human:    #3a5e86;   /* navy-slate */
+  --q-waiting:  #8492a4;   /* grey   */
+
+  /* ── Priority dots (traditional severity ramp) ────────────────────── */
+  --prio-critical: #d64545;   /* red   */
+  --prio-high:     #e0991f;   /* amber */
+  --prio-medium:   #196cc4;   /* blue  */
+  --prio-low:      #8492a4;   /* grey  */
+
+  /* ── Shape & motion (moderate radii · snappy SaaS easing) ─────────── */
+  --r-card:  10px;
+  --r-lane:  12px;
+  --r-badge: 6px;
+  --r-btn:   8px;
+  --ease:    0.18s cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* ── App background (clean light, blue→green brand washes) ────────── */
+  --app-bg:
+    radial-gradient(1100px 640px at 86% -12%, rgba(25, 108, 196, 0.11) 0%, transparent 60%),
+    radial-gradient(1050px 660px at 6% 110%, rgba(6, 182, 122, 0.11) 0%, transparent 60%),
+    #f3f6f9;
+
+  /* the hero blue→green sweep — used on the top bar + primary CTAs */
+  --brand-grad: linear-gradient(100deg, #1565c6 0%, #1786a6 52%, #38a857 100%);
+
+  /* clean — no grain */
+  --paper: none;
+  --paper-opacity: 0;
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   BRAND PRESENCE — blue/green throughout   (cosmetic only · LOOK, not UX)
+   The top bar wears the hero's blue→green gradient with white controls, the
+   primary CTAs carry the same sweep, and the top-left mark becomes the
+   Vantaca "V". Structure, routing and hover behaviour are all unchanged.
+   ══════════════════════════════════════════════════════════════════════ */
+
+/* top bar — branded gradient, white-on-brand controls */
+[data-theme="vantaca"] .topbar {
+  background: var(--brand-grad);
+  border-bottom: none;
+  box-shadow: 0 2px 16px -6px rgba(10, 29, 46, 0.42);
+}
+[data-theme="vantaca"] .topbar h1 { color: #ffffff; }
+[data-theme="vantaca"] .topbar h1 .h1-sub { color: rgba(255, 255, 255, 0.72); }
+[data-theme="vantaca"] .topbar-tab { color: rgba(255, 255, 255, 0.84); }
+[data-theme="vantaca"] .topbar-tab:hover { background: rgba(255, 255, 255, 0.16); color: #ffffff; }
+[data-theme="vantaca"] .topbar-tab.active { background: #ffffff; color: #0a1d2e; }
+[data-theme="vantaca"] .topbar-stats { color: rgba(255, 255, 255, 0.88); }
+[data-theme="vantaca"] .stat-quiet { color: rgba(255, 255, 255, 0.62); }
+[data-theme="vantaca"] .stat-foryou { color: rgba(255, 255, 255, 0.88); }
+[data-theme="vantaca"] .stat-foryou b { color: #ffffff; }
+[data-theme="vantaca"] .stat-dot { background: #ffffff; opacity: 1; }
+[data-theme="vantaca"] .mood-btn { color: rgba(255, 255, 255, 0.9); }
+[data-theme="vantaca"] .mood-btn:hover,
+[data-theme="vantaca"] .mood-btn[aria-expanded="true"] {
+  background: rgba(255, 255, 255, 0.18); color: #ffffff; border-color: rgba(255, 255, 255, 0.28);
+}
+
+/* top-left mark — the Vantaca "V" on a white tile (blue stroke stays legible) */
+[data-theme="vantaca"] .leaf-mark {
+  width: 26px; height: 26px;
+  border-radius: 7px;
+  background: #ffffff url("../assets/vantaca-v.png") center / 72% no-repeat;
+  transform: none;
+  opacity: 1;
+  box-shadow: 0 1px 5px rgba(10, 29, 46, 0.28);
+}
+
+/* primary CTAs carry the brand sweep */
+[data-theme="vantaca"] .btn-primary {
+  background: var(--brand-grad);
+  border-color: transparent;
+}
+[data-theme="vantaca"] .btn-primary:hover {
+  filter: brightness(1.06);
+  background: var(--brand-grad);
+}
+
+/* ── Raised-card lift — the crisp SaaS surface feel (cosmetic only) ──────
+   Subtle resting shadows so white cards/panels read as raised over the grey
+   page. Structure and behaviour are unchanged; the proximity-hover system
+   layers its own shadow on top of this. */
+[data-theme="vantaca"] .card {
+  box-shadow: 0 1px 2px rgba(10, 29, 46, 0.06), 0 1px 3px rgba(10, 29, 46, 0.04);
+}
+[data-theme="vantaca"] .modal {
+  box-shadow: 0 24px 60px -18px rgba(10, 29, 46, 0.30);
+}
+[data-theme="vantaca"] .mood-menu {
+  box-shadow: 0 12px 32px -10px rgba(10, 29, 46, 0.22);
+}
