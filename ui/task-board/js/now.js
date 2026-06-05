@@ -42,11 +42,11 @@ function renderNow() {
 
   let html = '';
   html += renderNowSection(
-    `Review`, lanes.review,
-    'Nothing to review.');
-  html += renderNowSection(
     `Decide`, lanes.decide,
     'Nothing waiting on your approval.');
+  html += renderNowSection(
+    `Review`, lanes.review,
+    'Nothing to review.');
   html += renderNowSection(
     `People`, lanes.people,
     'Inbox zero.');
