@@ -1,0 +1,102 @@
+/* ═══════════════════════════════════════════════════════════════════════
+   MOOD · Karesansui   —   枯山水 · Dry-landscape Zen garden
+   Warm raked sand, stone-and-moss palette, vast breathing room. The surface
+   carries faint horizontal rake lines and slow concentric ripples around
+   asymmetric "stones," and a single 間 (Ma) — the meaningful emptiness — rests
+   barely-seen in the space below. Stillness, not motion: governed by kanso
+   (simplicity), koko (weathered austerity), shizen (naturalness), yugen
+   (subtle mystery) and seijaku (deep stillness).
+
+   Palette (sampled): Sand #f2ede6 · Moss #7a8c70 · Stone #3d3830 · Grey #7a7468
+
+   Token-first like every mood. The only non-token rules (bottom) are the
+   raked-sand background and the ghosted 間 glyph — purely cosmetic surface,
+   LOOK only. The *-soft tints and legacy *-bg aliases derive in index.html's
+   :root; never repeat them here.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+[data-theme="karesansui"] {
+  /* ── Type (quiet Zen gothic; mincho for headers) ──────────────────── */
+  --font-sans:  'Zen Kaku Gothic New', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+  --font-serif: 'Zen Old Mincho', 'Zen Kaku Gothic New', Georgia, serif;
+
+  /* ── Surfaces (raked sand → cream paper) ──────────────────────────── */
+  --bg:            #f2ede6;                      /* sand            */
+  --bg-deep:       #e8e1d6;                      /* deeper well     */
+  --surface:       #faf7f1;                      /* panels · modals */
+  --surface-hover: #f4efe7;                      /* hovered/raised  */
+  --card-bg:       rgba(252, 250, 245, 0.62);    /* faint cream — sand reads through */
+  --border:        rgba(92, 82, 64, 0.14);
+  --border-soft:   rgba(92, 82, 64, 0.075);
+
+  /* ── Text (warm stone) ────────────────────────────────────────────── */
+  --text:       #3d3830;
+  --text-muted: #6f695d;
+  --text-dim:   #97907f;
+
+  /* ── Accents (moss & weathered earth) ─────────────────────────────── */
+  --accent:     #7a8c70;   /* moss green          */
+  --accent-ink: #faf8f3;   /* cream ink ON the moss */
+  --success:    #6f8767;   /* deeper moss         */
+  --warning:    #b09a5f;   /* dry ochre           */
+  --danger:     #b0735c;   /* weathered terracotta */
+
+  /* ── Queue / type hues (earthen, distinct) ────────────────────────── */
+  --q-agent:    #7a8c70;   /* moss        */
+  --q-collab:   #b09a5f;   /* ochre       */
+  --q-human:    #7a8691;   /* stone-blue  */
+  --q-waiting:  #a39a8a;   /* dry stone   */
+
+  /* ── Priority dots (weathered severity) ───────────────────────────── */
+  --prio-critical: #b0735c;   /* terracotta */
+  --prio-high:     #b09a5f;   /* ochre      */
+  --prio-medium:   #7a8c70;   /* moss       */
+  --prio-low:      #a39a8a;   /* stone      */
+
+  /* ── Shape & motion (kanso · soft, unhurried) ─────────────────────── */
+  --r-card:  12px;
+  --r-lane:  14px;
+  --r-badge: 6px;
+  --r-btn:   8px;
+  --ease:    0.5s cubic-bezier(0.33, 0, 0.2, 1);   /* slow, settling — seijaku */
+
+  /* ── App background — raked sand with ripples around two stones ───────
+     Drawn top→bottom: concentric ripple rings around two asymmetrically
+     placed stones (fukinsei), then the horizontal rake lines, over warm sand.
+     All alphas are barely-there — felt more than seen (yugen). ───────── */
+  --app-bg:
+    repeating-radial-gradient(circle at 66% 22%,
+      transparent 0 56px, rgba(92, 82, 64, 0.045) 56px 57px, transparent 57px 114px),
+    repeating-radial-gradient(circle at 24% 84%,
+      transparent 0 46px, rgba(92, 82, 64, 0.04) 46px 47px, transparent 47px 96px),
+    repeating-linear-gradient(0deg,
+      rgba(92, 82, 64, 0.032) 0 1px, transparent 1px 14px),
+    #f2ede6;
+
+  /* faint weathered grain — koko (aged austerity) */
+  --paper: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.02'/%3E%3C/svg%3E");
+  --paper-opacity: 0.6;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   間 · MA — the meaningful space between   (cosmetic only · LOOK, not UX)
+   A single huge 間 rests low and off-centre, almost invisible (6% opacity) in
+   a sea of empty space. Ma is felt, not seen. It sits behind all content,
+   is fixed to the viewport, and ignores the pointer. Nothing about behaviour
+   changes. (Reduced-motion is irrelevant here — there is no motion.)
+   ═══════════════════════════════════════════════════════════════════════ */
+[data-theme="karesansui"] body::after {
+  content: '間';
+  position: fixed;
+  right: 7vw;
+  bottom: -8vmin;
+  z-index: 0;
+  pointer-events: none;
+  font-family: var(--font-serif);
+  font-size: 48vmin;
+  line-height: 1;
+  font-weight: 500;
+  color: #5a5040;
+  opacity: 0.03;
+  user-select: none;
+}
