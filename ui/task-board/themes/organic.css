@@ -1,0 +1,70 @@
+/* ═══════════════════════════════════════════════════════════════════════
+   MOOD · Organic   —   Forest & wood, restful dusk
+   The default mood. Dim, low-saturation, botanical. Calm by design.
+
+   This file is a COMPLETE palette. Every token below is required. To make a
+   new mood, copy themes/_TEMPLATE.css → themes/<id>.css, fill in every token,
+   then follow the 3-step recipe in themes/README.md. Nothing else in the app
+   needs to change — every component reads these tokens.
+
+   Note: only TOKENS live here. Derived tokens (the *-soft tints and the
+   legacy *-bg aliases) are computed once in index.html's :root from the
+   primitives below, so you never repeat them.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+[data-theme="organic"] {
+  /* ── Type ─────────────────────────────────────────────────────────── */
+  --font-sans:  'Mulish', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+  --font-serif: 'Spectral', Georgia, serif;
+
+  /* ── Surfaces ─────────────────────────────────────────────────────── */
+  --bg:           oklch(0.198 0.014 128);
+  --bg-deep:      oklch(0.170 0.013 128);
+  --surface:      oklch(0.236 0.016 122);
+  --surface-hover:oklch(0.285 0.018 114);
+  --card-bg:      oklch(0.220 0.015 124);
+  --border:       oklch(0.322 0.016 116);
+  --border-soft:  oklch(0.272 0.013 118);
+
+  /* ── Text ─────────────────────────────────────────────────────────── */
+  --text:       oklch(0.902 0.014 92);
+  --text-muted: oklch(0.722 0.016 96);
+  --text-dim:   oklch(0.560 0.016 100);
+
+  /* ── Accents (very muted, dried-botanical) ───────────────────────── */
+  --accent:     oklch(0.748 0.046 140);
+  --accent-ink: oklch(0.205 0.020 140);   /* text/icon color ON an accent fill */
+  --success:    oklch(0.738 0.048 150);
+  --warning:    oklch(0.770 0.052 74);
+  --danger:     oklch(0.706 0.055 46);
+
+  /* ── Queue / type hues (muted, distinct) ─────────────────────────── */
+  --q-agent:    oklch(0.748 0.046 140);
+  --q-collab:   oklch(0.772 0.050 74);
+  --q-human:    oklch(0.736 0.040 232);
+  --q-waiting:  oklch(0.640 0.022 90);
+
+  /* ── Priority dots ───────────────────────────────────────────────── */
+  --prio-critical: oklch(0.706 0.055 46);
+  --prio-high:     oklch(0.770 0.052 74);
+  --prio-medium:   oklch(0.736 0.040 232);
+  --prio-low:      oklch(0.560 0.016 100);
+
+  /* ── Shape & motion ──────────────────────────────────────────────── */
+  --r-card:  12px;
+  --r-lane:  16px;
+  --r-badge: 6px;
+  --r-btn:   9px;
+  --ease:    0.42s cubic-bezier(0.22, 0.61, 0.36, 1);
+
+  /* ── App background & paper texture ──────────────────────────────── */
+  /* --app-bg is the full body background shorthand; it may reference the
+     hues above. --paper is an optional overlay texture (set to `none` to
+     drop it); --paper-opacity controls its strength. */
+  --app-bg:
+    radial-gradient(1100px 620px at 78% -8%, color-mix(in oklab, var(--accent) 9%, transparent) 0%, transparent 58%),
+    radial-gradient(820px 520px at 2% 106%, color-mix(in oklab, var(--success) 7%, transparent) 0%, transparent 55%),
+    var(--bg);
+  --paper: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.022'/%3E%3C/svg%3E");
+  --paper-opacity: 0.7;
+}

@@ -1,0 +1,85 @@
+/* ═══════════════════════════════════════════════════════════════════════
+   MOOD · _TEMPLATE   —   copy me to make a new mood
+   ───────────────────────────────────────────────────────────────────────
+   1.  cp themes/_TEMPLATE.css themes/<id>.css      (e.g. themes/calm.css)
+   2.  Replace EVERY "<id>" below with your mood id, and fill in every value.
+   3.  Add  <link rel="stylesheet" href="themes/<id>.css">  to index.html <head>
+       (next to the other theme <link>s).
+   4.  Register the mood in js/themes.js  →  add an entry to the MOODS array.
+
+   Rules of the road:
+   • Define ONLY tokens. Never restyle components here — the *-soft tints and
+     the legacy *-bg aliases are derived automatically in index.html's :root.
+   • Every token below is required. Missing one = that thing falls back to the
+     last mood's value (or nothing). Keep the full set.
+   • Want a custom webfont? Add `fontHref` to your MOODS entry in themes.js —
+     it's lazy-loaded on first switch. Then point --font-sans / --font-serif
+     at it here.
+   • You only change LOOK. Interactions (proximity hover, modals, refresh,
+     routing) are token-agnostic and keep working untouched.
+
+   Token feel cheat-sheet:
+     bg < bg-deep                 page + deepest wells
+     surface / surface-hover      panels, raised + hovered states
+     card-bg                      task card face
+     border / border-soft         hairlines (soft = quieter)
+     text / muted / dim           primary → tertiary text
+     accent + accent-ink          brand hue + the ink that sits ON it
+     success / warning / danger   status hues (also reused as q-/prio- below)
+     q-*                          queue/type hues on cards
+     prio-*                       priority dots
+     r-*                          corner radii (go sharp for retro, round for soft)
+     ease                         the one shared transition timing
+     app-bg / paper / paper-opacity   page background + optional grain
+   ═══════════════════════════════════════════════════════════════════════ */
+
+[data-theme="<id>"] {
+  /* ── Type ─────────────────────────────────────────────────────────── */
+  --font-sans:  /* e.g. */ -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+  --font-serif: /* e.g. */ Georgia, 'Times New Roman', serif;
+
+  /* ── Surfaces ─────────────────────────────────────────────────────── */
+  --bg:            ;
+  --bg-deep:       ;
+  --surface:       ;
+  --surface-hover: ;
+  --card-bg:       ;
+  --border:        ;
+  --border-soft:   ;
+
+  /* ── Text ─────────────────────────────────────────────────────────── */
+  --text:       ;
+  --text-muted: ;
+  --text-dim:   ;
+
+  /* ── Accents ──────────────────────────────────────────────────────── */
+  --accent:     ;
+  --accent-ink: ;   /* text/icon color that sits ON an accent fill */
+  --success:    ;
+  --warning:    ;
+  --danger:     ;
+
+  /* ── Queue / type hues ────────────────────────────────────────────── */
+  --q-agent:    ;
+  --q-collab:   ;
+  --q-human:    ;
+  --q-waiting:  ;
+
+  /* ── Priority dots ────────────────────────────────────────────────── */
+  --prio-critical: ;
+  --prio-high:     ;
+  --prio-medium:   ;
+  --prio-low:      ;
+
+  /* ── Shape & motion ───────────────────────────────────────────────── */
+  --r-card:  12px;
+  --r-lane:  16px;
+  --r-badge: 6px;
+  --r-btn:   9px;
+  --ease:    0.42s cubic-bezier(0.22, 0.61, 0.36, 1);
+
+  /* ── App background & paper texture ───────────────────────────────── */
+  --app-bg:        var(--bg);   /* or a gradient; may reference the hues above */
+  --paper:         none;        /* or a url(...) grain overlay */
+  --paper-opacity: 0;           /* 0 = no grain */
+}

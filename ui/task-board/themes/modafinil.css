@@ -1,0 +1,97 @@
+/* ═══════════════════════════════════════════════════════════════════════
+   MOOD · Modafinil   —   Vaporwave / Synthwave · digital sunset
+   Deep purple sky, a striped sunset orb, a neon perspective grid receding to
+   the horizon, chrome-neon accents. Retro-FUTURISM (not retro-web): glowing,
+   cinematic, 80s-imagined-future.
+
+   Only TOKENS live here. The whole scene (sky + sun + grid floor) is composed
+   as layered gradients in --app-bg, which paints the fixed page background
+   BEHIND all content — so it glows in the margins and through translucent
+   surfaces, and never sits on top of card text. The *-soft tints and legacy
+   *-bg aliases are derived in index.html's :root; never repeat them here.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+[data-theme="modafinil"] {
+  /* ── Type ─────────────────────────────────────────────────────────── */
+  --font-sans:  'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+  --font-serif: 'Outfit', 'Segoe UI', Helvetica, Arial, sans-serif;
+
+  /* ── Surfaces (deep indigo glass over the neon scene) ─────────────── */
+  --bg:            #150735;
+  --bg-deep:       #0d0221;
+  --surface:       #2b1560;        /* opaque — modals, inputs, lane glass base */
+  --surface-hover: #3b1d78;        /* opaque — hovered card / raised state    */
+  --card-bg:       #281254;        /* opaque — task-card face: text stays crisp */
+  --border:        rgba(185, 103, 255, 0.42);
+  --border-soft:   rgba(155, 110, 230, 0.22);
+
+  /* ── Text (cool white → lavender → dim violet) ────────────────────── */
+  --text:       #f4ecff;
+  --text-muted: #c2a9e8;
+  --text-dim:   #8a78b8;
+
+  /* ── Accents (neon chrome — hot pink lead, cyan / mint / gold) ────── */
+  --accent:     #ff5fc4;
+  --accent-ink: #14032b;   /* dark ink that reads on a neon-pink fill */
+  --success:    #14e0a3;
+  --warning:    #ffb14d;
+  --danger:     #ff4d7d;
+
+  /* ── Queue / type hues (distinct neon channels) ──────────────────── */
+  --q-agent:    #2bd6ff;   /* electric cyan */
+  --q-collab:   #ff7ad1;   /* hot pink      */
+  --q-human:    #2af0b6;   /* mint          */
+  --q-waiting:  #9a86c8;   /* dim violet    */
+
+  /* ── Priority dots ───────────────────────────────────────────────── */
+  --prio-critical: #ff4d7d;
+  --prio-high:     #ffb14d;
+  --prio-medium:   #2bd6ff;
+  --prio-low:      #8a78b8;
+
+  /* ── Shape & motion (retro-sharp corners) ────────────────────────── */
+  --r-card:  5px;
+  --r-lane:  8px;
+  --r-badge: 4px;
+  --r-btn:   5px;
+  --ease:    0.42s cubic-bezier(0.22, 0.61, 0.36, 1);
+
+  /* ── App background — the full synthwave scene ────────────────────────
+     Layered top → bottom. Sun layers are clipped to a 360px disk by
+     over-painting the box corners with sky colour; the grid floor uses a
+     repeating-conic-gradient for the converging verticals plus stacked
+     hairlines for the perspective horizontals; a sky layer with a
+     transparent lower edge masks the grid above the horizon. The sun orb is
+     pinned to the viewport, so cards scroll OVER it. ──────────── */
+  --app-bg:
+    /* sun orb — a real SVG circle: perfectly round, vertical sunset fill,
+       stripes clipped to the circle, transparent edge. No flat mask, so it
+       never reads as a square and never mismatches the sky behind it. */
+    url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%20100%20100'%3E%3Cdefs%3E%3ClinearGradient%20id%3D'g'%20x1%3D'0'%20y1%3D'0'%20x2%3D'0'%20y2%3D'1'%3E%3Cstop%20offset%3D'0'%20stop-color%3D'%23ff95d8'%2F%3E%3Cstop%20offset%3D'0.2'%20stop-color%3D'%23ff6fb2'%2F%3E%3Cstop%20offset%3D'0.44'%20stop-color%3D'%23ff7d5e'%2F%3E%3Cstop%20offset%3D'0.66'%20stop-color%3D'%23ffab4d'%2F%3E%3Cstop%20offset%3D'1'%20stop-color%3D'%23ffe85a'%2F%3E%3C%2FlinearGradient%3E%3CclipPath%20id%3D'c'%3E%3Ccircle%20cx%3D'50'%20cy%3D'50'%20r%3D'49'%2F%3E%3C%2FclipPath%3E%3C%2Fdefs%3E%3Ccircle%20cx%3D'50'%20cy%3D'50'%20r%3D'49'%20fill%3D'url(%23g)'%2F%3E%3Cg%20clip-path%3D'url(%23c)'%20fill%3D'%23160a2e'%3E%3Crect%20x%3D'0'%20y%3D'44.4'%20width%3D'100'%20height%3D'2.1'%2F%3E%3Crect%20x%3D'0'%20y%3D'51.4'%20width%3D'100'%20height%3D'2.7'%2F%3E%3Crect%20x%3D'0'%20y%3D'59.8'%20width%3D'100'%20height%3D'3.5'%2F%3E%3Crect%20x%3D'0'%20y%3D'69.6'%20width%3D'100'%20height%3D'4.6'%2F%3E%3Crect%20x%3D'0'%20y%3D'81.2'%20width%3D'100'%20height%3D'6.2'%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E") 50% 17% / 360px 360px no-repeat,
+    /* soft halo behind the orb (circular, fades to transparent — no edge) */
+    radial-gradient(circle at 50% 50%,
+      rgba(255,125,200,0.30) 0%, rgba(150,80,220,0.13) 44%, transparent 72%) 50% 17% / 720px 720px no-repeat,
+    /* 5 · sky — gradient with a bright sunset seam, transparent below horizon */
+    linear-gradient(180deg,
+      #160734 0%, #220f4e 26%, #341f68 45%,
+      #5b2f87 53%, #b5638f 57.2%, #ff9a56 58.2%,
+      transparent 59%) 0 0 / 100% 100% no-repeat,
+    /* 6 · grid — converging verticals (rays from the vanishing point) */
+    repeating-conic-gradient(from 180deg at 50% 59%,
+      rgba(43,214,255,0.42) 0deg 0.28deg, transparent 0.28deg 3.4deg) 0 0 / 100% 100% no-repeat,
+    /* 7 · grid — perspective horizontals (denser near the horizon) */
+    linear-gradient(180deg, transparent 60.6%, rgba(43,214,255,0.40) 60.6% 60.9%, transparent 60.9%) 0 0 / 100% 100% no-repeat,
+    linear-gradient(180deg, transparent 63.2%, rgba(43,214,255,0.40) 63.2% 63.5%, transparent 63.5%) 0 0 / 100% 100% no-repeat,
+    linear-gradient(180deg, transparent 67%, rgba(43,214,255,0.38) 67% 67.4%, transparent 67.4%) 0 0 / 100% 100% no-repeat,
+    linear-gradient(180deg, transparent 72.6%, rgba(43,214,255,0.36) 72.6% 73.1%, transparent 73.1%) 0 0 / 100% 100% no-repeat,
+    linear-gradient(180deg, transparent 81%, rgba(43,214,255,0.32) 81% 81.6%, transparent 81.6%) 0 0 / 100% 100% no-repeat,
+    linear-gradient(180deg, transparent 93%, rgba(43,214,255,0.28) 93% 93.8%, transparent 93.8%) 0 0 / 100% 100% no-repeat,
+    /* 8 · floor base + horizon bloom */
+    radial-gradient(120% 60% at 50% 58.5%, rgba(255,120,170,0.22) 0%, transparent 55%) 0 0 / 100% 100% no-repeat,
+    linear-gradient(180deg, transparent 0 58%, #1a0738 58.4%, #0a0420 100%) 0 0 / 100% 100% no-repeat,
+    #0d0221;
+
+  /* very faint CRT scan-lines over the whole frame */
+  --paper: repeating-linear-gradient(0deg, rgba(0,0,0,0.16) 0 1px, transparent 1px 3px);
+  --paper-opacity: 0.35;
+}
