@@ -125,8 +125,8 @@ cd ~/pm-os && python3 scripts/task_server.py   # http://localhost:8742
 Local Docker stack for prompt versioning and tracing. All LLM calls in the task system are instrumented.
 
 ```bash
-cd langfuse && ./start.sh        # http://localhost:3000
-source .env.langfuse             # exports LANGFUSE_PUBLIC_KEY, LANGFUSE_SECRET_KEY, LANGFUSE_HOST
+cd langfuse && ./start.sh                  # http://localhost:3000
+source ~/pm-os/.env.langfuse               # repo root, NOT langfuse/ — exports LANGFUSE_PUBLIC_KEY, LANGFUSE_SECRET_KEY, LANGFUSE_HOST
 ```
 
 Login: `jay@pm-os.local` / `changeme123`.
