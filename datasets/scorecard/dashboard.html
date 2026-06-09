@@ -1,0 +1,92 @@
+<!doctype html><html><head><meta charset="utf-8">
+<title>Resident Experience Scorecard — week of 2026-06-06</title>
+<style>
+ body{font:14px -apple-system,Segoe UI,Roboto,sans-serif;margin:0;background:#0f1419;color:#e6e9ef}
+ .wrap{max-width:920px;margin:0 auto;padding:28px}
+ h1{font-size:20px;margin:0 0 2px} .sub{color:#8b97a8;font-size:12px;margin-bottom:20px}
+ h2{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:#8b97a8;margin:26px 0 10px}
+ table{width:100%;border-collapse:collapse}
+ td{padding:10px 8px;border-bottom:1px solid #1e2630;vertical-align:middle}
+ .name{font-weight:600;width:34%} .val{font-size:16px} .tgt{color:#8b97a8;font-size:12px}
+ .rockflag{color:#f5c451;font-size:11px;margin-left:6px}
+ .pctof,.raw,.note{display:block;color:#8b97a8;font-size:11px;font-weight:400}
+ .target{white-space:nowrap}
+ tr.good .val{color:#5fd38a} tr.warn .val{color:#f5c451} tr.bad .val{color:#f08a8a}
+ .badge{font-size:11px;padding:2px 7px;border-radius:10px}
+ .badge.defer{background:#2a2f3a;color:#8b97a8} .badge.manual{background:#3a2f12;color:#f5c451}
+ .spark{color:#5b8def} .spark-empty{color:#3a414c}
+ .copy button{background:#1b2230;color:#aeb8c7;border:1px solid #2a3340;border-radius:6px;
+   padding:5px 9px;cursor:pointer;font:12px monospace} .copy button:hover{background:#243047}
+ .rocks{display:flex;gap:14px;flex-wrap:wrap}
+ .rock{flex:1;min-width:200px;background:#161c25;border:1px solid #1e2630;border-radius:10px;padding:14px}
+ .rock.good{border-color:#2f5e43} .rock.warn{border-color:#5e5026} .rock.bad{border-color:#5e2f2f}
+ .rname{color:#8b97a8;font-size:12px} .rval{font-size:26px;font-weight:700;margin:4px 0}
+ .rtgt{color:#8b97a8;font-size:12px}
+</style></head><body><div class="wrap">
+ <h1>Resident Experience Scorecard</h1>
+ <div class="sub">Week ending (as_of) <b>2026-06-06</b> · generated 2026-06-09 17:20 · weeks on file: 2026-06-06</div>
+ <h2>Rocks</h2><div class="rocks"><div class="rock bad"><div class="rname">Home WAU (web)</div><div class="rval">474.8k</div><div class="rtgt">target 540k</div></div><div class="rock bad"><div class="rname">Board Member Weekly Login Rate</div><div class="rval">33.4%</div><div class="rtgt">target 40%</div></div></div>
+ <h2>Scorecard</h2>
+ <table><thead><tr><td class="name">Metric</td><td>This week</td><td>Target</td><td>Trend</td><td>Copy</td></tr></thead>
+ <tbody>
+        <tr class="bad">
+          <td class="name">Home WAU (web) <span class="rockflag">★ Rock</span></td>
+          <td class="val">474.8k   </td>
+          <td class="tgt"><span class="target">target 540k</span></td>
+          <td class="trend"><span class="spark-empty">—</span></td>
+          <td class="copy"><button onclick="cp(this)" data-v="474.8k">⧉ 474.8k</button></td>
+        </tr>
+        <tr class="neutral">
+          <td class="name">Mobile WAU (iOS+Android) </td>
+          <td class="val">10.1k <span class="pctof">2.1% of web</span>  </td>
+          <td class="tgt"></td>
+          <td class="trend"><span class="spark-empty">—</span></td>
+          <td class="copy"><button onclick="cp(this)" data-v="10.1k">⧉ 10.1k</button></td>
+        </tr>
+        <tr class="neutral">
+          <td class="name">WAU/MAU Stickiness </td>
+          <td class="val">37.4%   </td>
+          <td class="tgt"></td>
+          <td class="trend"><span class="spark-empty">—</span></td>
+          <td class="copy"><button onclick="cp(this)" data-v="37.4%">⧉ 37.4%</button></td>
+        </tr>
+        <tr class="neutral">
+          <td class="name">New Home Tickets / 1k WAU </td>
+          <td class="val">0.15  <span class="raw">raw 7d: 72</span> </td>
+          <td class="tgt"></td>
+          <td class="trend"><span class="spark-empty">—</span></td>
+          <td class="copy"><button onclick="cp(this)" data-v="0.15">⧉ 0.15</button></td>
+        </tr>
+        <tr class="neutral">
+          <td class="name">Home Rage-Click Rate / 1k WAU </td>
+          <td class="val">81.5   </td>
+          <td class="tgt"></td>
+          <td class="trend"><span class="spark-empty">—</span></td>
+          <td class="copy"><button onclick="cp(this)" data-v="81.5">⧉ 81.5</button></td>
+        </tr>
+        <tr class="bad">
+          <td class="name">Board Member Weekly Login Rate <span class="rockflag">★ Rock</span></td>
+          <td class="val">33.4%   </td>
+          <td class="tgt"><span class="target">target 40%</span></td>
+          <td class="trend"><span class="spark-empty">—</span></td>
+          <td class="copy"><button onclick="cp(this)" data-v="33.4%">⧉ 33.4%</button></td>
+        </tr>
+        <tr class="neutral">
+          <td class="name">HOAi Weekly Interactions </td>
+          <td class="val"><span class="badge manual">enter manually</span>   </td>
+          <td class="tgt"></td>
+          <td class="trend"><span class="spark-empty">—</span></td>
+          <td class="copy"><button onclick="cp(this)" data-v="">⧉ —</button></td>
+        </tr>
+        <tr class="neutral">
+          <td class="name">New Resident Activation Rate (30d) </td>
+          <td class="val"><span class="badge defer">deferred</span>   <span class="note">Q3 Rock — starts July</span></td>
+          <td class="tgt"></td>
+          <td class="trend"><span class="spark-empty">—</span></td>
+          <td class="copy"><button onclick="cp(this)" data-v="">⧉ —</button></td>
+        </tr></tbody></table>
+ <div class="sub" style="margin-top:18px">Click a Copy cell to put the value on your clipboard, then paste into the SharePoint Scorecard tab.</div>
+</div>
+<script>
+function cp(b){navigator.clipboard.writeText(b.dataset.v);b.textContent='✓ copied';setTimeout(()=>b.textContent='⧉ '+(b.dataset.v||'—'),1200);}
+</script></body></html>

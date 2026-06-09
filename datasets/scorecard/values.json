@@ -1,0 +1,84 @@
+{
+  "weeks": {
+    "2026-06-06": {
+      "home-wau": {
+        "value": 474820,
+        "raw": [
+          444411,
+          434416,
+          430126,
+          590325
+        ],
+        "status": "ok",
+        "source": "auto",
+        "notes": "4-wk avg ending 2026-06-06; 05-31 week is an end-of-month spike (590k)",
+        "computed_at": "2026-06-09T17:20:06"
+      },
+      "mobile-wau": {
+        "value": 10082,
+        "raw": {
+          "app1": 1636,
+          "app2": 8446
+        },
+        "status": "ok",
+        "source": "auto",
+        "notes": "4-wk avg, two native apps; ~2.1% of web; app2 growing 7.4k->10.9k",
+        "computed_at": "2026-06-09T17:20:06"
+      },
+      "wau-mau-stickiness": {
+        "value": 0.3738,
+        "raw": {
+          "wau_week": 590325,
+          "mau_30d": 1579264
+        },
+        "status": "ok",
+        "source": "auto",
+        "notes": "FLAG: numerator is the 05-31 SPIKE week; 4-wk-avg-WAU variant = 0.30, smoother & consistent w/ North Star",
+        "computed_at": "2026-06-09T17:20:06"
+      },
+      "home-tickets-per-1k-wau": {
+        "value": 0.15,
+        "raw": 72,
+        "status": "ok",
+        "source": "auto",
+        "notes": "72 tickets tagged home__; large NULL untagged bucket = floor",
+        "computed_at": "2026-06-09T17:20:06"
+      },
+      "rage-click-rate": {
+        "value": 81.5,
+        "raw": 38682,
+        "status": "ok",
+        "source": "auto",
+        "notes": "FLAG: above my guessed 10-60 band (band was a guess); two duplicate pageIds add ~5k; denominator = 4-wk-avg WAU",
+        "computed_at": "2026-06-09T17:20:06"
+      },
+      "board-weekly-login-rate": {
+        "value": 0.334,
+        "raw": {
+          "n7": 39442,
+          "n90": 118087
+        },
+        "status": "ok",
+        "source": "auto",
+        "notes": "within sanity 0.28-0.40",
+        "computed_at": "2026-06-09T17:20:06"
+      },
+      "hoai-weekly-interactions": {
+        "value": null,
+        "raw": null,
+        "status": "manual",
+        "source": "manual",
+        "notes": "enter manually",
+        "computed_at": "2026-06-09T17:20:06"
+      },
+      "new-resident-activation-rate": {
+        "value": null,
+        "raw": null,
+        "status": "deferred",
+        "source": "deferred",
+        "notes": "Q3 - starts July",
+        "computed_at": "2026-06-09T17:20:06"
+      }
+    }
+  }
+}
