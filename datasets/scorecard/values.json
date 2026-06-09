@@ -79,6 +79,146 @@
         "notes": "Q3 - starts July",
         "computed_at": "2026-06-09T17:20:06"
       }
+    },
+    "2026-03-28": {
+      "home-wau": {
+        "value": 478000,
+        "status": "ok",
+        "source": "seed:rocks-tab",
+        "computed_at": "2026-06-09T00:00:00"
+      },
+      "board-weekly-login-rate": {
+        "value": 0.311,
+        "status": "ok",
+        "source": "seed:rocks-tab",
+        "computed_at": "2026-06-09T00:00:00"
+      }
+    },
+    "2026-04-04": {
+      "home-wau": {
+        "value": 493000,
+        "status": "ok",
+        "source": "seed:rocks-tab",
+        "computed_at": "2026-06-09T00:00:00"
+      },
+      "board-weekly-login-rate": {
+        "value": 0.323,
+        "status": "ok",
+        "source": "seed:rocks-tab",
+        "computed_at": "2026-06-09T00:00:00"
+      }
+    },
+    "2026-04-11": {
+      "home-wau": {
+        "value": 504000,
+        "status": "ok",
+        "source": "seed:rocks-tab",
+        "computed_at": "2026-06-09T00:00:00"
+      },
+      "board-weekly-login-rate": {
+        "value": 0.3242,
+        "status": "ok",
+        "source": "seed:rocks-tab",
+        "computed_at": "2026-06-09T00:00:00"
+      }
+    },
+    "2026-04-18": {
+      "home-wau": {
+        "value": 505000,
+        "status": "ok",
+        "source": "seed:rocks-tab",
+        "computed_at": "2026-06-09T00:00:00"
+      },
+      "board-weekly-login-rate": {
+        "value": 0.3201,
+        "status": "ok",
+        "source": "seed:rocks-tab",
+        "computed_at": "2026-06-09T00:00:00"
+      }
+    },
+    "2026-04-25": {
+      "home-wau": {
+        "value": 502000,
+        "status": "ok",
+        "source": "seed:rocks-tab",
+        "computed_at": "2026-06-09T00:00:00"
+      },
+      "board-weekly-login-rate": {
+        "value": 0.31,
+        "status": "ok",
+        "source": "seed:rocks-tab",
+        "computed_at": "2026-06-09T00:00:00"
+      }
+    },
+    "2026-05-02": {
+      "home-wau": {
+        "value": 471100,
+        "status": "ok",
+        "source": "seed:rocks-tab",
+        "computed_at": "2026-06-09T00:00:00"
+      },
+      "board-weekly-login-rate": {
+        "value": 0.3243,
+        "status": "ok",
+        "source": "seed:rocks-tab",
+        "computed_at": "2026-06-09T00:00:00"
+      }
+    },
+    "2026-05-09": {
+      "home-wau": {
+        "value": 469900,
+        "status": "ok",
+        "source": "seed:rocks-tab",
+        "computed_at": "2026-06-09T00:00:00"
+      },
+      "board-weekly-login-rate": {
+        "value": 0.3258,
+        "status": "ok",
+        "source": "seed:rocks-tab",
+        "computed_at": "2026-06-09T00:00:00"
+      }
+    },
+    "2026-05-16": {
+      "home-wau": {
+        "value": 467800,
+        "status": "ok",
+        "source": "seed:rocks-tab",
+        "computed_at": "2026-06-09T00:00:00"
+      },
+      "board-weekly-login-rate": {
+        "value": 0.3171,
+        "status": "ok",
+        "source": "seed:rocks-tab",
+        "computed_at": "2026-06-09T00:00:00"
+      }
+    },
+    "2026-05-23": {
+      "home-wau": {
+        "value": 469000,
+        "status": "ok",
+        "source": "seed:rocks-tab",
+        "computed_at": "2026-06-09T00:00:00"
+      },
+      "board-weekly-login-rate": {
+        "value": 0.3115,
+        "status": "ok",
+        "source": "seed:rocks-tab",
+        "computed_at": "2026-06-09T00:00:00"
+      }
+    },
+    "2026-05-30": {
+      "home-wau": {
+        "value": 449500,
+        "status": "ok",
+        "source": "seed:rocks-tab",
+        "computed_at": "2026-06-09T00:00:00"
+      },
+      "board-weekly-login-rate": {
+        "value": 0.2944,
+        "status": "ok",
+        "source": "seed:rocks-tab",
+        "computed_at": "2026-06-09T00:00:00"
+      }
     }
   }
 }

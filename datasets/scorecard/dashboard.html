@@ -1,92 +1,64 @@
 <!doctype html><html><head><meta charset="utf-8">
-<title>Resident Experience Scorecard — week of 2026-06-06</title>
+<title>Resident Experience Scorecard — trend</title>
 <style>
  body{font:14px -apple-system,Segoe UI,Roboto,sans-serif;margin:0;background:#0f1419;color:#e6e9ef}
- .wrap{max-width:920px;margin:0 auto;padding:28px}
- h1{font-size:20px;margin:0 0 2px} .sub{color:#8b97a8;font-size:12px;margin-bottom:20px}
- h2{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:#8b97a8;margin:26px 0 10px}
- table{width:100%;border-collapse:collapse}
- td{padding:10px 8px;border-bottom:1px solid #1e2630;vertical-align:middle}
- .name{font-weight:600;width:34%} .val{font-size:16px} .tgt{color:#8b97a8;font-size:12px}
- .rockflag{color:#f5c451;font-size:11px;margin-left:6px}
- .pctof,.raw,.note{display:block;color:#8b97a8;font-size:11px;font-weight:400}
- .target{white-space:nowrap}
- tr.good .val{color:#5fd38a} tr.warn .val{color:#f5c451} tr.bad .val{color:#f08a8a}
- .badge{font-size:11px;padding:2px 7px;border-radius:10px}
- .badge.defer{background:#2a2f3a;color:#8b97a8} .badge.manual{background:#3a2f12;color:#f5c451}
- .spark{color:#5b8def} .spark-empty{color:#3a414c}
- .copy button{background:#1b2230;color:#aeb8c7;border:1px solid #2a3340;border-radius:6px;
-   padding:5px 9px;cursor:pointer;font:12px monospace} .copy button:hover{background:#243047}
- .rocks{display:flex;gap:14px;flex-wrap:wrap}
- .rock{flex:1;min-width:200px;background:#161c25;border:1px solid #1e2630;border-radius:10px;padding:14px}
- .rock.good{border-color:#2f5e43} .rock.warn{border-color:#5e5026} .rock.bad{border-color:#5e2f2f}
- .rname{color:#8b97a8;font-size:12px} .rval{font-size:26px;font-weight:700;margin:4px 0}
- .rtgt{color:#8b97a8;font-size:12px}
+ .wrap{max-width:1180px;margin:0 auto;padding:26px}
+ h1{font-size:20px;margin:0 0 2px} .sub{color:#8b97a8;font-size:12px;margin-bottom:18px}
+ h2{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:#8b97a8;margin:22px 0 10px}
+ .nsbar{display:flex;gap:18px;align-items:center;flex-wrap:wrap;background:#161c25;border:1px solid #1e2630;border-radius:12px;padding:16px}
+ .ns{min-width:150px} .ns-name{color:#8b97a8;font-size:12px}
+ .ns-val{font-size:30px;font-weight:700;margin:2px 0} .ns-tgt{color:#8b97a8;font-size:12px}
+ .ns.good .ns-val{color:#5fd38a} .ns.warn .ns-val{color:#f5c451} .ns.bad .ns-val{color:#f08a8a}
+ .chart{flex:1;min-width:360px} .chart-empty{color:#8b97a8;font-size:12px}
+ .cline{stroke:#5b8def;stroke-width:2} circle{fill:#5b8def}
+ .tline{stroke:#5fd38a;stroke-dasharray:4 3;stroke-width:1} .tlab{fill:#5fd38a;font-size:10px}
+ .clatest{fill:#e6e9ef;font-size:12px;font-weight:700} .xlab,.ylab{fill:#8b97a8;font-size:10px}
+ .tblwrap{overflow-x:auto;border:1px solid #1e2630;border-radius:10px}
+ table{border-collapse:collapse;width:100%;font-size:13px}
+ th,td{padding:8px 10px;border-bottom:1px solid #1e2630;text-align:right;white-space:nowrap}
+ th.mh,td.mname{text-align:left} .dh{width:18px}
+ thead th{position:sticky;top:0;background:#11161d;color:#8b97a8;font-weight:600;font-size:11px}
+ th.wk{text-align:right} th.wk .yr{display:block;color:#5a6675;font-weight:400}
+ th.wk.latest{color:#e6e9ef;background:#16202c}
+ .colcopy{display:block;margin-top:4px;background:#1b2230;color:#aeb8c7;border:1px solid #2a3340;
+   border-radius:5px;padding:2px 6px;cursor:pointer;font:10px monospace}
+ .colcopy:hover{background:#243047}
+ td.mname{font-weight:600} .src{display:inline-block;margin-left:7px;font-size:9px;font-weight:400;
+   padding:1px 5px;border-radius:8px;color:#8b97a8;background:#1b222c;text-transform:uppercase}
+ .src.manual{color:#f5c451;background:#332a12} .src.deferred{color:#7e8794;background:#23262c}
+ .dtoggle{cursor:pointer;color:#5a6675} .defer{color:#5a6675}
+ .pof{display:block;color:#8b97a8;font-size:10px}
+ td.cell.latest{background:#141c26}
+ input.hoai{width:64px;background:#11161d;color:#f5c451;border:1px solid #3a3320;border-radius:5px;
+   padding:4px 6px;text-align:right;font:13px inherit}
+ tr.defrow{display:none} tr.defrow.show{display:table-row}
+ tr.defrow td{text-align:left;color:#aeb8c7;font-size:12px;background:#11161d;white-space:normal}
+ .hint{color:#8b97a8;font-size:12px;margin-top:14px}
 </style></head><body><div class="wrap">
  <h1>Resident Experience Scorecard</h1>
- <div class="sub">Week ending (as_of) <b>2026-06-06</b> · generated 2026-06-09 17:20 · weeks on file: 2026-06-06</div>
- <h2>Rocks</h2><div class="rocks"><div class="rock bad"><div class="rname">Home WAU (web)</div><div class="rval">474.8k</div><div class="rtgt">target 540k</div></div><div class="rock bad"><div class="rname">Board Member Weekly Login Rate</div><div class="rval">33.4%</div><div class="rtgt">target 40%</div></div></div>
- <h2>Scorecard</h2>
- <table><thead><tr><td class="name">Metric</td><td>This week</td><td>Target</td><td>Trend</td><td>Copy</td></tr></thead>
- <tbody>
-        <tr class="bad">
-          <td class="name">Home WAU (web) <span class="rockflag">★ Rock</span></td>
-          <td class="val">474.8k   </td>
-          <td class="tgt"><span class="target">target 540k</span></td>
-          <td class="trend"><span class="spark-empty">—</span></td>
-          <td class="copy"><button onclick="cp(this)" data-v="474.8k">⧉ 474.8k</button></td>
-        </tr>
-        <tr class="neutral">
-          <td class="name">Mobile WAU (iOS+Android) </td>
-          <td class="val">10.1k <span class="pctof">2.1% of web</span>  </td>
-          <td class="tgt"></td>
-          <td class="trend"><span class="spark-empty">—</span></td>
-          <td class="copy"><button onclick="cp(this)" data-v="10.1k">⧉ 10.1k</button></td>
-        </tr>
-        <tr class="neutral">
-          <td class="name">WAU/MAU Stickiness </td>
-          <td class="val">37.4%   </td>
-          <td class="tgt"></td>
-          <td class="trend"><span class="spark-empty">—</span></td>
-          <td class="copy"><button onclick="cp(this)" data-v="37.4%">⧉ 37.4%</button></td>
-        </tr>
-        <tr class="neutral">
-          <td class="name">New Home Tickets / 1k WAU </td>
-          <td class="val">0.15  <span class="raw">raw 7d: 72</span> </td>
-          <td class="tgt"></td>
-          <td class="trend"><span class="spark-empty">—</span></td>
-          <td class="copy"><button onclick="cp(this)" data-v="0.15">⧉ 0.15</button></td>
-        </tr>
-        <tr class="neutral">
-          <td class="name">Home Rage-Click Rate / 1k WAU </td>
-          <td class="val">81.5   </td>
-          <td class="tgt"></td>
-          <td class="trend"><span class="spark-empty">—</span></td>
-          <td class="copy"><button onclick="cp(this)" data-v="81.5">⧉ 81.5</button></td>
-        </tr>
-        <tr class="bad">
-          <td class="name">Board Member Weekly Login Rate <span class="rockflag">★ Rock</span></td>
-          <td class="val">33.4%   </td>
-          <td class="tgt"><span class="target">target 40%</span></td>
-          <td class="trend"><span class="spark-empty">—</span></td>
-          <td class="copy"><button onclick="cp(this)" data-v="33.4%">⧉ 33.4%</button></td>
-        </tr>
-        <tr class="neutral">
-          <td class="name">HOAi Weekly Interactions </td>
-          <td class="val"><span class="badge manual">enter manually</span>   </td>
-          <td class="tgt"></td>
-          <td class="trend"><span class="spark-empty">—</span></td>
-          <td class="copy"><button onclick="cp(this)" data-v="">⧉ —</button></td>
-        </tr>
-        <tr class="neutral">
-          <td class="name">New Resident Activation Rate (30d) </td>
-          <td class="val"><span class="badge defer">deferred</span>   <span class="note">Q3 Rock — starts July</span></td>
-          <td class="tgt"></td>
-          <td class="trend"><span class="spark-empty">—</span></td>
-          <td class="copy"><button onclick="cp(this)" data-v="">⧉ —</button></td>
-        </tr></tbody></table>
- <div class="sub" style="margin-top:18px">Click a Copy cell to put the value on your clipboard, then paste into the SharePoint Scorecard tab.</div>
+ <div class="sub">Trend view · current week <b>2026-06-06</b> · generated 2026-06-09 17:35 · 11 weeks on file</div>
+ <h2>North Star</h2>
+ <div class="nsbar"><div class="ns bad"><div class="ns-name">Home WAU (web)</div><div class="ns-val">474.8k</div><div class="ns-tgt">target 540k</div></div><div class="ns bad"><div class="ns-name">Board Member Weekly Login Rate</div><div class="ns-val">33.4%</div><div class="ns-tgt">target 40%</div></div><svg class="chart" width="680" height="170" viewBox="0 0 680 170"><line x1="46" y1="26.8" x2="666" y2="26.8" class="tline"/><text x="666" y="21.8" class="tlab" text-anchor="end">target 540k</text><polyline points="46.0,99.7 108.0,82.1 170.0,69.1 232.0,67.9 294.0,71.5 356.0,107.8 418.0,109.2 480.0,111.7 542.0,110.3 604.0,133.2 666.0,103.4" class="cline" fill="none"/><circle cx="46.0" cy="99.7" r="2.6"/><circle cx="108.0" cy="82.1" r="2.6"/><circle cx="170.0" cy="69.1" r="2.6"/><circle cx="232.0" cy="67.9" r="2.6"/><circle cx="294.0" cy="71.5" r="2.6"/><circle cx="356.0" cy="107.8" r="2.6"/><circle cx="418.0" cy="109.2" r="2.6"/><circle cx="480.0" cy="111.7" r="2.6"/><circle cx="542.0" cy="110.3" r="2.6"/><circle cx="604.0" cy="133.2" r="2.6"/><circle cx="666.0" cy="103.4" r="2.6"/><text x="666.0" y="95.4" class="clatest" text-anchor="end">474.8k</text><text x="46" y="163" class="xlab">03-28</text><text x="666" y="163" class="xlab" text-anchor="end">06-06</text><text x="40" y="30.8" class="ylab" text-anchor="end">540k</text><text x="40" y="137.2" class="ylab" text-anchor="end">449.5k</text></svg></div>
+ <h2>Scorecard — weekly trend</h2>
+ <div class="tblwrap"><table>
+  <thead><tr><th class="mh">Metric</th><th class="dh"></th><th class="wk">03-28<span class="yr">2026</span><button class="colcopy" onclick="copyCol('2026-03-28',this)" title="Copy this week down (vertical paste)">copy &#8595;</button></th><th class="wk">04-04<span class="yr">2026</span><button class="colcopy" onclick="copyCol('2026-04-04',this)" title="Copy this week down (vertical paste)">copy &#8595;</button></th><th class="wk">04-11<span class="yr">2026</span><button class="colcopy" onclick="copyCol('2026-04-11',this)" title="Copy this week down (vertical paste)">copy &#8595;</button></th><th class="wk">04-18<span class="yr">2026</span><button class="colcopy" onclick="copyCol('2026-04-18',this)" title="Copy this week down (vertical paste)">copy &#8595;</button></th><th class="wk">04-25<span class="yr">2026</span><button class="colcopy" onclick="copyCol('2026-04-25',this)" title="Copy this week down (vertical paste)">copy &#8595;</button></th><th class="wk">05-02<span class="yr">2026</span><button class="colcopy" onclick="copyCol('2026-05-02',this)" title="Copy this week down (vertical paste)">copy &#8595;</button></th><th class="wk">05-09<span class="yr">2026</span><button class="colcopy" onclick="copyCol('2026-05-09',this)" title="Copy this week down (vertical paste)">copy &#8595;</button></th><th class="wk">05-16<span class="yr">2026</span><button class="colcopy" onclick="copyCol('2026-05-16',this)" title="Copy this week down (vertical paste)">copy &#8595;</button></th><th class="wk">05-23<span class="yr">2026</span><button class="colcopy" onclick="copyCol('2026-05-23',this)" title="Copy this week down (vertical paste)">copy &#8595;</button></th><th class="wk">05-30<span class="yr">2026</span><button class="colcopy" onclick="copyCol('2026-05-30',this)" title="Copy this week down (vertical paste)">copy &#8595;</button></th><th class="wk latest">06-06<span class="yr">2026</span><button class="colcopy" onclick="copyCol('2026-06-06',this)" title="Copy this week down (vertical paste)">copy &#8595;</button></th></tr></thead>
+  <tbody><tr class="mrow"><td class="mname" onclick="toggleDef('home-wau')">Home WAU (web)<span class="src auto">auto</span></td><td class="dtoggle" onclick="toggleDef('home-wau')">&#9656;</td><td class="cell" data-week="2026-03-28" data-copy="478k" title="seeded from Rocks tab">478k</td><td class="cell" data-week="2026-04-04" data-copy="493k" title="seeded from Rocks tab">493k</td><td class="cell" data-week="2026-04-11" data-copy="504k" title="seeded from Rocks tab">504k</td><td class="cell" data-week="2026-04-18" data-copy="505k" title="seeded from Rocks tab">505k</td><td class="cell" data-week="2026-04-25" data-copy="502k" title="seeded from Rocks tab">502k</td><td class="cell" data-week="2026-05-02" data-copy="471.1k" title="seeded from Rocks tab">471.1k</td><td class="cell" data-week="2026-05-09" data-copy="469.9k" title="seeded from Rocks tab">469.9k</td><td class="cell" data-week="2026-05-16" data-copy="467.8k" title="seeded from Rocks tab">467.8k</td><td class="cell" data-week="2026-05-23" data-copy="469k" title="seeded from Rocks tab">469k</td><td class="cell" data-week="2026-05-30" data-copy="449.5k" title="seeded from Rocks tab">449.5k</td><td class="cell" data-week="2026-06-06" data-copy="474.8k">474.8k</td></tr><tr class="defrow" id="def-home-wau"><td colspan="13"><b>How it&rsquo;s calculated:</b> Mean weekly unique visitors to Home WEB (Pendo appId 5961191088521216), averaged over the 4 most-recent complete Sun-Sat weeks. Excludes native mobile apps.</td></tr><tr class="mrow"><td class="mname" onclick="toggleDef('mobile-wau')">Mobile WAU (iOS+Android)<span class="src auto">auto</span></td><td class="dtoggle" onclick="toggleDef('mobile-wau')">&#9656;</td><td class="cell" data-week="2026-03-28" data-copy="">—</td><td class="cell" data-week="2026-04-04" data-copy="">—</td><td class="cell" data-week="2026-04-11" data-copy="">—</td><td class="cell" data-week="2026-04-18" data-copy="">—</td><td class="cell" data-week="2026-04-25" data-copy="">—</td><td class="cell" data-week="2026-05-02" data-copy="">—</td><td class="cell" data-week="2026-05-09" data-copy="">—</td><td class="cell" data-week="2026-05-16" data-copy="">—</td><td class="cell" data-week="2026-05-23" data-copy="">—</td><td class="cell" data-week="2026-05-30" data-copy="">—</td><td class="cell" data-week="2026-06-06" data-copy="10.1k">10.1k<span class="pof">2.1%</span></td></tr><tr class="defrow" id="def-mobile-wau"><td colspan="13"><b>How it&rsquo;s calculated:</b> 4-week-average unique visitors across the two native mobile apps (5355360917585920 + 6607066993197056), summed. Pendo. Cross-app overlap treated as negligible.</td></tr><tr class="mrow"><td class="mname" onclick="toggleDef('wau-mau-stickiness')">WAU/MAU Stickiness<span class="src auto">auto</span></td><td class="dtoggle" onclick="toggleDef('wau-mau-stickiness')">&#9656;</td><td class="cell" data-week="2026-03-28" data-copy="">—</td><td class="cell" data-week="2026-04-04" data-copy="">—</td><td class="cell" data-week="2026-04-11" data-copy="">—</td><td class="cell" data-week="2026-04-18" data-copy="">—</td><td class="cell" data-week="2026-04-25" data-copy="">—</td><td class="cell" data-week="2026-05-02" data-copy="">—</td><td class="cell" data-week="2026-05-09" data-copy="">—</td><td class="cell" data-week="2026-05-16" data-copy="">—</td><td class="cell" data-week="2026-05-23" data-copy="">—</td><td class="cell" data-week="2026-05-30" data-copy="">—</td><td class="cell" data-week="2026-06-06" data-copy="37.4%">37.4%</td></tr><tr class="defrow" id="def-wau-mau-stickiness"><td colspan="13"><b>How it&rsquo;s calculated:</b> Most-recent-week unique visitors / trailing-30-day unique visitors (Home web). Pendo. Numerator is the single latest Sun-Sat week (not the 4-wk avg).</td></tr><tr class="mrow"><td class="mname" onclick="toggleDef('home-tickets-per-1k-wau')">New Home Tickets / 1k WAU<span class="src auto">auto</span></td><td class="dtoggle" onclick="toggleDef('home-tickets-per-1k-wau')">&#9656;</td><td class="cell" data-week="2026-03-28" data-copy="">—</td><td class="cell" data-week="2026-04-04" data-copy="">—</td><td class="cell" data-week="2026-04-11" data-copy="">—</td><td class="cell" data-week="2026-04-18" data-copy="">—</td><td class="cell" data-week="2026-04-25" data-copy="">—</td><td class="cell" data-week="2026-05-02" data-copy="">—</td><td class="cell" data-week="2026-05-09" data-copy="">—</td><td class="cell" data-week="2026-05-16" data-copy="">—</td><td class="cell" data-week="2026-05-23" data-copy="">—</td><td class="cell" data-week="2026-05-30" data-copy="">—</td><td class="cell" data-week="2026-06-06" data-copy="0.15">0.15</td></tr><tr class="defrow" id="def-home-tickets-per-1k-wau"><td colspan="13"><b>How it&rsquo;s calculated:</b> Zendesk tickets tagged custom_product_field=&#x27;home__&#x27; created in the trailing 7d, divided by (Home WAU / 1000). Databricks is_prod. Floor only - many tickets are untagged (NULL).</td></tr><tr class="mrow"><td class="mname" onclick="toggleDef('rage-click-rate')">Home Rage-Click Rate / 1k WAU<span class="src auto">auto</span></td><td class="dtoggle" onclick="toggleDef('rage-click-rate')">&#9656;</td><td class="cell" data-week="2026-03-28" data-copy="">—</td><td class="cell" data-week="2026-04-04" data-copy="">—</td><td class="cell" data-week="2026-04-11" data-copy="">—</td><td class="cell" data-week="2026-04-18" data-copy="">—</td><td class="cell" data-week="2026-04-25" data-copy="">—</td><td class="cell" data-week="2026-05-02" data-copy="">—</td><td class="cell" data-week="2026-05-09" data-copy="">—</td><td class="cell" data-week="2026-05-16" data-copy="">—</td><td class="cell" data-week="2026-05-23" data-copy="">—</td><td class="cell" data-week="2026-05-30" data-copy="">—</td><td class="cell" data-week="2026-06-06" data-copy="81.5">81.5</td></tr><tr class="defrow" id="def-rage-click-rate"><td colspan="13"><b>How it&rsquo;s calculated:</b> Total Pendo rage-click events across all Home web pages in the trailing 7d (incl. Pre-Login), divided by (Home WAU / 1000). Pendo frustrationMetrics.</td></tr><tr class="mrow"><td class="mname" onclick="toggleDef('board-weekly-login-rate')">Board Member Weekly Login Rate<span class="src auto">auto</span></td><td class="dtoggle" onclick="toggleDef('board-weekly-login-rate')">&#9656;</td><td class="cell" data-week="2026-03-28" data-copy="31.1%" title="seeded from Rocks tab">31.1%</td><td class="cell" data-week="2026-04-04" data-copy="32.3%" title="seeded from Rocks tab">32.3%</td><td class="cell" data-week="2026-04-11" data-copy="32.4%" title="seeded from Rocks tab">32.4%</td><td class="cell" data-week="2026-04-18" data-copy="32.0%" title="seeded from Rocks tab">32.0%</td><td class="cell" data-week="2026-04-25" data-copy="31.0%" title="seeded from Rocks tab">31.0%</td><td class="cell" data-week="2026-05-02" data-copy="32.4%" title="seeded from Rocks tab">32.4%</td><td class="cell" data-week="2026-05-09" data-copy="32.6%" title="seeded from Rocks tab">32.6%</td><td class="cell" data-week="2026-05-16" data-copy="31.7%" title="seeded from Rocks tab">31.7%</td><td class="cell" data-week="2026-05-23" data-copy="31.1%" title="seeded from Rocks tab">31.1%</td><td class="cell" data-week="2026-05-30" data-copy="29.4%" title="seeded from Rocks tab">29.4%</td><td class="cell" data-week="2026-06-06" data-copy="33.4%">33.4%</td></tr><tr class="defrow" id="def-board-weekly-login-rate"><td colspan="13"><b>How it&rsquo;s calculated:</b> Unique board members active in trailing 7d / unique board members active in trailing 90d (Pendo segment &#x27;Home | Board Members&#x27;). Board-member stickiness.</td></tr><tr class="mrow"><td class="mname" onclick="toggleDef('hoai-weekly-interactions')">HOAi Weekly Interactions<span class="src manual">manual</span></td><td class="dtoggle" onclick="toggleDef('hoai-weekly-interactions')">&#9656;</td><td class="cell" data-week="2026-03-28"><input class="hoai" data-week="2026-03-28" value="" placeholder="enter" oninput="saveHoai(this)"></td><td class="cell" data-week="2026-04-04"><input class="hoai" data-week="2026-04-04" value="" placeholder="enter" oninput="saveHoai(this)"></td><td class="cell" data-week="2026-04-11"><input class="hoai" data-week="2026-04-11" value="" placeholder="enter" oninput="saveHoai(this)"></td><td class="cell" data-week="2026-04-18"><input class="hoai" data-week="2026-04-18" value="" placeholder="enter" oninput="saveHoai(this)"></td><td class="cell" data-week="2026-04-25"><input class="hoai" data-week="2026-04-25" value="" placeholder="enter" oninput="saveHoai(this)"></td><td class="cell" data-week="2026-05-02"><input class="hoai" data-week="2026-05-02" value="" placeholder="enter" oninput="saveHoai(this)"></td><td class="cell" data-week="2026-05-09"><input class="hoai" data-week="2026-05-09" value="" placeholder="enter" oninput="saveHoai(this)"></td><td class="cell" data-week="2026-05-16"><input class="hoai" data-week="2026-05-16" value="" placeholder="enter" oninput="saveHoai(this)"></td><td class="cell" data-week="2026-05-23"><input class="hoai" data-week="2026-05-23" value="" placeholder="enter" oninput="saveHoai(this)"></td><td class="cell" data-week="2026-05-30"><input class="hoai" data-week="2026-05-30" value="" placeholder="enter" oninput="saveHoai(this)"></td><td class="cell" data-week="2026-06-06"><input class="hoai" data-week="2026-06-06" value="" placeholder="enter" oninput="saveHoai(this)"></td></tr><tr class="defrow" id="def-hoai-weekly-interactions"><td colspan="13"><b>How it&rsquo;s calculated:</b> HOAi voice calls + agentic web-chat sessions in the trailing 7d. MANUAL entry - no reliable Pendo/auto source yet (HOAi has no Pendo agent or track events).</td></tr><tr class="mrow"><td class="mname" onclick="toggleDef('new-resident-activation-rate')">New Resident Activation Rate (30d)<span class="src deferred">deferred</span></td><td class="dtoggle" onclick="toggleDef('new-resident-activation-rate')">&#9656;</td><td class="cell" data-week="2026-03-28" data-copy=""><span class="defer">·</span></td><td class="cell" data-week="2026-04-04" data-copy=""><span class="defer">·</span></td><td class="cell" data-week="2026-04-11" data-copy=""><span class="defer">·</span></td><td class="cell" data-week="2026-04-18" data-copy=""><span class="defer">·</span></td><td class="cell" data-week="2026-04-25" data-copy=""><span class="defer">·</span></td><td class="cell" data-week="2026-05-02" data-copy=""><span class="defer">·</span></td><td class="cell" data-week="2026-05-09" data-copy=""><span class="defer">·</span></td><td class="cell" data-week="2026-05-16" data-copy=""><span class="defer">·</span></td><td class="cell" data-week="2026-05-23" data-copy=""><span class="defer">·</span></td><td class="cell" data-week="2026-05-30" data-copy=""><span class="defer">·</span></td><td class="cell" data-week="2026-06-06" data-copy=""><span class="defer">·</span></td></tr><tr class="defrow" id="def-new-resident-activation-rate"><td colspan="13"><b>How it&rsquo;s calculated:</b> Of residents who became eligible for a Home account in a cohort, % who logged in &gt;=1x within 30 days. DEFERRED - Q3 Rock (starts July 2026); source TBD (Databricks eligibility + login).</td></tr></tbody>
+ </table></div>
+ <div class="hint">Click a metric name to see how it&rsquo;s calculated. Click <b>copy &#8595;</b> in any week
+ header to copy that week&rsquo;s full column, then paste straight down a dated column in your L10 sheets.
+ The HOAi cell is editable &mdash; type the number; it&rsquo;s saved in this browser.</div>
 </div>
 <script>
-function cp(b){navigator.clipboard.writeText(b.dataset.v);b.textContent='✓ copied';setTimeout(()=>b.textContent='⧉ '+(b.dataset.v||'—'),1200);}
+function toggleDef(s){var r=document.getElementById('def-'+s);if(r)r.classList.toggle('show');}
+function saveHoai(i){try{localStorage.setItem('hoai_'+i.dataset.week,i.value);}catch(e){}}
+function restore(){document.querySelectorAll('input.hoai').forEach(function(i){
+  try{var v=localStorage.getItem('hoai_'+i.dataset.week);if(v!==null&&v!=='')i.value=v;}catch(e){}});}
+function copyCol(wk,btn){
+  var cells=document.querySelectorAll('td.cell[data-week="'+wk+'"]');
+  var out=[];cells.forEach(function(c){var inp=c.querySelector('input');
+    out.push(inp?inp.value:(c.dataset.copy||''));});
+  navigator.clipboard.writeText(out.join('\n'));
+  var t=btn.innerHTML;btn.innerHTML='&#10003; copied';setTimeout(function(){btn.innerHTML=t;},1100);
+}
+window.addEventListener('load',restore);
 </script></body></html>
