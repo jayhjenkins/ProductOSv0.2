@@ -1,9 +1,14 @@
 #!/usr/bin/env python3
-"""Render the Resident Experience scorecard + Rocks as ONE self-contained HTML file.
+"""Render the Resident Experience scorecard as ONE self-contained, dependency-free HTML file.
 
-Reads registry.json (display metadata) + values.json (append-only weekly time series).
-Optionally records a week's fetched results (--record) or a manual value (--set-manual)
-into values.json before rendering. No third-party dependencies.
+Trend-matrix view: metrics down the side, one dated column per week (newest on the right, a new
+column appended each run). A North Star block on top shows the current Home WAU + Board rate and a
+WAU line chart. HOAi is an editable, browser-persisted (localStorage) input. Each week column has a
+"copy down" button that copies that week's values vertically for pasting into the SharePoint sheet.
+Metric definitions are collapsible (click a metric name).
+
+Reads registry.json (display metadata + definitions) + values.json (append-only weekly series).
+Optionally records a week's fetched results (--record) or a manual value (--set-manual).
 
 Companion to the metric-scorecard-fetch skill / /scorecard-update command.
 """
@@ -70,27 +75,10 @@ def series_for(values: dict, slug: str) -> list:
     return out
 
 
-def sparkline(series: list, w=120, h=28) -> str:
-    pts = [v for _, v in series]
-    if len(pts) < 2:
-        return '<span class="spark-empty">—</span>'
-    lo, hi = min(pts), max(pts)
-    rng = (hi - lo) or 1
-    n = len(pts)
-    coords = []
-    for i, v in enumerate(pts):
-        x = i * (w / (n - 1))
-        y = h - ((v - lo) / rng) * (h - 4) - 2
-        coords.append(f"{x:.1f},{y:.1f}")
-    return (f'<svg class="spark" width="{w}" height="{h}" viewBox="0 0 {w} {h}">'
-            f'<polyline points="{" ".join(coords)}" fill="none" '
-            f'stroke="currentColor" stroke-width="1.5"/></svg>')
-
-
 def status_color(metric: dict, value) -> str:
-    """Green/amber/red only for rock metrics with a target; else neutral."""
+    """Green/amber/red only for metrics with a target; else neutral."""
     target = metric.get("target")
-    if target is None or value is None:
+    if target is None or not isinstance(value, (int, float)):
         return "neutral"
     higher = metric.get("higher_better", True)
     ratio = value / target if higher else target / max(value, 1e-9)
@@ -101,96 +89,159 @@ def status_color(metric: dict, value) -> str:
     return "bad"
 
 
-def render(registry: dict, values: dict, week: str) -> str:
-    metrics = sorted(registry["metrics"], key=lambda m: m.get("order", 99))
-    wkdata = values.get("weeks", {}).get(week, {})
-    rows = []
-    for m in metrics:
-        slug = m["slug"]
-        cell = wkdata.get(slug, {})
-        value = cell.get("value")
-        src = m.get("source", "auto")
-        if src == "deferred":
-            disp = '<span class="badge defer">deferred</span>'
-            note = m.get("note", "")
-        elif src == "manual" and value is None:
-            disp = '<span class="badge manual">enter manually</span>'
-            note = ""
-        else:
-            disp = html.escape(fmt(m["format"], value))
-            note = ""
-        pct_of = ""
-        if m.get("show_pct_of") and isinstance(value, (int, float)):
-            base = wkdata.get(m["show_pct_of"], {}).get("value")
-            if isinstance(base, (int, float)) and base:
-                pct_of = f'<span class="pctof">{value/base*100:.1f}% of web</span>'
-        raw = ""
-        if m.get("raw_label") and cell.get("raw") is not None:
-            raw = f'<span class="raw">{m["raw_label"]}: {html.escape(str(cell["raw"]))}</span>'
-        target = (f'<span class="target">target {html.escape(m["target_display"])}</span>'
-                  if m.get("target_display") else "")
-        color = status_color(m, value)
-        spark = sparkline(series_for(values, slug))
-        copy_val = html.escape(fmt(m["format"], value)) if value is not None else ""
-        rock = '<span class="rockflag">★ Rock</span>' if m.get("rock") else ""
-        note_html = f'<span class="note">{html.escape(note)}</span>' if note else ""
-        rows.append(f"""
-        <tr class="{color}">
-          <td class="name">{html.escape(m['name'])} {rock}</td>
-          <td class="val">{disp} {pct_of} {raw} {note_html}</td>
-          <td class="tgt">{target}</td>
-          <td class="trend">{spark}</td>
-          <td class="copy"><button onclick="cp(this)" data-v="{copy_val}">⧉ {copy_val or '—'}</button></td>
-        </tr>""")
+def line_chart(series: list, target=None, w=680, h=170) -> str:
+    pts = [v for _, v in series]
+    if len(pts) < 2:
+        return '<div class="chart-empty">Not enough weeks for a trend yet.</div>'
+    vals = pts + ([target] if target else [])
+    lo, hi = min(vals), max(vals)
+    pad = (hi - lo) * 0.12 or 1
+    lo -= pad; hi += pad
+    rng = hi - lo or 1
+    n = len(pts)
+    padL, padR, padT, padB = 46, 14, 14, 24
+    cw, ch = w - padL - padR, h - padT - padB
+    X = lambda i: padL + i * (cw / (n - 1))
+    Y = lambda v: padT + ch - ((v - lo) / rng) * ch
+    poly = " ".join(f"{X(i):.1f},{Y(v):.1f}" for i, v in enumerate(pts))
+    dots = "".join(f'<circle cx="{X(i):.1f}" cy="{Y(v):.1f}" r="2.6"/>' for i, v in enumerate(pts))
+    tline = ""
+    if target:
+        ty = Y(target)
+        tline = (f'<line x1="{padL}" y1="{ty:.1f}" x2="{w-padR}" y2="{ty:.1f}" class="tline"/>'
+                 f'<text x="{w-padR}" y="{ty-5:.1f}" class="tlab" text-anchor="end">target {fmt("k",target)}</text>')
+    lx, ly = X(n - 1), Y(pts[-1])
+    latest = f'<text x="{lx:.1f}" y="{ly-8:.1f}" class="clatest" text-anchor="end">{fmt("k",pts[-1])}</text>'
+    xlabs = (f'<text x="{padL}" y="{h-7}" class="xlab">{series[0][0][5:]}</text>'
+             f'<text x="{w-padR}" y="{h-7}" class="xlab" text-anchor="end">{series[-1][0][5:]}</text>')
+    ylabs = (f'<text x="{padL-6}" y="{Y(hi-pad)+4:.1f}" class="ylab" text-anchor="end">{fmt("k",hi-pad)}</text>'
+             f'<text x="{padL-6}" y="{Y(lo+pad)+4:.1f}" class="ylab" text-anchor="end">{fmt("k",lo+pad)}</text>')
+    return (f'<svg class="chart" width="{w}" height="{h}" viewBox="0 0 {w} {h}">'
+            f'{tline}<polyline points="{poly}" class="cline" fill="none"/>{dots}{latest}{xlabs}{ylabs}</svg>')
 
-    rock_rows = []
+
+def render(registry: dict, values: dict, current_week: str) -> str:
+    metrics = sorted(registry["metrics"], key=lambda m: m.get("order", 99))
+    weeks = sorted_weeks(values)
+
+    # North Star block (current values + WAU chart)
+    ns_cards, chart = "", ""
+    for m in (x for x in metrics if x.get("section") == "northstar"):
+        cur = values.get("weeks", {}).get(current_week, {}).get(m["slug"], {}).get("value")
+        color = status_color(m, cur)
+        ns_cards += (f'<div class="ns {color}"><div class="ns-name">{html.escape(m["name"])}</div>'
+                     f'<div class="ns-val">{html.escape(fmt(m["format"], cur))}</div>'
+                     f'<div class="ns-tgt">target {html.escape(m.get("target_display",""))}</div></div>')
+        if m["slug"] == "home-wau":
+            chart = line_chart(series_for(values, "home-wau"), target=m.get("target"))
+
+    # Header row: Metric | (toggle) | one column per week
+    head = '<th class="mh">Metric</th><th class="dh"></th>'
+    for wk in weeks:
+        cls = "wk latest" if wk == current_week else "wk"
+        head += (f'<th class="{cls}">{wk[5:]}<span class="yr">{wk[:4]}</span>'
+                 f'<button class="colcopy" onclick="copyCol(\'{wk}\',this)" '
+                 f'title="Copy this week down (vertical paste)">copy &#8595;</button></th>')
+
+    ncol = len(weeks) + 2
+    rows = ""
     for m in metrics:
-        if not m.get("rock"):
-            continue
-        value = wkdata.get(m["slug"], {}).get("value")
-        color = status_color(m, value)
-        rock_rows.append(
-            f'<div class="rock {color}"><div class="rname">{html.escape(m["name"])}</div>'
-            f'<div class="rval">{html.escape(fmt(m["format"], value))}</div>'
-            f'<div class="rtgt">target {html.escape(m.get("target_display",""))}</div></div>')
+        slug, src = m["slug"], m.get("source", "auto")
+        cells = ""
+        for wk in weeks:
+            cell = values.get("weeks", {}).get(wk, {}).get(slug, {})
+            v = cell.get("value")
+            if slug == "hoai-weekly-interactions":
+                val = "" if v is None else fmt(m["format"], v)
+                cells += (f'<td class="cell" data-week="{wk}">'
+                          f'<input class="hoai" data-week="{wk}" value="{html.escape(val)}" '
+                          f'placeholder="enter" oninput="saveHoai(this)"></td>')
+                continue
+            if src == "deferred":
+                disp, copy = '<span class="defer">·</span>', ""
+            elif v is None:
+                disp, copy = "—", ""
+            else:
+                disp = html.escape(fmt(m["format"], v))
+                copy = disp
+            extra = ""
+            if m.get("show_pct_of") and isinstance(v, (int, float)):
+                base = values.get("weeks", {}).get(wk, {}).get(m["show_pct_of"], {}).get("value")
+                if isinstance(base, (int, float)) and base:
+                    extra = f'<span class="pof">{v/base*100:.1f}%</span>'
+            seed = ' title="seeded from Rocks tab"' if str(cell.get("source","")).startswith("seed") else ""
+            cells += f'<td class="cell" data-week="{wk}" data-copy="{html.escape(copy)}"{seed}>{disp}{extra}</td>'
+        rows += (f'<tr class="mrow">'
+                 f'<td class="mname" onclick="toggleDef(\'{slug}\')">{html.escape(m["name"])}'
+                 f'<span class="src {src}">{src}</span></td>'
+                 f'<td class="dtoggle" onclick="toggleDef(\'{slug}\')">&#9656;</td>{cells}</tr>')
+        rows += (f'<tr class="defrow" id="def-{slug}"><td colspan="{ncol}">'
+                 f'<b>How it&rsquo;s calculated:</b> {html.escape(m.get("definition",""))}</td></tr>')
 
     gen = dt.datetime.now().strftime("%Y-%m-%d %H:%M")
-    weeks_avail = ", ".join(sorted_weeks(values)) or "none"
     return f"""<!doctype html><html><head><meta charset="utf-8">
-<title>{html.escape(registry['scorecard'])} Scorecard — week of {week}</title>
+<title>{html.escape(registry['scorecard'])} Scorecard — trend</title>
 <style>
  body{{font:14px -apple-system,Segoe UI,Roboto,sans-serif;margin:0;background:#0f1419;color:#e6e9ef}}
- .wrap{{max-width:920px;margin:0 auto;padding:28px}}
- h1{{font-size:20px;margin:0 0 2px}} .sub{{color:#8b97a8;font-size:12px;margin-bottom:20px}}
- h2{{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:#8b97a8;margin:26px 0 10px}}
- table{{width:100%;border-collapse:collapse}}
- td{{padding:10px 8px;border-bottom:1px solid #1e2630;vertical-align:middle}}
- .name{{font-weight:600;width:34%}} .val{{font-size:16px}} .tgt{{color:#8b97a8;font-size:12px}}
- .rockflag{{color:#f5c451;font-size:11px;margin-left:6px}}
- .pctof,.raw,.note{{display:block;color:#8b97a8;font-size:11px;font-weight:400}}
- .target{{white-space:nowrap}}
- tr.good .val{{color:#5fd38a}} tr.warn .val{{color:#f5c451}} tr.bad .val{{color:#f08a8a}}
- .badge{{font-size:11px;padding:2px 7px;border-radius:10px}}
- .badge.defer{{background:#2a2f3a;color:#8b97a8}} .badge.manual{{background:#3a2f12;color:#f5c451}}
- .spark{{color:#5b8def}} .spark-empty{{color:#3a414c}}
- .copy button{{background:#1b2230;color:#aeb8c7;border:1px solid #2a3340;border-radius:6px;
-   padding:5px 9px;cursor:pointer;font:12px monospace}} .copy button:hover{{background:#243047}}
- .rocks{{display:flex;gap:14px;flex-wrap:wrap}}
- .rock{{flex:1;min-width:200px;background:#161c25;border:1px solid #1e2630;border-radius:10px;padding:14px}}
- .rock.good{{border-color:#2f5e43}} .rock.warn{{border-color:#5e5026}} .rock.bad{{border-color:#5e2f2f}}
- .rname{{color:#8b97a8;font-size:12px}} .rval{{font-size:26px;font-weight:700;margin:4px 0}}
- .rtgt{{color:#8b97a8;font-size:12px}}
+ .wrap{{max-width:1180px;margin:0 auto;padding:26px}}
+ h1{{font-size:20px;margin:0 0 2px}} .sub{{color:#8b97a8;font-size:12px;margin-bottom:18px}}
+ h2{{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:#8b97a8;margin:22px 0 10px}}
+ .nsbar{{display:flex;gap:18px;align-items:center;flex-wrap:wrap;background:#161c25;border:1px solid #1e2630;border-radius:12px;padding:16px}}
+ .ns{{min-width:150px}} .ns-name{{color:#8b97a8;font-size:12px}}
+ .ns-val{{font-size:30px;font-weight:700;margin:2px 0}} .ns-tgt{{color:#8b97a8;font-size:12px}}
+ .ns.good .ns-val{{color:#5fd38a}} .ns.warn .ns-val{{color:#f5c451}} .ns.bad .ns-val{{color:#f08a8a}}
+ .chart{{flex:1;min-width:360px}} .chart-empty{{color:#8b97a8;font-size:12px}}
+ .cline{{stroke:#5b8def;stroke-width:2}} circle{{fill:#5b8def}}
+ .tline{{stroke:#5fd38a;stroke-dasharray:4 3;stroke-width:1}} .tlab{{fill:#5fd38a;font-size:10px}}
+ .clatest{{fill:#e6e9ef;font-size:12px;font-weight:700}} .xlab,.ylab{{fill:#8b97a8;font-size:10px}}
+ .tblwrap{{overflow-x:auto;border:1px solid #1e2630;border-radius:10px}}
+ table{{border-collapse:collapse;width:100%;font-size:13px}}
+ th,td{{padding:8px 10px;border-bottom:1px solid #1e2630;text-align:right;white-space:nowrap}}
+ th.mh,td.mname{{text-align:left}} .dh{{width:18px}}
+ thead th{{position:sticky;top:0;background:#11161d;color:#8b97a8;font-weight:600;font-size:11px}}
+ th.wk{{text-align:right}} th.wk .yr{{display:block;color:#5a6675;font-weight:400}}
+ th.wk.latest{{color:#e6e9ef;background:#16202c}}
+ .colcopy{{display:block;margin-top:4px;background:#1b2230;color:#aeb8c7;border:1px solid #2a3340;
+   border-radius:5px;padding:2px 6px;cursor:pointer;font:10px monospace}}
+ .colcopy:hover{{background:#243047}}
+ td.mname{{font-weight:600}} .src{{display:inline-block;margin-left:7px;font-size:9px;font-weight:400;
+   padding:1px 5px;border-radius:8px;color:#8b97a8;background:#1b222c;text-transform:uppercase}}
+ .src.manual{{color:#f5c451;background:#332a12}} .src.deferred{{color:#7e8794;background:#23262c}}
+ .dtoggle{{cursor:pointer;color:#5a6675}} .defer{{color:#5a6675}}
+ .pof{{display:block;color:#8b97a8;font-size:10px}}
+ td.cell.latest{{background:#141c26}}
+ input.hoai{{width:64px;background:#11161d;color:#f5c451;border:1px solid #3a3320;border-radius:5px;
+   padding:4px 6px;text-align:right;font:13px inherit}}
+ tr.defrow{{display:none}} tr.defrow.show{{display:table-row}}
+ tr.defrow td{{text-align:left;color:#aeb8c7;font-size:12px;background:#11161d;white-space:normal}}
+ .hint{{color:#8b97a8;font-size:12px;margin-top:14px}}
 </style></head><body><div class="wrap">
  <h1>{html.escape(registry['scorecard'])} Scorecard</h1>
- <div class="sub">Week ending (as_of) <b>{week}</b> · generated {gen} · weeks on file: {weeks_avail}</div>
- <h2>Rocks</h2><div class="rocks">{''.join(rock_rows)}</div>
- <h2>Scorecard</h2>
- <table><thead><tr><td class="name">Metric</td><td>This week</td><td>Target</td><td>Trend</td><td>Copy</td></tr></thead>
- <tbody>{''.join(rows)}</tbody></table>
- <div class="sub" style="margin-top:18px">Click a Copy cell to put the value on your clipboard, then paste into the SharePoint Scorecard tab.</div>
+ <div class="sub">Trend view · current week <b>{current_week}</b> · generated {gen} · {len(weeks)} weeks on file</div>
+ <h2>North Star</h2>
+ <div class="nsbar">{ns_cards}{chart}</div>
+ <h2>Scorecard — weekly trend</h2>
+ <div class="tblwrap"><table>
+  <thead><tr>{head}</tr></thead>
+  <tbody>{rows}</tbody>
+ </table></div>
+ <div class="hint">Click a metric name to see how it&rsquo;s calculated. Click <b>copy &#8595;</b> in any week
+ header to copy that week&rsquo;s full column, then paste straight down a dated column in your L10 sheets.
+ The HOAi cell is editable &mdash; type the number; it&rsquo;s saved in this browser.</div>
 </div>
 <script>
-function cp(b){{navigator.clipboard.writeText(b.dataset.v);b.textContent='✓ copied';setTimeout(()=>b.textContent='⧉ '+(b.dataset.v||'—'),1200);}}
+function toggleDef(s){{var r=document.getElementById('def-'+s);if(r)r.classList.toggle('show');}}
+function saveHoai(i){{try{{localStorage.setItem('hoai_'+i.dataset.week,i.value);}}catch(e){{}}}}
+function restore(){{document.querySelectorAll('input.hoai').forEach(function(i){{
+  try{{var v=localStorage.getItem('hoai_'+i.dataset.week);if(v!==null&&v!=='')i.value=v;}}catch(e){{}}}});}}
+function copyCol(wk,btn){{
+  var cells=document.querySelectorAll('td.cell[data-week="'+wk+'"]');
+  var out=[];cells.forEach(function(c){{var inp=c.querySelector('input');
+    out.push(inp?inp.value:(c.dataset.copy||''));}});
+  navigator.clipboard.writeText(out.join('\\n'));
+  var t=btn.innerHTML;btn.innerHTML='&#10003; copied';setTimeout(function(){{btn.innerHTML=t;}},1100);
+}}
+window.addEventListener('load',restore);
 </script></body></html>"""
 
 
@@ -199,8 +250,8 @@ def main() -> int:
     ap.add_argument("--registry", type=Path, default=DEFAULT_REGISTRY)
     ap.add_argument("--values", type=Path, default=DEFAULT_VALUES)
     ap.add_argument("--out", type=Path, default=DEFAULT_OUT)
-    ap.add_argument("--week", help="as_of Saturday YYYY-MM-DD; default = latest week on file")
-    ap.add_argument("--record", type=Path, help="JSON file of {slug:{value,raw,status,source}} to merge into the week")
+    ap.add_argument("--week", help="current as_of Saturday YYYY-MM-DD; default = latest week on file")
+    ap.add_argument("--record", type=Path, help="JSON {slug:{value,raw,status,source}} to merge into the week")
     ap.add_argument("--set-manual", help="slug:value to set a manual metric for the week")
     args = ap.parse_args()
 
@@ -229,11 +280,9 @@ def main() -> int:
                     "computed_at": dt.datetime.now().isoformat(timespec="seconds")}
         save_json_atomic(args.values, values)
 
-    week = args.week or (sorted_weeks(values)[-1] if sorted_weeks(values) else
-                         dt.date.today().isoformat())
-    out_html = render(registry, values, week)
-    write_atomic(args.out, out_html)
-    print(f"Wrote {args.out} (week {week}, {len(sorted_weeks(values))} weeks on file)")
+    week = args.week or (sorted_weeks(values)[-1] if sorted_weeks(values) else dt.date.today().isoformat())
+    write_atomic(args.out, render(registry, values, week))
+    print(f"Wrote {args.out} (current week {week}, {len(sorted_weeks(values))} weeks on file)")
     return 0
 
 

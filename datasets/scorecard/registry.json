@@ -2,13 +2,21 @@
   "scorecard": "Resident Experience",
   "generated_note": "Edit metric display here; fetch logic lives in .claude/skills/metric-scorecard-fetch/metrics/<slug>.md",
   "metrics": [
-    {"slug": "home-wau", "name": "Home WAU (web)", "section": "scorecard", "source": "auto", "format": "k", "order": 1, "rock": true, "target": 540000, "target_display": "540k", "higher_better": true},
-    {"slug": "mobile-wau", "name": "Mobile WAU (iOS+Android)", "section": "scorecard", "source": "auto", "format": "k", "order": 2, "show_pct_of": "home-wau", "higher_better": true},
-    {"slug": "wau-mau-stickiness", "name": "WAU/MAU Stickiness", "section": "scorecard", "source": "auto", "format": "pct", "order": 3, "higher_better": true},
-    {"slug": "home-tickets-per-1k-wau", "name": "New Home Tickets / 1k WAU", "section": "scorecard", "source": "auto", "format": "ratio2", "order": 4, "raw_label": "raw 7d", "higher_better": false},
-    {"slug": "rage-click-rate", "name": "Home Rage-Click Rate / 1k WAU", "section": "scorecard", "source": "auto", "format": "ratio1", "order": 5, "higher_better": false},
-    {"slug": "board-weekly-login-rate", "name": "Board Member Weekly Login Rate", "section": "scorecard", "source": "auto", "target": 0.40, "target_display": "40%", "format": "pct", "order": 6, "rock": true, "higher_better": true},
-    {"slug": "hoai-weekly-interactions", "name": "HOAi Weekly Interactions", "section": "scorecard", "source": "manual", "format": "int", "order": 7, "higher_better": true},
-    {"slug": "new-resident-activation-rate", "name": "New Resident Activation Rate (30d)", "section": "scorecard", "source": "deferred", "format": "pct", "order": 8, "note": "Q3 Rock — starts July"}
+    {"slug": "home-wau", "name": "Home WAU (web)", "section": "northstar", "source": "auto", "format": "k", "order": 1, "target": 540000, "target_display": "540k", "higher_better": true,
+     "definition": "Mean weekly unique visitors to Home WEB (Pendo appId 5961191088521216), averaged over the 4 most-recent complete Sun-Sat weeks. Excludes native mobile apps."},
+    {"slug": "mobile-wau", "name": "Mobile WAU (iOS+Android)", "section": "scorecard", "source": "auto", "format": "k", "order": 2, "show_pct_of": "home-wau", "higher_better": true,
+     "definition": "4-week-average unique visitors across the two native mobile apps (5355360917585920 + 6607066993197056), summed. Pendo. Cross-app overlap treated as negligible."},
+    {"slug": "wau-mau-stickiness", "name": "WAU/MAU Stickiness", "section": "scorecard", "source": "auto", "format": "pct", "order": 3, "higher_better": true,
+     "definition": "Most-recent-week unique visitors / trailing-30-day unique visitors (Home web). Pendo. Numerator is the single latest Sun-Sat week (not the 4-wk avg)."},
+    {"slug": "home-tickets-per-1k-wau", "name": "New Home Tickets / 1k WAU", "section": "scorecard", "source": "auto", "format": "ratio2", "order": 4, "raw_label": "raw 7d", "higher_better": false,
+     "definition": "Zendesk tickets tagged custom_product_field='home__' created in the trailing 7d, divided by (Home WAU / 1000). Databricks is_prod. Floor only - many tickets are untagged (NULL)."},
+    {"slug": "rage-click-rate", "name": "Home Rage-Click Rate / 1k WAU", "section": "scorecard", "source": "auto", "format": "ratio1", "order": 5, "higher_better": false,
+     "definition": "Total Pendo rage-click events across all Home web pages in the trailing 7d (incl. Pre-Login), divided by (Home WAU / 1000). Pendo frustrationMetrics."},
+    {"slug": "board-weekly-login-rate", "name": "Board Member Weekly Login Rate", "section": "northstar", "source": "auto", "target": 0.40, "target_display": "40%", "format": "pct", "order": 6, "higher_better": true,
+     "definition": "Unique board members active in trailing 7d / unique board members active in trailing 90d (Pendo segment 'Home | Board Members'). Board-member stickiness."},
+    {"slug": "hoai-weekly-interactions", "name": "HOAi Weekly Interactions", "section": "scorecard", "source": "manual", "format": "int", "order": 7, "higher_better": true,
+     "definition": "HOAi voice calls + agentic web-chat sessions in the trailing 7d. MANUAL entry - no reliable Pendo/auto source yet (HOAi has no Pendo agent or track events)."},
+    {"slug": "new-resident-activation-rate", "name": "New Resident Activation Rate (30d)", "section": "scorecard", "source": "deferred", "format": "pct", "order": 8, "note": "Q3 Rock — starts July",
+     "definition": "Of residents who became eligible for a Home account in a cohort, % who logged in >=1x within 30 days. DEFERRED - Q3 Rock (starts July 2026); source TBD (Databricks eligibility + login)."}
   ]
 }
