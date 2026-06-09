@@ -39,6 +39,8 @@ def write_atomic(p: Path, text: str) -> None:
 def fmt(fmt_name: str, v) -> str:
     if v is None:
         return "—"
+    if fmt_name in ("k", "pct", "ratio1", "ratio2", "int") and not isinstance(v, (int, float)):
+        return str(v)  # a metric carrying a non-numeric value should never crash the render
     if fmt_name == "k":
         s = f"{v/1000:.1f}"
         if s.endswith(".0"):
@@ -214,6 +216,8 @@ def main() -> int:
         wk = values["weeks"].setdefault(args.week, {})
         stamp = dt.datetime.now().isoformat(timespec="seconds")
         for slug, cell in results.items():
+            if not isinstance(cell, dict):  # a flaky subagent must not block the other metrics
+                cell = {"value": None, "status": "error", "notes": f"malformed cell: {cell!r}"}
             cell.setdefault("computed_at", stamp)
             wk[slug] = cell
         save_json_atomic(args.values, values)
