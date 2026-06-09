@@ -1,0 +1,14 @@
+{
+  "scorecard": "Resident Experience",
+  "generated_note": "Edit metric display here; fetch logic lives in .claude/skills/metric-scorecard-fetch/metrics/<slug>.md",
+  "metrics": [
+    {"slug": "home-wau", "name": "Home WAU (web)", "section": "scorecard", "source": "auto", "format": "k", "order": 1, "rock": true, "target": 540000, "target_display": "540k", "higher_better": true},
+    {"slug": "mobile-wau", "name": "Mobile WAU (iOS+Android)", "section": "scorecard", "source": "auto", "format": "k", "order": 2, "show_pct_of": "home-wau", "higher_better": true},
+    {"slug": "wau-mau-stickiness", "name": "WAU/MAU Stickiness", "section": "scorecard", "source": "auto", "format": "pct", "order": 3, "higher_better": true},
+    {"slug": "home-tickets-per-1k-wau", "name": "New Home Tickets / 1k WAU", "section": "scorecard", "source": "auto", "format": "ratio2", "order": 4, "raw_label": "raw 7d", "higher_better": false},
+    {"slug": "rage-click-rate", "name": "Home Rage-Click Rate / 1k WAU", "section": "scorecard", "source": "auto", "format": "ratio1", "order": 5, "higher_better": false},
+    {"slug": "board-weekly-login-rate", "name": "Board Member Weekly Login Rate", "section": "scorecard", "source": "auto", "target": 0.40, "target_display": "40%", "format": "pct", "order": 6, "rock": true, "higher_better": true},
+    {"slug": "hoai-weekly-interactions", "name": "HOAi Weekly Interactions", "section": "scorecard", "source": "manual", "format": "int", "order": 7, "higher_better": true},
+    {"slug": "new-resident-activation-rate", "name": "New Resident Activation Rate (30d)", "section": "scorecard", "source": "deferred", "format": "pct", "order": 8, "note": "Q3 Rock — starts July"}
+  ]
+}
