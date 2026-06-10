@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.jayjenkins.scorecard-weekly</string>
+
+    <!-- Run through a login shell so PATH/profile (node, claude, etc.) are available -->
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/zsh</string>
+        <string>-lc</string>
+        <string>exec /Users/jayjenkins/pm-os/scripts/run-scorecard-update.sh</string>
+    </array>
+
+    <key>StandardOutPath</key>
+    <string>/Users/jayjenkins/pm-os/logs/scorecard-cron.out.log</string>
+    <key>StandardErrorPath</key>
+    <string>/Users/jayjenkins/pm-os/logs/scorecard-cron.out.log</string>
+
+    <!-- Mondays at 9:03am (Weekday 1 = Monday) -->
+    <key>StartCalendarInterval</key>
+    <dict>
+        <key>Weekday</key><integer>1</integer>
+        <key>Hour</key><integer>9</integer>
+        <key>Minute</key><integer>3</integer>
+    </dict>
+</dict>
+</plist>
