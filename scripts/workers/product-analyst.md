@@ -19,6 +19,7 @@ match:
     - "(?i)metric.*(defin|frame|design|diagnosis)"
     - "(?i)launch.*(announce|communication)"
     - "(?i)OKR|rocks|quarterly"
+    - "(?i)scorecard"
     - "(?i)dashboard.*(design|defin)"
     - "(?i)ship.?it|press.?release|red.?team|swag|business.?case"
     - "(?i)api.?design|agentic.?api"
