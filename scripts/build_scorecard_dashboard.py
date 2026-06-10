@@ -122,7 +122,8 @@ def line_chart(series: list, target=None, w=680, h=170) -> str:
 
 def render(registry: dict, values: dict, current_week: str) -> str:
     metrics = sorted(registry["metrics"], key=lambda m: m.get("order", 99))
-    weeks = sorted_weeks(values)
+    all_weeks = sorted_weeks(values)
+    weeks = all_weeks[-8:]  # table shows the most recent 8 weeks; the WAU chart uses full history
 
     # North Star block (current values + WAU chart)
     ns_cards, chart = "", ""
@@ -136,14 +137,14 @@ def render(registry: dict, values: dict, current_week: str) -> str:
             chart = line_chart(series_for(values, "home-wau"), target=m.get("target"))
 
     # Header row: Metric | (toggle) | one column per week
-    head = '<th class="mh">Metric</th><th class="dh"></th>'
+    head = '<th class="mh">Metric</th>'
     for wk in weeks:
         cls = "wk latest" if wk == current_week else "wk"
         head += (f'<th class="{cls}">{wk[5:]}<span class="yr">{wk[:4]}</span>'
                  f'<button class="colcopy" onclick="copyCol(\'{wk}\',this)" '
                  f'title="Copy this week down (vertical paste)">copy &#8595;</button></th>')
 
-    ncol = len(weeks) + 2
+    ncol = len(weeks) + 1
     rows = ""
     for m in metrics:
         slug, src = m["slug"], m.get("source", "auto")
@@ -172,9 +173,9 @@ def render(registry: dict, values: dict, current_week: str) -> str:
             seed = ' title="seeded from Rocks tab"' if str(cell.get("source","")).startswith("seed") else ""
             cells += f'<td class="cell" data-week="{wk}" data-copy="{html.escape(copy)}"{seed}>{disp}{extra}</td>'
         rows += (f'<tr class="mrow">'
-                 f'<td class="mname" onclick="toggleDef(\'{slug}\')">{html.escape(m["name"])}'
-                 f'<span class="src {src}">{src}</span></td>'
-                 f'<td class="dtoggle" onclick="toggleDef(\'{slug}\')">&#9656;</td>{cells}</tr>')
+                 f'<td class="mname" onclick="toggleDef(\'{slug}\')">'
+                 f'<span class="tw">&#9656;</span>{html.escape(m["name"])}'
+                 f'<span class="src {src}">{src}</span></td>{cells}</tr>')
         rows += (f'<tr class="defrow" id="def-{slug}"><td colspan="{ncol}">'
                  f'<b>How it&rsquo;s calculated:</b> {html.escape(m.get("definition",""))}</td></tr>')
 
@@ -197,8 +198,10 @@ def render(registry: dict, values: dict, current_week: str) -> str:
  .tblwrap{{overflow-x:auto;border:1px solid #1e2630;border-radius:10px}}
  table{{border-collapse:collapse;width:100%;font-size:13px}}
  th,td{{padding:8px 10px;border-bottom:1px solid #1e2630;text-align:right;white-space:nowrap}}
- th.mh,td.mname{{text-align:left}} .dh{{width:18px}}
+ th.mh,td.mname{{text-align:left;position:sticky;left:0;z-index:2;background:#12171e;border-right:1px solid #2a3340}}
  thead th{{position:sticky;top:0;background:#11161d;color:#8b97a8;font-weight:600;font-size:11px}}
+ thead th.mh{{z-index:3;background:#11161d}}
+ .tw{{color:#5a6675;margin-right:6px;font-size:10px}}
  th.wk{{text-align:right}} th.wk .yr{{display:block;color:#5a6675;font-weight:400}}
  th.wk.latest{{color:#e6e9ef;background:#16202c}}
  .colcopy{{display:block;margin-top:4px;background:#1b2230;color:#aeb8c7;border:1px solid #2a3340;
@@ -217,7 +220,7 @@ def render(registry: dict, values: dict, current_week: str) -> str:
  .hint{{color:#8b97a8;font-size:12px;margin-top:14px}}
 </style></head><body><div class="wrap">
  <h1>{html.escape(registry['scorecard'])} Scorecard</h1>
- <div class="sub">Trend view · current week <b>{current_week}</b> · generated {gen} · {len(weeks)} weeks on file</div>
+ <div class="sub">Trend view · current week <b>{current_week}</b> · generated {gen} · showing last {len(weeks)} of {len(all_weeks)} weeks</div>
  <h2>North Star</h2>
  <div class="nsbar">{ns_cards}{chart}</div>
  <h2>Scorecard — weekly trend</h2>
