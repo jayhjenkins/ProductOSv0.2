@@ -31,13 +31,19 @@ Three clearly separated layers. Read these before the workflow phases — they a
 
 Non-negotiables for every generated page, regardless of brand or audience. Mechanical validation enforces most of these.
 
-- **Login surface is unmistakable above the fold.** The first viewport contains: the community name, a primary CTA pointing at `{{portal_login_url}}`, and the visual cue (color, contrast, size) that makes the CTA the obvious next action. **No competing CTAs in the hero** — one button, one job.
-- **The four "find what I need" destinations are reachable in one click from the page.** Pay (`{{pay_now_url}}`), Documents (`/documents`), Calendar (`{{calendar_url}}`), Contact (`mailto:{{manager_email}}`). They appear in a scannable group somewhere on the page. If a community legitimately doesn't offer one — most often Pay — the count can drop to three via Shift 3 (see Layer 3).
+- **Login surface is unmistakable above the fold.** The first viewport contains: the community name, a primary CTA pointing at `[~portal_login_url~]`, and the visual cue (color, contrast, size) that makes the CTA the obvious next action. **No competing CTAs in the hero** — one button, one job.
+- **The four "find what I need" destinations are reachable in one click from the page.** Pay (`[~pay_now_url~]`), Documents (`/documents`), Calendar (`[~calendar_url~]`), Contact (`mailto:[~manager_email~]`). They appear in a scannable group somewhere on the page. If a community legitimately doesn't offer one — most often Pay — the count can drop to three via Shift 3 (see Layer 3).
 - **A contact moment is present.** Phone, email, or both.
 - **Static evergreen content only.** No "Latest News" / "Upcoming Events" / "Recent Announcements" / `[ DATE ]` placeholders. Manager-editable bracketed instructions like `[ Replace with a friendly paragraph about your community... ]` are fine — they're setup notes, not dynamic content.
-- **Seven allowed merge tags. Four banned ones.**
-  - **Allowed:** `{{community_name}}`, `{{management_company_name}}`, `{{manager_phone}}`, `{{manager_email}}`, `{{portal_login_url}}`, `{{pay_now_url}}`, `{{calendar_url}}`
-  - **Banned (zero instances ever):** `{{manager_name}}` → say "your management team"; `{{documents_url}}` → static `/documents`; `{{submit_request_url}}` → static `mailto:{{manager_email}}`; `{{current_year}}` → static year string
+- **Seven allowed merge tags. Four banned ones.** Portal syntax is `[~tag~]` — the portal resolves these at publish time (`<connect>` = portal origin, `<code>` = association code). Never use the old `{{tag}}` delimiters.
+  - **Allowed:** `[~community_name~]`, `[~management_company_name~]`, `[~manager_phone~]`, `[~manager_email~]`, `[~portal_login_url~]`, `[~pay_now_url~]`, `[~calendar_url~]`
+
+    | Token | Resolves to |
+    |---|---|
+    | `[~calendar_url~]` | `<connect>/public/community/calendar?c=<code>` |
+    | `[~pay_now_url~]` | `<connect>/public/paynow?c=<code>` |
+    | `[~portal_login_url~]` | `<connect>/public?modal=login&c=<code>` |
+  - **Banned (zero instances ever):** `[~manager_name~]` → say "your management team"; `[~documents_url~]` → static `/documents`; `[~submit_request_url~]` → static `mailto:[~manager_email~]`; `[~current_year~]` → static year string
 - **No external top bar elements in the JSON.** The portal shell renders hamburger / centered logo / login button above the canvas. The Unlayer canvas starts flush at the hero.
 - **Schema discipline.** `schemaVersion: 12`. Every `counters.u_*` set to `99`. Every row's `cells` sums to `12` and `len(cells) == len(columns)`. `body.values.contentWidth: 1200` default (`1280` only when matching the Estate-Premium-style canvas, template 06).
 - **Background-image overlay hack** when a photographic hero is chosen. `backgroundImage.fullWidth: false` so image and overlay occupy the same box. Row `backgroundColor` matches the overlay's dark base (`#0E1620`-ish) so the viewport-edge bleed reads continuous. Column `backgroundColor: rgba(R, G, B, 0.4–0.55)`. Add `text-shadow: 0 1px 4px rgba(0,0,0,0.5)` to hero eyebrow / H1 / subhead as a fallback. **If `fullWidth: true` is left in place, the image bleeds edge-to-edge but the column overlay only covers the center content box, leaving bright unshaded strips on the sides.** Most common visual mistake.
@@ -165,7 +171,7 @@ Same compose-from-blocks workflow as today, anchored on template 06's row invent
 | Shift 4 (centered about)  | Row 5 (promise band) | §12 |
 | Shift 5 (48px phone contact) | Row 7 (contact) | §13 |
 
-Substitute color tokens (`<#PAGE_BG>`, `<#ACCENT>`, etc.) per `notes.md` palette, brand voice phrases where natural, and the chosen image URLs at the right CDN size. Use only the seven allowed merge tags; no top-bar elements; no dynamic-content language. Every `cells` array sums to 12 and matches its column count. `schemaVersion: 12`, all `counters.u_*` at 99.
+Substitute color tokens (`<#PAGE_BG>`, `<#ACCENT>`, etc.) per `notes.md` palette, brand voice phrases where natural, and the chosen image URLs at the right CDN size. Use only the seven allowed merge tags in `[~tag~]` syntax (never the old `{{tag}}` delimiters); no top-bar elements; no dynamic-content language. Every `cells` array sums to 12 and matches its column count. `schemaVersion: 12`, all `counters.u_*` at 99.
 
 Write the assembled JSON to `landing-page.json` in the output folder.
 
@@ -175,8 +181,16 @@ Write the assembled JSON to `landing-page.json` in the output folder.
 
 ```bash
 python3 - <<'PY'
-import json, sys
+import json, re, sys
 path = 'landing-page.json'
+ALLOWED = {'community_name','management_company_name','manager_phone',
+           'manager_email','portal_login_url','pay_now_url','calendar_url'}
+BANNED = {
+    'manager_name':       'use "your management team" instead',
+    'documents_url':      'use static /documents instead',
+    'submit_request_url': 'use static mailto:[~manager_email~] instead',
+    'current_year':       'use a static year string instead',
+}
 ok = True
 try:
     d = json.load(open(path))
@@ -192,12 +206,20 @@ for i, row in enumerate(d['body']['rows']):
     if len(row['cells']) != len(row['columns']):
         print(f'FAIL: row {i} cells/columns mismatch'); ok = False
 src = open(path).read()
-for tag in ('manager_name','documents_url','submit_request_url','current_year'):
-    n = src.count('{{' + tag + '}}')
-    if n:
-        print(f'FAIL: banned tag {{{{{tag}}}}} appears {n} time(s)'); ok = False
+# Migration guard: no old-style {{...}} merge tags may survive.
+old = sorted(set(re.findall(r'\{\{([a-z_]+)\}\}', src)))
+if old:
+    print(f'FAIL: old-style {{{{...}}}} merge tags remain: {old}'); ok = False
+# Whitelist: every [~...~] token must be one of the 7 supported tags.
+for tag in sorted(set(re.findall(r'\[~([a-z_]+)~\]', src))):
+    if tag in ALLOWED:
+        continue
+    if tag in BANNED:
+        print(f'FAIL: banned tag [~{tag}~] — {BANNED[tag]}'); ok = False
+    else:
+        print(f'FAIL: unknown merge tag [~{tag}~] — only the 7 supported tags are allowed'); ok = False
 if ok:
-    print(f'OK: schemaVersion=12, rows={len(d["body"]["rows"])}, all cells sum to 12, no banned tags')
+    print(f'OK: schemaVersion=12, rows={len(d["body"]["rows"])}, all cells sum to 12, only the 7 supported merge tags present')
     sys.exit(0)
 sys.exit(1)
 PY
@@ -212,7 +234,7 @@ If it exits non-zero, fix the JSON and re-run.
 Warning only — validation still exits 0 and the workflow proceeds.
 
 **Resident-jobs sanity check** — final read before hand-off:
-- The hero's first viewport (top ~700px) makes the login CTA unmistakable. One primary button, pointing at `{{portal_login_url}}`. No competing CTAs.
+- The hero's first viewport (top ~700px) makes the login CTA unmistakable. One primary button, pointing at `[~portal_login_url~]`. No competing CTAs.
 - Pay / Documents / Calendar / Contact are all reachable in one click — unless a shift legitimately dropped one with a recorded trigger.
 
 **Hand off** — print to the user:
