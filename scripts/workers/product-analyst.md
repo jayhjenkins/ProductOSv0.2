@@ -121,11 +121,29 @@ on what the task asks for, choose the right command or sequence:
 - `/metrics:dashboard` — Design health dashboards
 - `/metrics:goals` — Set OKR targets
 
-**How to choose:** Read the task description carefully. If it says "ship-it" or
-asks for a full package, run the full pipeline. If it asks for a PRD specifically,
-use /project:create-prd. If it asks for a strategy doc, use
-/project:create-product-strategy. Match the scope of the command to the scope
-of the ask. When in doubt, start with /project:prep to gather context first.
+**How to choose:** Read the task description carefully and match the command to
+the ask. The single most important rule:
+
+- **"Create / write / draft / author a PRD" (and no PRD exists yet) → run the full
+  `/project:ship-it` pipeline.** This is the default. When the ask is to produce a
+  PRD, it means the complete, thorough package — discovery, vision, knowledge base,
+  the PRD itself, validation, and business case — NOT a bare PRD from
+  `/project:create-prd` alone. "Create the PRD" / "write the PRD" is a request for
+  the full Ship It! output with all supporting artifacts and depth. Do not shortcut
+  to `/project:create-prd` just because the word "PRD" appears in the task.
+- **The PRD already exists and needs refinement or rework → do NOT re-run the full
+  pipeline.** Pick the single subcommand that produces the thing being changed
+  (`/project:red-team` to re-validate, `/project:expand` to widen scope,
+  `/project:api-design` to redo the agent capability inventory, `/project:create-prd`
+  to revise the PRD body, etc.), re-run just that, then fold its output back into the
+  existing PRD. Preserve reviewed work — edit additively, don't regenerate over it.
+- **The task names a specific command, or asks for a specific tweak → use that
+  command.** An explicitly named subcommand always overrides this heuristic; that is
+  the signal to operate at subcommand scope rather than the full pipeline.
+- **Strategy / metrics asks →** use the matching command
+  (`/project:create-product-strategy`, `/strategy:session`, `/metrics:*`).
+- **When in doubt on a fresh build, start with `/project:prep`** to gather context
+  first, then continue into `/project:build`.
 
 ## Your Data Sources
 
