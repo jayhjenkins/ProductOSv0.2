@@ -68,9 +68,11 @@ Derive the slug from `--topic` if provided, or ask the PM for the initiative nam
 >
 > **PM interaction**: YES — walk the PM through the interrogation loop. Do not skip questions.
 >
+> **Required in every artifact**: Each of the three docs MUST carry an explicit **Value to the Management Company** section (per the templates — after Solution in the one-pager/external PR, after Shared Context in the internal PR). The management company is our buyer; make their gain explicit even when the primary user is a resident or board member. Do not leave it implied.
+>
 > **When done**: Report which artifacts were created and any concerns about vision clarity.
 
-**Gate 2**: Verify all 3 files exist. Read the one-pager to confirm it supports a 10-minute pitch. Flag issues to PM if needed.
+**Gate 2**: Verify all 3 files exist. Read the one-pager to confirm it supports a 10-minute pitch. **Confirm the "Value to the Management Company" section is present and explicit in all three vision docs** (one-pager, external PR, internal PR) — not merely implied through resident/board benefits. If any is missing or implicit, send it back to the Vision Clarifier before proceeding. Flag issues to PM if needed.
 
 ---
 
