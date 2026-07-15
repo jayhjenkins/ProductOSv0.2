@@ -58,6 +58,7 @@ Ask the PM a structured sequence of questions. **Do not proceed until answers ar
 4. **What is the proposed solution, described as a USER OUTCOME?** Not a feature list — what does the user experience after this exists?
 5. **What is the durable differentiation?** Why will this be better than alternatives long-term, not just at launch?
 6. **What is the emotional hook?** Why would a customer CARE? What's the gut reaction?
+7. **What is the explicit value to the management company (our buyer)?** What do they gain — operational efficiency, staff time saved, retention/expansion, the client/board/homeowner satisfaction they are accountable for, or a competitive edge? If the primary user is a resident or board member, push for the management-company benefit explicitly — don't let it stay implied.
 
 **Cross-reference with Context Brief**: If the Context Brief has customer evidence, use it to pre-populate or challenge answers. Don't re-ask questions already answered upstream.
 
@@ -69,6 +70,7 @@ Write a market-facing press release using template `datasets/product/templates/p
 - **Subheadline**: One sentence expanding on the headline
 - **Problem paragraph**: The customer's pain, in THEIR language (not engineering jargon)
 - **Solution paragraph**: The product described as an experience
+- **Value to the Management Company**: An explicit statement of what the management company (our buyer) gains. Make it explicit even when the primary user is a resident or board member.
 - **Key benefits**: 3–4 outcome-oriented benefits
 - **Simulated customer quote**: From a target persona (clearly labeled as simulated)
 - **Call to action**
@@ -86,6 +88,11 @@ Write a team-facing press release using template `datasets/product/templates/pre
 - Success criteria (how we'll know this worked)
 - Timeline and key milestones
 - Simulated executive sponsor quote
+
+**Value to the Management Company Section (top of document, after Shared Context):**
+- Explicit statement of what the management company (our buyer) gains — the value every internal team below must be able to articulate.
+- Cover the business outcomes they care about: operational efficiency, staff time saved, retention/expansion, client/board/homeowner satisfaction they are accountable for, competitive edge when winning new associations.
+- If the primary user is a resident or board member, make the management-company benefit explicit, not implied.
 
 **Sales & Sales Demos Section:**
 - What is the new capability and how does it change the demo flow?
@@ -120,6 +127,7 @@ Produce a single-page summary using template `datasets/product/templates/one-pag
 - Target audience
 - Problem statement (2 sentences max)
 - Solution statement (2 sentences max)
+- Value to the management company (1-2 sentences, explicit — our buyer's gain)
 - Key differentiators (3 bullets max)
 - Success metrics (2–3 measurable outcomes)
 - Timeline and key milestones
@@ -137,6 +145,7 @@ Produce a single-page summary using template `datasets/product/templates/one-pag
 
 - [ ] External PR readable by a customer with zero product knowledge
 - [ ] Internal PR has actionable content for EACH persona section (Sales, PMM, PS, CSM)
+- [ ] Value to the Management Company is explicitly stated in all three artifacts (external PR, internal PR, one-pager) — not implied
 - [ ] One-pager could support a 10-minute pitch
 - [ ] No engineering jargon in either press release
 - [ ] Durable differentiation is clearly stated and defensible

@@ -34,6 +34,12 @@
 
 ---
 
+## Value to the Management Company
+
+{State plainly what the management company — our buyer — gains from this: operational efficiency, staff time saved, retention/expansion, the client/board/homeowner satisfaction they are accountable for, or a competitive edge when winning new associations. Write it in the management company's language, no jargon. If the primary user is a resident or board member, make the management-company benefit explicit, not implied. Two to three sentences.}
+
+---
+
 ## Key Benefits
 
 | # | Benefit |

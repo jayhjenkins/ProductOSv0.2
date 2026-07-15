@@ -26,6 +26,11 @@ datasets/product/packages/{YYYY}/{slug}/
 - If resuming an existing package, use the existing folder
 - If neither, ask the PM for the initiative name
 
+**Preflight — check for an existing initiative before scaffolding a new folder.** Creating a duplicate package for work that already has one is a known failure mode (it splits the PRD across two folders and orphans the older one). Before creating:
+1. Glob existing packages: `datasets/product/packages/{YYYY}/*/` (and adjacent years if this could be a continuation). Read the slugs.
+2. Match semantically, not just by slug — the same initiative is often named differently ("FTUE redesign" vs "new-resident onboarding"). If no obvious slug match, run `context-search` over `product_artifacts` for the topic.
+3. If a plausible match exists, **STOP and ask the PM**: *"This overlaps with `{existing-slug}` — resume that package, or start a new one?"* Default to resuming. Only scaffold a new folder once the PM confirms it's genuinely new.
+
 **Create the folder** if it doesn't exist. All subsequent sub-agents read from and write to this folder.
 
 **Announce**: "Product package folder: `datasets/product/packages/{YYYY}/{slug}/`"

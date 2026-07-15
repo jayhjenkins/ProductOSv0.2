@@ -64,11 +64,10 @@ Before starting, verify these artifacts exist in the package folder:
 > - `datasets/product/templates/prd-template.md`
 > - `.claude/skills/quality-prd-validation/SKILL.md`
 >
-> **Write to disk** (dual location):
-> - `{package}/PRD_{slug}.md`
-> - `datasets/product/prds/{YYYY}/PRD_{slug}.md`
+> **Write to disk** (single canonical location):
+> - `{package}/PRD_{slug}.md` — the only copy; do not mirror to `prds/{YYYY}/` (mirror retired)
 >
-> **PM interaction**: YES — confirm pre-populated sections are accurate, fill genuinely missing sections (DACE ownership, timeline, links). Do NOT re-ask for information already in upstream artifacts.
+> **PM interaction**: YES — confirm pre-populated sections are accurate, fill genuinely missing sections (timeline, links). Do NOT re-ask for information already in upstream artifacts.
 >
 > **Important**: Inherit every item from the Living FAQ's "Open Questions for PM" section that remains UNANSWERED into the PRD Open Questions.
 >
@@ -79,7 +78,7 @@ Before starting, verify these artifacts exist in the package folder:
 After the sub-agent completes:
 1. Verify `{package}/PRD_{slug}.md` exists
 2. Read the PRD status — confirm it is at least "Drafting"
-3. Check that key sections are populated (Objectives, Scope, Requirements)
+3. Check that key sections are populated (Objectives, Value to the Management Company, Scope, Requirements, Shipping Strategy / vertical slices)
 4. If the PRD has critical validation failures, flag to the PM before proceeding
 
 ---
@@ -244,7 +243,7 @@ datasets/product/packages/{YYYY}/{slug}/
 └── business-case-swag.md         (Phase 6)
 ```
 
-The PRD is also written to `datasets/product/prds/{YYYY}/PRD_{slug}.md` for backlog/roadmap integration.
+The PRD lives only in the package folder. Backlog/roadmap tooling discovers it by globbing `datasets/product/packages/{YYYY}/*/PRD_*.md` — there is no separate `prds/{YYYY}/` copy.
 
 ## Iteration Loops
 

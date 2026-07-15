@@ -27,7 +27,7 @@ Activate when:
 
 **From:**
 - `datasets/product/backlog.md` (latest PRD Intake section)
-- `datasets/product/prds/{YYYY}/PRD_*.md` files
+- `datasets/product/packages/{YYYY}/*/PRD_*.md` files — the canonical single source. (PRDs are no longer mirrored to a flat `prds/{YYYY}/` folder.) Skip packages whose folder name ends in `_archived` and PRDs whose status is ❗ Abandoned.
 
 **Extract:**
 - PRD titles

@@ -12,6 +12,12 @@
 
 {Add context or additional details about why this project exists and what problem it solves.}
 
+## Value to the Management Company
+
+> State plainly what the management company (our buyer) gains from this. Tie it to the business outcomes they care about: operational efficiency, staff time saved, retention/expansion, the client/board/homeowner satisfaction they are accountable for, or a competitive edge when winning new associations. If the primary user is a resident or board member, make the management-company benefit **explicit**, not implied — do not leave it to be inferred.
+
+{Value to the management company goes here — 1-2 sentences.}
+
 ## Key Resources & Links
 
 | Resource | Link |
@@ -105,6 +111,8 @@
 >
 > All three phases ship. Priority determines **sequence**, not whether something gets built.
 >
+> **Slice, don't stack.** Each milestone should map to at least one shippable slice in the Shipping Strategy below. Sequence requirements to deliver customer value early and often — not to complete a horizontal layer before anyone can use anything.
+>
 > Note: Include concept mock-ups, designs, functional flow diagrams as helpful. Note external dependencies.
 
 ### Milestone 1: {Name/Summary}
@@ -128,6 +136,20 @@
 ## Build Sequence
 
 > Everything in this PRD ships. The build sequence determines the **relative priority** in which capabilities are delivered, not whether they are delivered. Each phase builds on the previous one, and all phases are planned from the start.
+>
+> **Two lenses, reconciled.** The Shipping Strategy below is the *delivery* lens — vertical slices that put working software in a customer's hands and answer "when does a customer first get value?" The Foundation/Expansion/Polish phases are the *build-order* lens. Ambition governs *what* we build (aim high); slicing governs *when* a customer gets it (ship small, validate, iterate). Each slice cuts across the phases.
+
+### Shipping Strategy — Vertical Slices
+
+> Do not wait for the whole build to be done to put it in front of a customer. A **slice** is a thin, end-to-end cut through the whole stack (not a horizontal layer) that a named audience can actually use and benefit from. Ship the thinnest valuable slice first, learn from it, then widen. Framed by *who gets it and when*, not by calendar dates.
+
+| Slice | What the customer can do end-to-end (the value) | Who gets it first (dogfood / design partner / early adopter / GA) | What we validate before widening |
+|-------|--------------------------------------------------|-------------------------------------------------------------------|----------------------------------|
+| Slice 1 (thinnest shippable) | | | |
+| Slice 2 | | | |
+| Slice 3 | | | |
+
+> **Slice 1 must deliver standalone customer value.** If no customer could use it and benefit on its own, it is not a slice — it is a layer. Map each slice's requirements back to the Foundation/Expansion/Polish phases below.
 
 ### Foundation (P0)
 

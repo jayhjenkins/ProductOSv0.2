@@ -21,6 +21,14 @@
 
 ---
 
+## Value to the Management Company
+
+> The management company is our buyer. State explicitly what they gain — this is the value every internal team below must be able to articulate. Cover the business outcomes they care about: operational efficiency, staff time saved, retention/expansion, the client/board/homeowner satisfaction they are accountable for, and competitive edge when winning new associations. If the primary user is a resident or board member, make the management-company benefit explicit, not implied.
+
+{Value to the management company goes here — 2-4 sentences.}
+
+---
+
 ## Sales & Sales Demos
 
 ### New Capability

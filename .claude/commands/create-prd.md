@@ -24,18 +24,17 @@ Create individual PRD through interactive session with structured information ga
 
 ## Interactive Session
 
-The skill guides through 10 phases:
+The skill guides through 9 phases:
 1. Core Identity (name, description, background)
-2. Ownership (DACE & teams)
-3. Objectives (customer statement, success metrics)
-4. Scope & Non-Goals (use cases in/out, agent/API scenarios, non-goals)
-5. Requirements (by milestone with priorities as build sequence)
-5b. Build Sequence (Foundation → Expansion → Polish)
-6. Timeline (milestones and delivery dates)
-7. Links and Resources
-8. Metrics and Learning Agenda
-9. Open Questions / Tracked Assumptions (from Living FAQ)
-10. Appendix / Upstream Artifact Links
+2. Objectives (customer statement, success metrics)
+3. Scope & Non-Goals (use cases in/out, agent/API scenarios, non-goals)
+4. Requirements (by milestone with priorities as build sequence)
+4b. Build Sequence (Foundation → Expansion → Polish)
+5. Timeline (milestones and delivery dates)
+6. Links and Resources
+7. Metrics and Learning Agenda
+8. Open Questions / Tracked Assumptions (from Living FAQ)
+9. Appendix / Upstream Artifact Links
 
 ## Upstream Artifact Ingestion
 
@@ -53,13 +52,12 @@ If information is not provided, leave it blank or marked "TBD". PRDs are living 
 
 ## Validation
 
-PRD must pass 6-point validation before becoming Actionable:
+PRD must pass 5-point validation before becoming Actionable:
 1. Objectives Clear
 2. Use Cases Defined
 3. Requirements Structured
 4. Timeline Present
 5. Success Measurable
-6. DACE Assigned
 
 ## Arguments
 

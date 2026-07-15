@@ -31,7 +31,7 @@ Do NOT use when:
 ./scripts/task.sh done TASK-0042
 
 # Mark done with output artifact
-./scripts/task.sh done TASK-0042 --output "datasets/product/prds/2026/PRD_feature-x.md"
+./scripts/task.sh done TASK-0042 --output "datasets/product/packages/2026/feature-x/PRD_feature-x.md"
 ```
 
 This does three things:

@@ -10,7 +10,7 @@ description: Use when transforming meeting transcripts into roadmap PRDs - synth
 Transform meeting signals into actionable PRDs:
 - Synthesize product signals from meeting transcripts
 - Cluster semantically into PRD themes
-- Validate PRD quality (6-point rubric)
+- Validate PRD quality (5-point rubric)
 - Generate PRD proposals and update roadmap
 
 ## When to Use
@@ -93,8 +93,8 @@ Fill in what's known from signals:
 **Invoke:** `prd-validation` skill
 
 **For each PRD proposal:**
-- Apply 6-point rubric
-- Drafting PRDs may have warnings (missing DACE, timeline, etc.)
+- Apply 5-point rubric
+- Drafting PRDs may have warnings (missing timeline, etc.)
 - Note required additions for Actionable status
 - If fundamentally incomplete: flag for interactive completion
 
@@ -150,10 +150,12 @@ For high-priority PRD candidates, optionally pull supporting data:
 {Previous backlog content...}
 ```
 
-**Write individual PRD files:**
-`datasets/product/prds/{YYYY}/PRD_{slug}.md`
+**Write individual PRD files** to the canonical single-source location — each PRD lives in its own package folder:
+`datasets/product/packages/{YYYY}/{slug}/PRD_{slug}.md`
 
-Slug generation: lowercase, hyphens, remove special chars
+Slug generation: lowercase, hyphens, remove special chars.
+
+**Before creating each PRD's package folder, run the duplicate-initiative preflight** (this is a batch run from meetings — duplication risk is highest here): glob existing `datasets/product/packages/{YYYY}/*/` slugs and semantically match each proposed PRD against them (use `context-search` over `product_artifacts` when the slug isn't an obvious match). If a proposed PRD overlaps an existing package, **update/extend that package's PRD rather than creating a new folder**, and note it in the intake summary. Only scaffold a new package folder for genuinely new initiatives. Do not write to the retired `prds/{YYYY}/` mirror.
 
 ### 8. Update State Tracking
 
@@ -172,7 +174,7 @@ Product planning complete when:
 - Signals clustered into PRD themes
 - PRD validation applied (flags issues, doesn't fabricate)
 - PRD proposals written to backlog.md
-- Individual PRD files created in prds/{YYYY}/
+- Individual PRD files created in their package folders at packages/{YYYY}/{slug}/ (no duplicates of existing initiatives)
 - State file updated with current timestamp
 
 ## PRD Statuses

@@ -160,9 +160,8 @@ Briefly summarize what was produced in Phases 1–3:
 > - `datasets/product/templates/prd-template.md`
 > - `.claude/skills/quality-prd-validation/SKILL.md`
 >
-> **Write to disk** (dual location):
-> - `{package}/PRD_{slug}.md`
-> - `datasets/product/prds/{YYYY}/PRD_{slug}.md`
+> **Write to disk** (single canonical location):
+> - `{package}/PRD_{slug}.md` — the only copy; do not mirror to `prds/{YYYY}/` (mirror retired)
 >
 > **PM interaction**: YES — confirm pre-populated sections, fill genuinely missing sections. Do NOT re-ask for info already in upstream artifacts.
 >
@@ -170,7 +169,7 @@ Briefly summarize what was produced in Phases 1–3:
 >
 > **When done**: Report PRD status, which sections were pre-populated vs. PM-provided, and any validation warnings.
 
-**Gate 4**: Verify PRD exists with at least "Drafting" status. Check key sections are populated.
+**Gate 4**: Verify PRD exists with at least "Drafting" status. Check key sections are populated — including **Value to the Management Company** and the **Shipping Strategy (vertical slices)** with a named first-delivery audience.
 
 ---
 
@@ -399,7 +398,7 @@ datasets/product/packages/{YYYY}/{slug}/
 └── business-case-swag.md         (Phase 6)
 ```
 
-The PRD is also written to `datasets/product/prds/{YYYY}/PRD_{slug}.md` for backlog/roadmap integration.
+The PRD lives only in the package folder. Backlog/roadmap tooling discovers it by globbing `datasets/product/packages/{YYYY}/*/PRD_*.md` — there is no separate `prds/{YYYY}/` copy.
 
 Phase 7 produces one side-effect outside the package folder: a `human`-queue task titled `Publish Jira Feature: {Feature Name}` containing a JIRA_DRAFT block. The PM publishes it from the task board.
 
