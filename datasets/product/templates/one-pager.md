@@ -16,6 +16,12 @@
 
 {Solution statement in 2 sentences. What does the user experience after this exists? Describe as an outcome, not a feature list.}
 
+## Value to the Management Company
+
+> State plainly, in 1-2 sentences, what the management company (our buyer) gains: operational efficiency, staff time saved, retention/expansion, the client/board/homeowner satisfaction they are accountable for, or a competitive edge when winning new associations. If the primary user is a resident or board member, make the management-company benefit **explicit**, not implied.
+
+{Value to the management company goes here.}
+
 ## Key Differentiators
 
 1. **{Differentiator 1}** — {Why this matters to the customer}

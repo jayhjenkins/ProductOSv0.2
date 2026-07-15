@@ -45,8 +45,7 @@ For the selected package folder, list every file with:
 - `{package}/ai-agent-scenarios.md` — {one-line summary} — Last modified: {date}
 
 ### Phase 4: PRD
-- `{package}/PRD_{slug}.md` — {one-line summary} — Last modified: {date}
-- `datasets/product/prds/{YYYY}/PRD_{slug}.md` — (canonical PRD copy)
+- `{package}/PRD_{slug}.md` — {one-line summary} — Last modified: {date} — (single canonical PRD location; no separate `prds/{YYYY}/` copy)
 - `{package}/expansion-proposals.md` — {one-line summary} — Last modified: {date}
 
 ### Phase 5: Validation

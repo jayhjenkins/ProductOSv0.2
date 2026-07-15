@@ -37,7 +37,7 @@ datasets/product/packages/{YYYY}/{slug}/
 
 ## Inputs Required
 
-- **Complete PRD** — in `{package}/` and `datasets/product/prds/{YYYY}/`
+- **Complete PRD** — `{package}/PRD_{slug}.md` (single canonical location)
 - **Context Brief** (`{package}/context-brief.md`)
 - **Press Releases** (`{package}/press-release-external.md`, `{package}/press-release-internal.md`)
 - **Living FAQ** (`{package}/living-faq.md`) — for reference only; this skill does NOT write back to it

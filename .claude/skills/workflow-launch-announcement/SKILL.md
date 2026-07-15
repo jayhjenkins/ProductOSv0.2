@@ -29,7 +29,7 @@ Activate when:
 **Announce to user:** "I'm researching existing documentation to pre-fill the announcement template. Looking for PRDs, experiments, and related product documentation."
 
 **Search workspace:**
-- Look in `datasets/product/prds/` for matching PRD
+- Look in `datasets/product/packages/{YYYY}/*/PRD_*.md` for matching PRD (canonical single source)
 - Check `datasets/product/roadmap.md` for feature references
 - Search `datasets/meetings/` for customer signals related to the feature
 

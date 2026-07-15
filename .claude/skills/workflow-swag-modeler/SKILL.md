@@ -36,7 +36,7 @@ datasets/product/packages/{YYYY}/{slug}/
 
 ## Inputs Required
 
-- **Complete PRD** — in `{package}/` and `datasets/product/prds/{YYYY}/`
+- **Complete PRD** — `{package}/PRD_{slug}.md` (single canonical location)
 - **Context Brief** (`{package}/context-brief.md`) — customer evidence, market context
 - **Press Releases** (`{package}/press-release-*.md`) — value proposition and target market
 - **Red Team Report** (`{package}/red-team-report.md`) — risk factors (optional but recommended)

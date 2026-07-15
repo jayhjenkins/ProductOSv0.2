@@ -24,12 +24,12 @@ Local MD files <-> pandoc <-> .docx in OneDrive sync folder <-> SharePoint
 
 ### Manual Sync (single file)
 ```bash
-python3 scripts/doc_sync.py sync-one datasets/product/prds/2026/example.md
+python3 scripts/doc_sync.py sync-one datasets/product/packages/2026/example/PRD_example.md
 ```
 
 ### Sync Back (Word -> Markdown)
 ```bash
-python3 scripts/doc_sync.py sync-back /path/to/OneDrive/PM-OS/product/prds/2026/example.docx
+python3 scripts/doc_sync.py sync-back /path/to/OneDrive/PM-OS/product/packages/2026/example/PRD_example.docx
 ```
 
 ### Sync Folder (all .md files in a directory)
@@ -49,14 +49,14 @@ python3 scripts/doc_sync.py status
 
 ### Resolve Conflicts
 ```bash
-python3 scripts/doc_sync.py resolve datasets/product/prds/2026/example.md
+python3 scripts/doc_sync.py resolve datasets/product/packages/2026/example/PRD_example.md
 ```
 
 ## Path Mapping
 
 | Local | OneDrive |
 |-------|----------|
-| `datasets/product/prds/2026/X.md` | `{onedrive}/PM-OS/product/prds/2026/X.docx` |
+| `datasets/product/packages/2026/X/PRD_X.md` | `{onedrive}/PM-OS/product/packages/2026/X/PRD_X.docx` |
 | `datasets/strategy/memos/X.md` | `{onedrive}/PM-OS/strategy/memos/X.docx` |
 
 Rule: strip `datasets/` prefix, mirror path, change `.md` to `.docx`.
