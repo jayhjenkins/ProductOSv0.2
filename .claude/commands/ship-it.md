@@ -169,7 +169,7 @@ Briefly summarize what was produced in Phases 1–3:
 >
 > **When done**: Report PRD status, which sections were pre-populated vs. PM-provided, and any validation warnings.
 
-**Gate 4**: Verify PRD exists with at least "Drafting" status. Check key sections are populated — including **Value to the Management Company** and the **Shipping Strategy (vertical slices)** with a named first-delivery audience.
+**Gate 4**: Verify PRD exists with at least "Drafting" status. Check key sections are populated — including **Value to the Buyer** (if your product has a distinct buyer persona) and the **Shipping Strategy (vertical slices)** with a named first-delivery audience.
 
 ---
 
@@ -205,7 +205,7 @@ Briefly summarize what was produced in Phases 1–3:
 2. Present each proposal to the PM (category, description, outcome, evidence, effort)
 3. Collect Accept/Reject + rationale for each
 4. Update `expansion-proposals.md` with PM Decision Log
-5. Fold accepted items into PRD (update both locations)
+5. Fold accepted items into PRD
 
 ---
 
@@ -243,7 +243,7 @@ Briefly summarize what was produced in Phases 1–3:
 1. Read `{package}/red-team-report.md`
 2. Present all `critical` findings to PM (ID, PRD reference, description, recommended fix)
 3. PM confirms fixes are adequate
-4. Update PRD with critical fixes (both locations)
+4. Update PRD with critical fixes
 5. Track major findings (don't block)
 
 ---
@@ -273,16 +273,16 @@ Briefly summarize what was produced in Phases 1–3:
 
 ---
 
-### Phase 7: Jira Feature Handoff (Orchestrator — Direct) — unless `--skip-jira`
+### Phase 7: Jira Top-Level-Issue Handoff (Orchestrator — Direct) — unless `--skip-jira`
 
-Sam's 2026-05-22 process refresh made the Jira **Feature** the source of truth for downstream comms. Three fields drive that workflow: **Spec Reference** (URL of the spec/PRD), **GTM Date**, and **EA Date**. Phase 7 turns this package into a published-ready Jira Feature draft.
+If your team's process makes the Jira top-level issue (Feature/Epic-role) the source of truth for downstream comms, three fields typically drive that workflow: **Spec Reference** (URL of the spec/PRD), a **Target Date**, and an **Early Access Date** (if your instance tracks one — see workflow-jira-home's custom-fields config). Phase 7 turns this package into a published-ready Jira draft.
 
 **Handle this directly in the orchestrator — no sub-agent.** It is interactive and short.
 
 #### Step 7.1: Confirm intent
 
 Ask the PM:
-> "All artifacts are in `{package}`. Want to draft the Jira Feature now so engineering can pick it up? (Y/N)"
+> "All artifacts are in `{package}`. Want to draft the Jira top-level issue now so engineering can pick it up? (Y/N)"
 
 - If `--skip-jira` or the PM declines: end Phase 7 with the reminder "Run `/jira:create --feature` later, or re-run with `--jira-only --package {package}`."
 - If yes: continue.
@@ -306,12 +306,12 @@ Ask:
 
 #### Step 7.3: Gather Feature fields
 
-Ask in order, accepting `TBD` or empty for each date field (these mean "leave the Jira field blank — Sam's process accepts filling them in later"):
+Ask in order, accepting `TBD` or empty for each date field (these mean "leave the Jira field blank — fill it in later"). Skip any field whose custom field isn't configured in the profile (see workflow-jira-home):
 
-1. **Feature Name** — default to `{slug}` title-cased; allow edit.
-2. **GTM Date** — `YYYY-MM-DD`, or `TBD`/empty.
-3. **EA Date** — `YYYY-MM-DD`, or `TBD`/empty. (Early-access date; typically before GTM.)
-4. **Client Commitment** — `CAI` / `Vision` / none.
+1. **Name** — default to `{slug}` title-cased; allow edit.
+2. **Target Date** — `YYYY-MM-DD`, or `TBD`/empty.
+3. **Early Access Date** — `YYYY-MM-DD`, or `TBD`/empty, if configured. (Typically before the target date.)
+4. **Commitment** — one of the profile's configured `commitment_values`, or none.
 
 Do **not** ask about Release Notes, Priority, Components, or Regression Area — those are set in Jira when the issue transitions out of Refinement.
 
@@ -331,18 +331,18 @@ Explicitly **omit**: meeting framing, name-dropping, version narrative, TASK-NNN
 Create the task. Build the description argument as a single string containing the JIRA_DRAFT block plus the body sections — the existing `task.sh add` writes `--description` into the body, and `jira_publish.py` parses the `<!-- JIRA_DRAFT -->…<!-- /JIRA_DRAFT -->` block wherever it appears.
 
 ```
-./scripts/task.sh add "Publish Jira Feature: {Feature Name}" \
+./scripts/task.sh add "Publish Jira issue: {Name}" \
   -q human -p medium -d product \
   --description "$(cat <<'EOF'
 <!-- JIRA_DRAFT -->
-<!-- JIRA_TYPE:Feature -->
+<!-- JIRA_TYPE:{issue_types.top_level.name from profile} -->
 <!-- JIRA_SUMMARY:{summary} -->
-<!-- JIRA_LABELS:home_aidlc -->
-<!-- JIRA_FEATURE_NAME:{feature name} -->
+<!-- JIRA_LABELS:{auto_label from profile, if configured} -->
+<!-- JIRA_FEATURE_NAME:{name} -->
 <!-- JIRA_GTM_DATE:{YYYY-MM-DD or empty} -->
 <!-- JIRA_EA_DATE:{YYYY-MM-DD or empty} -->
 <!-- JIRA_SPEC_REFERENCE:{PRD Word URL or empty} -->
-<!-- JIRA_CLIENT_COMMITMENT:{CAI/Vision/empty} -->
+<!-- JIRA_CLIENT_COMMITMENT:{commitment value or empty} -->
 
 ### Summary
 {summary}
@@ -359,15 +359,15 @@ Internal Press Release: {press-release-internal Word URL}
 - {AC bullet 3}
 
 ### Fields
-- Type: Feature
-- Labels: home_aidlc (Features go to the AI DLC swim lane)
+- Type: {top-level type name}
+- Labels: {auto_label from profile, if configured}
 <!-- /JIRA_DRAFT -->
 EOF
 )"
 ```
 
 Print the TASK ID and the task-board URL. End with:
-> "Draft saved at TASK-NNNN. Open the task board, review the draft, click **Publish to Jira** when ready. Sam's process is satisfied as long as Spec Reference is set — GTM/EA dates can be filled in later in the Jira UI."
+> "Draft saved at TASK-NNNN. Open the task board, review the draft, click **Publish to Jira** when ready. As long as Spec Reference is set, the rest can be filled in later in the Jira UI."
 
 ---
 

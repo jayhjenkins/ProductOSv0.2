@@ -1,56 +1,56 @@
 ## MANDATORY: Use the workflow-jira-home Skill
 
 Before doing anything else:
-1. Announce: "Using the **workflow-jira-home** skill to create an issue on the Vantaca Home AI DLC board (VNT, board 1096)."
-2. Read and follow `.claude/skills/workflow-jira-home/SKILL.md` exactly.
+1. Announce: "Using the **workflow-jira-home** skill to create a Jira issue." (If this is the first run and Jira isn't configured yet, announce that First-Run Setup will run first.)
+2. Read and follow `.claude/skills/workflow-jira-home/SKILL.md` exactly — including its First-Run Setup section if `profile/integrations.yaml` has no Jira config yet.
 
 ## Purpose
 
-Create Jira issues for Vantaca Home (project `VNT`) via the Jira MCP. Most issues (Bugs, Units, Regression Defects) land on the Home AI DLC board's backlog and kanban (board `1096`). Features and Epics live on the roadmap boards (not on the AI DLC kanban) and carry `home_aidlc` as an initiative tag. Labels follow the Swim Lane Rule defined in `workflow-jira-home/SKILL.md` — the command does not invent topical labels.
+Create Jira issues via the Jira MCP, scoped to whichever project/board your profile is configured for (see First-Run Setup in the skill). Most issues (Bugs, work items, Regression Defects) land on the team's board backlog and kanban. Top-level issues (Features/Epics) typically live on roadmap boards and carry the profile's configured swim-lane label as an initiative tag, if one is set. Labels follow the Swim Lane Rule defined in `workflow-jira-home/SKILL.md` — the command does not invent topical labels.
 
 ## Arguments
 
 Primary (new hierarchy):
 - `/jira:create` — Interactive mode. Asks what kind of issue to create.
-- `/jira:create --feature "name"` — Feature (PRD-linked product capability). Replaces Epic for new work.
-- `/jira:create --unit "summary"` — Unit (small enhancement, improvement, or single engineering change — the default for most engineering work). Replaces Story. Will prompt for an optional parent Feature/Epic key.
+- `/jira:create --feature "name"` — Top-level issue (PRD-linked product capability).
+- `/jira:create --unit "summary"` — Work item (small enhancement, improvement, or single engineering change — the default for most engineering work). Will prompt for an optional parent key.
 - `/jira:create --bug "summary"` — Bug (client-reported defect).
-- `/jira:create --regression "summary"` — Regression Defect (internally-found regression).
+- `/jira:create --regression "summary"` — Regression Defect (internally-found regression, if configured).
 
 Other:
-- `/jira:create --spike "summary"` — Time-boxed investigation.
-- `/jira:create --hotfix "summary"` — Emergency fix.
+- `/jira:create --spike "summary"` — Time-boxed investigation (if configured).
+- `/jira:create --hotfix "summary"` — Emergency fix (if configured).
 - `/jira:create --epic "name"` — Legacy Epic flow (retained for special cases).
 - `/jira:create --story "summary"` — Legacy Story flow (retained for special cases).
 
 ## What This Creates
 
 **All issues:**
-- Component set to `Vantaca HXP` (id `10011`)
-- Labels follow the Swim Lane Rule: Features/Epics get `home_aidlc` (AI DLC automated lane); Bugs, Units, and other one-offs get no labels (lands in "everything else" column on board 1096)
-- Defaults to the standard new-issue status for the type (typically Refinement or Backlog)
+- Component set per profile (`component_id`), if configured
+- Labels follow the Swim Lane Rule: top-level issues get the profile's `auto_label` (if configured); Bugs, work items, and other one-offs get no labels
+- Defaults to the standard new-issue status for the type
 - Optionally sets priority and release notes. Additional labels are only added when the user explicitly names one in their prompt — the command never invents topical tags.
 
-**Units (and legacy Stories):**
-- Optional parent issue key (Feature or Epic). If left blank, the Unit is created unparented and the user can wire it in Jira.
+**Work items (and legacy Stories):**
+- Optional parent issue key (top-level type or Epic). If left blank, it's created unparented and the user can wire it in Jira.
 
-**Features (and legacy Epics):**
-- Sets the Feature/Epic Name custom field
-- Prompts for **Spec Reference** (the PRD/spec Word URL — Sam's 2026-05-22 process refresh; downstream Teams comms read this field)
-- Prompts for **GTM Date** and **EA Date** — either can be left blank or `TBD` to fill in later in the Jira UI
-- Prompts for Client Commitment flag (CAI / Vision)
-- **Assignee defaults to Jay Jenkins** (`712020:aeec48b7-3829-433b-9125-c8c2a4c84e6f`) unless a different person is specified
+**Top-level issues (and legacy Epics):**
+- Sets the top-level name custom field, if configured
+- Prompts for **Spec Reference** (a shareable PRD/spec URL), if configured
+- Prompts for **Target Date** and **Early Access Date** — either can be left blank or `TBD` to fill in later in the Jira UI, if those fields are configured
+- Prompts for a Commitment flag, if configured
+- **Assignee defaults to the profile's `default_assignee`** unless a different person is specified
 
 ## Examples
 
 ```
 /jira:create
 /jira:create --feature "Mobile Push Notifications"
-/jira:create --unit "Wire Home dashboard to new homeowner index"
-/jira:create --bug "Landing page WYSIWYG editor crashes on save"
-/jira:create --regression "Home_V3 amenity image not displaying"
-/jira:create --spike "Investigate slow My Requests page load"
+/jira:create --unit "Wire dashboard to new index"
+/jira:create --bug "Landing page editor crashes on save"
+/jira:create --regression "Amenity image not displaying"
+/jira:create --spike "Investigate slow page load"
 /jira:create --hotfix "Login loop on iOS 18.4"
 ```
 
-Result URLs follow the pattern `https://vantaca.atlassian.net/browse/VNT-XXXXX`.
+Result URLs follow the pattern `https://{cloud_id}/browse/{project_key}-XXXXX`, where `{cloud_id}` and `{project_key}` come from your profile config.

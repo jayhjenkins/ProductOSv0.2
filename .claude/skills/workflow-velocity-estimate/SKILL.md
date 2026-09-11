@@ -8,7 +8,7 @@ allowed-tools: Read, Grep, Glob, Bash, Skill
 
 ## Purpose
 
-Produce a bottom-up, **unit-level** time estimate for a feature, benchmarked to the Home team's observed Q2 2026 throughput. Give it a PRD + an inception transcript (and a spec if one exists); it returns each unit's active-execution estimate, sums them to a feature estimate, forecasts mini-inception rework, and reports controllable latency separately. Every number is traceable to `datasets/velocity/calibration.yaml`.
+Produce a bottom-up, **unit-level** time estimate for a feature, benchmarked to your team's own observed throughput (fill in `datasets/velocity/calibration.yaml` with your team's real historical data before relying on this). Give it a PRD + an inception transcript (and a spec if one exists); it returns each unit's active-execution estimate, sums them to a feature estimate, forecasts mini-inception rework, and reports controllable latency separately. Every number is traceable to `datasets/velocity/calibration.yaml`.
 
 ## When to Use
 
@@ -36,8 +36,8 @@ Load these every run (they are the model):
 
 Resolve inputs from the user's args (a feature slug, a package path, and/or explicit file paths):
 - **PRD:** `datasets/product/packages/2026/<feature>/PRD_*.md`
-- **Inception transcript:** `datasets/meetings/product/home/YYYY-MM/*Inception*.txt` (use `context-search`/qmd to locate — people say "inception" conversationally; also check for mini-inceptions via grep `"mini inception"`).
-- **Spec / unit list (optional):** `~/dev/Vantaca/VantacaConnect/apps/home/doc/specs/NNN-*.md`, `~/dev/Vantaca/VantacaNextGeneration/Documentation/Inception/home/<feature>/`, or the Jira Feature's child-unit "Affected Areas" tables (pull via Jira MCP if available).
+- **Inception transcript:** `datasets/meetings/product/<team>/YYYY-MM/*Inception*.txt` (use `context-search`/qmd to locate — people say "inception" conversationally; also check for mini-inceptions via grep `"mini inception"`).
+- **Spec / unit list (optional):** wherever your team keeps specs (e.g. `~/dev/<YourRepo>/doc/specs/NNN-*.md`), or the Jira Feature's child-unit "Affected Areas" tables (pull via Jira MCP if available).
 
 **Mode A — units given:** a spec or Jira already enumerates units → estimate each directly. Higher confidence.
 **Mode B — units inferred:** only PRD + inception exist → first propose a probable unit list (decompose by surface/system/workstream the way real specs do), then estimate. Lower confidence — label it and list the inferred units as a prediction.
@@ -51,22 +51,22 @@ Locate and read PRD + inception (+ spec). State Mode A or B. If Mode B, derive a
 
 ### Phase 2 — Per-unit signal extraction (the rubric)
 For each unit, determine:
-1. **Systems touched** + count — from spec "Affected Areas"/"Target Repo(s)"/"File Locations", Jira components/labels, or (Mode B) inference. Map repos→systems using `system_weights`. `Vantaca HXP` is a team tag — ignore.
-2. **Regime** — if any touched system is `Mobile`, it's `human_native` (out-of-model): flag, use `regimes.human_native.base_days`, set confidence low, do not pretend precision. Otherwise `ai_leveraged`.
-3. **Foundation vs increment** — does an analogous Service/Contract/component/page already exist? **Inspect locally for NextGen** (`~/dev/Vantaca/VantacaNextGeneration/{Services,Contracts}/`) **and Connect** (`~/dev/Vantaca/VantacaConnect/apps/home/src/{components,pages,lib,stores}/`) with Glob/Grep. If the pattern exists → increment; if net-new → foundation. For systems in `non_local_default` scope (CMP/Core/Mobile/Migrations — not cloned), default to `foundation` and note it.
-4. **Cross-repo** — ≥2 repos, especially CMP+Core both present → cross-repo.
+1. **Systems touched** + count — from spec "Affected Areas"/"Target Repo(s)"/"File Locations", Jira components/labels, or (Mode B) inference. Map repos→systems using `system_weights`. Ignore any component tags that are just team/routing labels, not real systems.
+2. **Regime** — if any touched system is a "human-native" (out-of-model) system per your `regimes` config, flag it, use its `base_days`, set confidence low, do not pretend precision. Otherwise `ai_leveraged`.
+3. **Foundation vs increment** — does an analogous Service/Contract/component/page already exist? **Inspect your locally-cloned repos** with Glob/Grep for the equivalent pattern. If the pattern exists → increment; if net-new → foundation. For systems in `non_local_default` scope (repos you don't have cloned locally), default to `foundation` and note it.
+4. **Cross-repo** — ≥2 repos touched → cross-repo (note any specific repo pairings your team knows to be especially costly, per your own calibration).
 5. **Scope size** — count affected files/areas in the spec → small/medium/large per `modifiers.scope_size`. In Mode B, estimate the count from the PRD scope and flag it.
 
 ### Phase 3 — Per-unit estimate
 1. Pick archetype: `{increment|foundation}_{single_system|multi/cross_repo}` (use `foundation_cross_repo` when foundation + cross-repo; `increment_multi_system` when increment + ≥2 systems).
 2. Look up `base_days` (p50/p75).
-3. Apply modifiers (≤2): `cross_repo_handshake` multiplier (increments touching CMP+Core only), then `scope_size` factor.
+3. Apply modifiers (≤2): `cross_repo_handshake` multiplier (for whichever repo pairing your calibration flags as especially costly), then `scope_size` factor.
 4. If `foundation_tax.apply` is true in calibration AND this unit meets the triggers, apply that multiplier (default off — only for genuinely greenfield, unresolved-ownership work).
 5. Round to 0.5 days. Assign confidence per `confidence` rules. Record the **drivers** (one phrase) for the unit row.
 
 ### Phase 4 — Feature roll-up (additive)
 1. **Headline = Σ unit p50 … Σ unit p75** active days; also show ÷ `working_days_per_week` as weeks, explicitly labeled "effort-sum, not parallelism-adjusted wall-clock."
-2. **Mini-inception forecast:** score `mini_inception.signals` from the inception/PRD (open-question count, unresolved cross-team CMP ownership, public/security surface, new external dependency) → risk low/medium/high → `expected_count` → add (`added_increment_units` × increment_single p50) + `respec_latency_days`. Report as a separate line.
+2. **Mini-inception forecast:** score `mini_inception.signals` from the inception/PRD (open-question count, unresolved cross-team ownership, public/security surface, new external dependency) → risk low/medium/high → `expected_count` → add (`added_increment_units` × increment_single p50) + `respec_latency_days`. Report as a separate line.
 3. **Latency (separate):** report `overheads.pre_dev_latency_days` + `overheads.integration_release_latency_days` as the controllable wall-clock overhead — not in the headline.
 4. **Overall confidence** = lowest-common across units + mode + inspectability.
 
@@ -81,14 +81,14 @@ Then summarize to the user: headline range, the 2–3 units driving it, mini-inc
 
 ```json
 {
-  "feature": "community-feed",
+  "feature": "example-feature",
   "date": "2026-06-02",
   "mode": "A",
   "calibration_version": "2026-06-02.v1",
   "overall_confidence": "medium",
-  "inputs": { "prd": "...", "inception": "...", "spec": "...", "repos_inspected": ["NextGen","Connect"] },
+  "inputs": { "prd": "...", "inception": "...", "spec": "...", "repos_inspected": ["RepoA","RepoB"] },
   "units": [
-    { "id": "U1", "name": "Resident feed surface", "systems": ["Connect"],
+    { "id": "U1", "name": "Feed surface", "systems": ["RepoB"],
       "regime": "ai_leveraged", "archetype": "foundation_single_system",
       "foundation_or_increment": "foundation", "scope_size": "medium",
       "modifiers_applied": [], "est_days_p50": 7, "est_days_p75": 9,

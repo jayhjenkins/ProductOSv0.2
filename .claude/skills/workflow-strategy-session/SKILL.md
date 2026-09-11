@@ -146,14 +146,14 @@ qmd search "<decision_question_keywords>" -c tasks --json -n 5
 
 When MCP data sources are connected, gather additional live context. Skip if tools are unavailable. Append results to `{session-folder}/context.md` under a new "## Live Data Context (MCP)" heading.
 
-**Pendo feedback topics**: Use `mcp__claude_ai_Pendo__generate_feedback_topics` (subId: `4818486697721856`) filtered by `similaritySearchTerms` matching the session topic to surface AI-clustered customer feedback themes.
+**Pendo feedback topics**: Use `mcp__claude_ai_Pendo__generate_feedback_topics` (subId: from profile (`profile_lib.py --pendo-subid`)) filtered by `similaritySearchTerms` matching the session topic to surface AI-clustered customer feedback themes.
 
-**Pendo feedback insights**: Use `mcp__claude_ai_Pendo__get_feedback_insights` (subId: `4818486697721856`) with topic-relevant filters for AI-extracted actionable insights with supporting quotes.
+**Pendo feedback insights**: Use `mcp__claude_ai_Pendo__get_feedback_insights` (subId: from profile (`profile_lib.py --pendo-subid`)) with topic-relevant filters for AI-extracted actionable insights with supporting quotes.
 
 **Zendesk intent/sentiment distribution** (via Databricks):
 ```sql
 SELECT custom_intent, custom_sentiment, COUNT(*) as count
-FROM is_prod.zendesk.ticket
+FROM {catalog}.zendesk.ticket
 WHERE created_at >= DATE_SUB(CURRENT_DATE(), 90)
   AND custom_intent IS NOT NULL
 GROUP BY custom_intent, custom_sentiment

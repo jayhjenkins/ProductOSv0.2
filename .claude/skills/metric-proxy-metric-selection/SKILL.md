@@ -342,7 +342,7 @@ When Pendo MCP is connected, validate proxy metric selection against actual prod
 
 ### Time-Series Correlation Check
 
-Use `mcp__claude_ai_Pendo__activityQuery` (subId: `4818486697721856`, appId for relevant app) with `period: "daily"` or `period: "weekly"` to pull time-series data for both the proposed proxy metric and the outcome metric. Compare trends to validate correlation:
+Use `mcp__claude_ai_Pendo__activityQuery` (subId: from profile (`profile_lib.py --pendo-subid`), appId for relevant app) with `period: "daily"` or `period: "weekly"` to pull time-series data for both the proposed proxy metric and the outcome metric. Compare trends to validate correlation:
 
 - Set `entityType` to match the proxy (e.g., "feature" for feature usage, "page" for page visits)
 - Use `group` to aggregate by the relevant dimension
@@ -350,7 +350,7 @@ Use `mcp__claude_ai_Pendo__activityQuery` (subId: `4818486697721856`, appId for 
 
 ### Measurability Confirmation
 
-Use `mcp__claude_ai_Pendo__searchEntities` (subId: `4818486697721856`, appId for relevant app) with `search` matching the proposed proxy behavior to verify:
+Use `mcp__claude_ai_Pendo__searchEntities` (subId: from profile (`profile_lib.py --pendo-subid`), appId for relevant app) with `search` matching the proposed proxy behavior to verify:
 - The behavior is actually instrumented in Pendo (page or feature exists)
 - The entity has recent activity (not a dead/unused tag)
 - Get the exact entity ID for future dashboard/reporting use
@@ -364,7 +364,7 @@ For each identified counter-metric, check if monitoring data exists:
 - **Zendesk**: Check if ticket volume for the related product area can serve as a counter-metric signal:
   ```sql
   SELECT DATE_TRUNC('week', created_at) as week, COUNT(*) as tickets
-  FROM is_prod.zendesk.ticket
+  FROM {catalog}.zendesk.ticket
   WHERE custom_product_field LIKE '%{counter_metric_area}%'
     AND created_at >= DATE_SUB(CURRENT_DATE(), 90)
   GROUP BY DATE_TRUNC('week', created_at)

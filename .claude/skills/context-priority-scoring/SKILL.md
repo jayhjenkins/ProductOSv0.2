@@ -298,7 +298,7 @@ When MCP data sources are connected, supplement estimation-based scores with act
 
 Instead of estimating adoption rates, query Pendo for actual data:
 
-- **Feature adoption**: Use `mcp__claude_ai_Pendo__activityQuery` (subId: `4818486697721856`, appId for the relevant app) with `entityType: "feature"`, `group: ["featureId"]`, and a 30-day date range to get actual visitor/event counts for the feature area being scored.
+- **Feature adoption**: Use `mcp__claude_ai_Pendo__activityQuery` (subId: from profile (`profile_lib.py --pendo-subid`), appId for the relevant app) with `entityType: "feature"`, `group: ["featureId"]`, and a 30-day date range to get actual visitor/event counts for the feature area being scored.
 - **App-level health**: Use `mcp__claude_ai_Pendo__productEngagementScore` to get PES (adoption + stickiness + growth) per app. A feature in a low-adoption area may score higher on Impact if it addresses the adoption gap.
 
 ### SignalStrength Enhancement
@@ -308,7 +308,7 @@ Supplement meeting-based frequency with external signal sources:
 - **Zendesk ticket volume**:
   ```sql
   SELECT COUNT(*) as ticket_count
-  FROM is_prod.zendesk.ticket
+  FROM {catalog}.zendesk.ticket
   WHERE custom_product_field LIKE '%{feature_area}%'
     AND created_at >= DATE_SUB(CURRENT_DATE(), 90)
   ```
@@ -317,8 +317,8 @@ Supplement meeting-based frequency with external signal sources:
 - **Gong tracker mentions**:
   ```sql
   SELECT SUM(ct.count) as mentions
-  FROM is_prod.gongio.call_tracker ct
-  JOIN is_prod.gongio.call c ON CAST(ct.call_id AS STRING) = c.id
+  FROM {catalog}.gongio.call_tracker ct
+  JOIN {catalog}.gongio.call c ON CAST(ct.call_id AS STRING) = c.id
   WHERE ct.phrase LIKE '%{feature_keyword}%'
     AND c.started >= DATE_SUB(CURRENT_DATE(), 90)
   ```

@@ -1,0 +1,7 @@
+# WHO THE OPERATOR IS — the only place identity lives.
+# Copied to profile/ by onboarding; edit there, never here.
+display_name: "Your Name"
+email: "you@company.com"
+company: "Your Company"
+persona: "pm"            # pm | exec
+timezone: "America/New_York"

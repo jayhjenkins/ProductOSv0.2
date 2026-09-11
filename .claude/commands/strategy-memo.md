@@ -52,7 +52,7 @@ Will gather context, apply framework, and build memo interactively.
 
 **D) Custom memo parameters**
 ```
-/strategy:memo --title="Q4 Pricing Strategy" --stakeholders="Jay,Nathan"
+/strategy:memo --title="Q4 Pricing Strategy" --stakeholders="Alex,Jordan"
 ```
 
 **E) YAML ARGS block**
@@ -62,7 +62,7 @@ ARGS:
   session_path: "/datasets/strategy/sessions/2025/08-11_pricing-strategy/"
   title: "Agency Pricing Model Launch Decision"
   decision_type: "strategic"
-  stakeholders: ["Jay Jenkins", "Nathan Snell"]
+  stakeholders: ["Alex Rivera", "Jordan Kim"]
 ```
 
 ## What Makes a Good Memo

@@ -267,14 +267,14 @@ def register_judge_rubric(langfuse, dry_run=False):
 
 
 def register_voice(langfuse, dry_run=False):
-    """Register Jay's voice guide (judge-voice-jay) from datasets/reference/jay-voice.md.
+    """Register the operator's voice guide (judge-voice-operator) from datasets/reference/jay-voice.md.
 
     The on-disk file is the editable source of truth; this pushes its body to
     LangFuse so the judge can fetch a versioned copy (composed into the message rubric).
     """
     from judge import VOICE_FILE
 
-    name = "judge-voice-jay"
+    name = "judge-voice-operator"
     if not os.path.isfile(VOICE_FILE):
         print(f"  Skipping {name}: {VOICE_FILE} not found")
         return

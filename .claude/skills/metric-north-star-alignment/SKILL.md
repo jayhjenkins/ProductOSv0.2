@@ -304,14 +304,14 @@ When Pendo MCP is connected, validate North Star alignment with actual product d
 
 ### Current PES Baseline
 
-Use `mcp__claude_ai_Pendo__productEngagementScore` (subId: `4818486697721856`, appId for relevant app) to get current adoption, stickiness, and growth scores. Compare proposed North Star metrics against actual PES components:
+Use `mcp__claude_ai_Pendo__productEngagementScore` (subId: from profile (`profile_lib.py --pendo-subid`), appId for relevant app) to get current adoption, stickiness, and growth scores. Compare proposed North Star metrics against actual PES components:
 - If North Star relates to growth → check growth score trend
 - If North Star relates to engagement → check stickiness score (DAU/MAU or WAU/MAU)
 - If North Star relates to adoption → check adoption score
 
 ### App-Level Baseline Metrics
 
-Use `mcp__claude_ai_Pendo__activityQuery` with `entityType: "visitor"`, `group: ["visitorId"]`, `count: true` for each Vantaca app to establish current MAU/DAU baselines for the Enterprise SaaS North Star mapping.
+Use `mcp__claude_ai_Pendo__activityQuery` with `entityType: "visitor"`, `group: ["visitorId"]`, `count: true` for each app to establish current MAU/DAU baselines for the Enterprise SaaS North Star mapping.
 
-Available apps: Vantaca IQ (`-323232`), Vantaca Manage (`5412977898749952`), Vantaca Home (`5961191088521216`), HOAi (`6037667364143104`), Vantaca Core (`6243085483048960`).
+Available apps and their IDs are profile-supplied — read `analytics.pendo.app_ids` from `profile/integrations.yaml` (or see the pendo-analytics skill). Pick the app by name from that map; do not hardcode an appId.
 

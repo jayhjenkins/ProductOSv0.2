@@ -1,0 +1,4 @@
+# Install: python3 -m pip install --break-system-packages -r requirements-dev.txt
+# (Homebrew python3 is PEP-668 externally-managed.)
+pytest>=8.0
+ruamel.yaml>=0.18

@@ -32,9 +32,9 @@ Activate automatically when:
 
 **Examples:**
 ```
-/Users/jay/llm/datasets/meetings/Customers/PrettyBoy/2025/10-15_sales_discovery-call.md
-datasets/learning/sources/seasonality/**/*.md
-~/Workspace/llm/datasets/research/competitive-analysis/klaviyo-pricing.md
+datasets/meetings/Customers/<Company>/2025/10-15_sales_discovery-call.md
+datasets/research/competitive-analysis/**/*.md
+datasets/research/competitive-analysis/klaviyo-pricing.md
 ```
 
 **Normalization:**
@@ -133,7 +133,7 @@ checksum=$(echo "$content" | sha256sum | awk '{print "sha256:"$1}')
 
 **Why checksums matter:**
 - Detect file modifications
-- Enable change-based sync (Mochi flashcards)
+- Enable change-based sync
 - Verify content integrity
 - Support caching and deduplication
 

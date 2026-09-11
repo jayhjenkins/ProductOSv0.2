@@ -48,13 +48,6 @@ const MOODS = [
     blurb: 'Karesansui · empty stillness',
     fontHref: 'https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@300;400;500;700&family=Zen+Old+Mincho:wght@400;500;600&display=swap',
   },
-  {
-    id: 'vantaca',
-    label: 'Vantacan',
-    blurb: 'Powered by HOAi',
-    fontHref: 'https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap',
-    favicon: '/assets/vantaca-v.png',   // swaps the browser-tab icon to the Vantaca "V"
-  },
   // ── add more moods here ──
 ];
 

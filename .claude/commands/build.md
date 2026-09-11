@@ -78,7 +78,7 @@ Before starting, verify these artifacts exist in the package folder:
 After the sub-agent completes:
 1. Verify `{package}/PRD_{slug}.md` exists
 2. Read the PRD status — confirm it is at least "Drafting"
-3. Check that key sections are populated (Objectives, Value to the Management Company, Scope, Requirements, Shipping Strategy / vertical slices)
+3. Check that key sections are populated (Objectives, Value to the Buyer if distinct from the end user, Scope, Requirements, Shipping Strategy / vertical slices)
 4. If the PRD has critical validation failures, flag to the PM before proceeding
 
 ---

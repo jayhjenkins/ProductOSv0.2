@@ -28,7 +28,7 @@ Activate when:
 2. **Ambitious by default** — Set the ceiling as high as possible. Build the fully-featured version. Code is cheap — ambiguity and timidity are expensive
 3. **Ambitious scope, incremental delivery** — Ambition governs *what* we build; slicing governs *when* a customer gets value. Set the scope ceiling high, but deliver in vertical slices that put working software in a customer's hands early. Ship small, validate, iterate. Avoid big-bang/waterfall delivery.
 4. **Sequence as shippable slices, don't cut** — Instead of asking "what's the minimum?" ask "what's the best possible version, and what's the thinnest end-to-end slice a real customer could use first?" Everything ships, sequenced so each slice delivers standalone customer value — not so a horizontal layer is completed before anyone can use anything.
-5. **Value to the management company is explicit** — The management company is our buyer. Every PRD states what they gain, even when the primary user is a resident or board member.
+5. **Value to the buyer is explicit, if the buyer differs from the end user** — Every PRD states what the buyer gains, even when the primary user is someone else. (Skip if your product has no distinct buyer persona.)
 6. **Share and link** — PRDs should be accessible with links to Slack channels
 7. **No fabrication** — Leave sections blank/TBD rather than making up information
 8. **Reflect what was delivered** — At close, PRD should document actual outcomes
@@ -69,9 +69,9 @@ Before starting the interactive session, check the package folder for these arti
 | Artifact | Path | What to Extract |
 |----------|------|----------------|
 | Context Brief | `{package}/context-brief.md` | Customer problems, evidence, behavioral baselines, open questions |
-| External Press Release | `{package}/press-release-external.md` | Product vision, customer outcome, key benefits, emotional hook, **value to the management company** |
-| Internal Press Release | `{package}/press-release-internal.md` | Stakeholder impact, implementation considerations, support implications, **value to the management company** |
-| One-Pager | `{package}/one-pager.md` | Tagline, target audience, differentiators, success metrics, timeline, **value to the management company** |
+| External Press Release | `{package}/press-release-external.md` | Product vision, customer outcome, key benefits, emotional hook, **value to the buyer** |
+| Internal Press Release | `{package}/press-release-internal.md` | Stakeholder impact, implementation considerations, support implications, **value to the buyer** |
+| One-Pager | `{package}/one-pager.md` | Tagline, target audience, differentiators, success metrics, timeline, **value to the buyer** |
 | Living FAQ | `{package}/living-faq.md` | Import all items in the "Open Questions for PM" section that are still UNANSWERED into the PRD Open Questions. Use answered items to inform requirements and customer-facing positioning. |
 | AI Agent Scenarios | `{package}/ai-agent-scenarios.md` | Use Case Inventory, scenarios, and API Requirements → populate Agent/API Scenarios section. Do NOT prescribe endpoint shape in the PRD — engineering owns that. |
 
@@ -96,7 +96,7 @@ If upstream artifacts exist, announce what was imported and which sections were 
   - But: (problem/barrier)
   - Because: (root cause)
   - Which makes me feel: (emotion)
-- **Value to the Management Company**: What does the management company (our buyer) gain? Operational efficiency, staff time saved, retention/expansion, the client/board/homeowner satisfaction they are accountable for, or a competitive edge. Make it explicit even when the primary user is a resident or board member. (Pre-populate from the press releases / one-pager if available.)
+- **Value to the Buyer** (if distinct from the end user): What does the buyer gain? Operational efficiency, staff time saved, retention/expansion, the satisfaction of the people they're accountable for, or a competitive edge. Make it explicit when the primary user isn't the buyer. Skip if your product has no distinct buyer persona. (Pre-populate from the press releases / one-pager if available.)
 - **Success Metrics**: How will we measure success? (User Experience, Technical Capabilities)
 - **Opportunity Sizing**: What's the potential impact?
 

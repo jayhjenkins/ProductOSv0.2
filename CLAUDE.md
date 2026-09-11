@@ -34,8 +34,8 @@ This is an AI-driven automation workspace for product management: meeting-driven
 
 Two MCP servers supplement local datasets. Steps that use them are optional and degrade gracefully when unavailable.
 
-- **Pendo** (`mcp__claude_ai_Pendo__*`) — product analytics, feature usage, segments, Pendo Listen feedback, session replays, AI agent analytics. Vantaca subId: `4818486697721856`. App IDs and tool reference live in the `context-pendo-analytics` skill.
-- **VantacaDatabricks** (`mcp__claude_ai_VantacaDatabricks__execute_sql_read_only`) — Gong sales calls, Zendesk tickets, Azure DevOps work items. Catalog `is_prod`. SQL templates and schema reference live in the `context-databricks-analytics` skill.
+- **Pendo** (`mcp__claude_ai_Pendo__*`) — product analytics, feature usage, segments, Pendo Listen feedback, session replays, AI agent analytics. Subscription ID and app IDs are read from `profile/integrations.yaml` (via `scripts/profile_lib.py`), never hardcoded. App IDs and tool reference live in the `context-pendo-analytics` skill.
+- **Databricks** (your org's `mcp__claude_ai_<YourDatabricks>__execute_sql_read_only` — rename to match however your MCP server is configured) — sales calls, support tickets, engineering work items. Catalog name is read from `profile/integrations.yaml`, never hardcoded. SQL templates and schema reference live in the `context-databricks-analytics` skill.
 
 ## Meeting File Schema
 
@@ -117,7 +117,7 @@ When work needs doing during any workflow, create a task with the right queue:
 ### Web UI
 
 ```bash
-cd ~/pm-os && python3 scripts/task_server.py   # http://localhost:8742
+python3 scripts/task_server.py   # http://localhost:8742
 ```
 
 ## LangFuse (Prompt Management & Observability)
@@ -126,10 +126,10 @@ Local Docker stack for prompt versioning and tracing. All LLM calls in the task 
 
 ```bash
 cd langfuse && ./start.sh                  # http://localhost:3000
-source ~/pm-os/.env.langfuse               # repo root, NOT langfuse/ — exports LANGFUSE_PUBLIC_KEY, LANGFUSE_SECRET_KEY, LANGFUSE_HOST
+source .env.langfuse               # repo root, NOT langfuse/ — exports LANGFUSE_PUBLIC_KEY, LANGFUSE_SECRET_KEY, LANGFUSE_HOST
 ```
 
-Login: `jay@pm-os.local` / `changeme123`.
+Login: `operator@pm-os.local` / `changeme123`.
 
 **Traced**: `parse_task_input.py` (auto via langfuse.openai wrapper, trace name `task-parser`). `task_dispatch.py` (`worker-match` and `worker-execution` per dispatch). All use `session_id=task_id`.
 
@@ -155,6 +155,15 @@ Cron jobs auto-create tasks on a schedule that flow through the existing dispatc
 
 Key files: `scripts/cron_lib.py`, `scripts/cron_scheduler.py`, `scripts/parse_cron_input.py`.
 
+## Profile-Driven Configuration
+
+The engine never hardcodes person/team identity or per-instance IDs (Jira project keys, board
+IDs, Pendo subscription IDs, Databricks catalog names, etc.) — it reads them from `profile/` via
+`scripts/profile_lib.py`. `profile.example/` is the tracked, generic template (seeded on first
+setup); the real `profile/` is gitignored and holds your actual values. Skills that need a
+per-instance ID call `profile_lib` (or a small CLI wrapper) rather than embedding the value in
+skill text — that's what keeps this repo safe to share and quick for a new PM to configure.
+
 ## Output Conventions
 
 - Never delete generated artifacts — append version suffixes (`v1`, `v2`)
@@ -170,7 +179,7 @@ Key files: `scripts/cron_lib.py`, `scripts/cron_scheduler.py`, `scripts/parse_cr
 
 ## Safety Rails
 
-- Operate within `~/pm-os/` unless explicitly instructed otherwise
+- Operate within this project unless explicitly instructed otherwise
 - Never overwrite large files without confirmation
 - When unsure of a path, list directories first
 - For batch operations, show a plan and await approval

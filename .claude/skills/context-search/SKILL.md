@@ -154,7 +154,7 @@ When you run `qmd query "onboarding friction" --json -n 3`, the response looks l
       "file": "qmd://meetings_general/2026/2026-02-28_general_cs-sync.txt",
       "score": 0.691,
       "title": "CS Sync - Customer Feedback Roundup",
-      "snippet": "...CompoundStudio said onboarding took them three weeks, which is way too long. They almost churned before getting value..."
+      "snippet": "...Northwind said onboarding took them three weeks, which is way too long. They almost churned before getting value..."
     }
   ],
   "query": "onboarding friction",
@@ -250,18 +250,19 @@ For each document, extract:
 **Relevance**: 0.88
 
 **Content:**
-Trisha identified API permissions framework as the top priority for the new platform PM hire.
-Concern: sophisticated customers requesting full API access to build their own agents, bypassing
-the product. Stan AI already building on Vantaca APIs. Direction: be "very opinionated" about
-which APIs are externally usable vs. internal-only as the system becomes headless.
+Leadership identified an API permissions framework as the top priority for the new platform PM
+hire. Concern: sophisticated customers requesting full API access to build their own agents,
+bypassing the product. A competitor is already building integrations on our APIs. Direction: be
+"very opinionated" about which APIs are externally usable vs. internal-only as the system becomes
+headless.
 
 **Key quotes:**
-> "That is like the one of the first things I would go tell Zach he needs to go figure out before we do anything else."
+> "That's one of the first things the platform PM needs to figure out before we do anything else."
 
 ---
 
-### 2. CMP API Improvements — Prioritization (2026-03-09)
-**Source**: `qmd://meetings_product/platform/2026/2026-03-09_cmp-api-improvements.txt`
+### 2. Platform API Improvements — Prioritization (2026-03-09)
+**Source**: `qmd://meetings_product/platform/2026/2026-03-09_platform-api-improvements.txt`
 **Relevance**: 0.79
 
 **Content:**
@@ -297,10 +298,10 @@ qmd searches local PM-OS datasets (meetings, research, product artifacts, tasks)
 
 | Need | MCP Tool | Example |
 |------|----------|---------|
-| Product entity search | `mcp__claude_ai_Pendo__searchEntities` (subId: `4818486697721856`) | Find pages, features, guides by name/concept |
+| Product entity search | `mcp__claude_ai_Pendo__searchEntities` (subId: from profile (`profile_lib.py --pendo-subid`)) | Find pages, features, guides by name/concept |
 | Customer feedback search | `mcp__claude_ai_Pendo__get_feedback_items` with `similaritySearchTerms` | Semantic search across Pendo Listen feedback |
-| Gong transcript search | Databricks: `SELECT sentence FROM is_prod.gongio.transcript WHERE sentence LIKE '%{terms}%'` | Keyword search in sales call transcripts |
-| Zendesk ticket search | Databricks: `SELECT subject, description FROM is_prod.zendesk.ticket WHERE subject LIKE '%{terms}%' OR custom_intent LIKE '%{terms}%'` | Search support ticket subjects and intents |
-| Engineering work items | Databricks: `SELECT title, state FROM is_prod.azure_devops.work_item WHERE title LIKE '%{terms}%'` | Find related ADO work items |
+| Gong transcript search | Databricks: `SELECT sentence FROM {catalog}.gongio.transcript WHERE sentence LIKE '%{terms}%'` | Keyword search in sales call transcripts |
+| Zendesk ticket search | Databricks: `SELECT subject, description FROM {catalog}.zendesk.ticket WHERE subject LIKE '%{terms}%' OR custom_intent LIKE '%{terms}%'` | Search support ticket subjects and intents |
+| Engineering work items | Databricks: `SELECT title, state FROM {catalog}.azure_devops.work_item WHERE title LIKE '%{terms}%'` | Find related ADO work items |
 
 **When to supplement**: If qmd results are sparse or the query involves sales/support/product analytics data that wouldn't be in local meeting files or research docs, try the MCP sources above.

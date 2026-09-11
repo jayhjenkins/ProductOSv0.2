@@ -297,13 +297,13 @@ When MCP data sources are connected, inform tradeoff analysis with segment-level
 
 Before choosing segmented rollout as a mitigation strategy, check actual segment-level data:
 
-1. **List segments**: `mcp__claude_ai_Pendo__segmentList` (subId: `4818486697721856`) to see available user segments.
-2. **Segment comparison**: For each relevant segment, run `mcp__claude_ai_Pendo__activityQuery` (subId: `4818486697721856`, appId, entityType matching the test metric, segmentId: "{segment_id}", dateRange covering the test period) to evaluate whether the A/B test impact varies across cohorts.
+1. **List segments**: `mcp__claude_ai_Pendo__segmentList` (subId: from profile (`profile_lib.py --pendo-subid`)) to see available user segments.
+2. **Segment comparison**: For each relevant segment, run `mcp__claude_ai_Pendo__activityQuery` (subId: from profile (`profile_lib.py --pendo-subid`), appId, entityType matching the test metric, segmentId: "{segment_id}", dateRange covering the test period) to evaluate whether the A/B test impact varies across cohorts.
 3. **Identify benefiting segments**: If the primary metric improves for Segment A but the counter-metric degrades for Segment B, segmented rollout becomes a strong mitigation option.
 
 ### UX Evidence via Session Replays (Pendo)
 
-Use `mcp__claude_ai_Pendo__sessionReplayList` (subId: `4818486697721856`, startDate/endDate covering the test period) with frustration filtering to find replays showing user struggle with the tested change:
+Use `mcp__claude_ai_Pendo__sessionReplayList` (subId: from profile (`profile_lib.py --pendo-subid`), startDate/endDate covering the test period) with frustration filtering to find replays showing user struggle with the tested change:
 - `frustrationTypes`: [{"frustrationType": "rageClick", "fact": "occurred"}, {"frustrationType": "uTurn", "fact": "occurred"}]
 - Filter by relevant page/feature IDs if the test targets specific areas
 
@@ -315,7 +315,7 @@ Check whether the test period correlates with support ticket changes:
 ```sql
 SELECT DATE(created_at) as day, COUNT(*) as tickets,
        SUM(CASE WHEN custom_product_field LIKE '%{test_area}%' THEN 1 ELSE 0 END) as related_tickets
-FROM is_prod.zendesk.ticket
+FROM {catalog}.zendesk.ticket
 WHERE created_at >= '{test_start_date}'
   AND created_at <= '{test_end_date}'
 GROUP BY DATE(created_at)

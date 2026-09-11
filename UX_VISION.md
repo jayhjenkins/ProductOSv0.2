@@ -86,7 +86,7 @@ Human and Waiting are one category: *things involving other people that aren't d
 1. **Convert.** Many "human" tasks — draft a follow-up, research X, summarize, write the request — were never human tasks. An agent owns them.
 2. **Assist the ones that stay human.** If it's "send a message," the agent **drafts it** (Teams / email via the M365 MCP already used for scheduling), the judge scores the draft, and your action collapses to *review + send*. Sending is a Tier-2 external action, so it routes through approval per the roadmap.
 
-A People-work card should rarely be a naked "Jay, go do this." It arrives with a draft attached and a one-tap send, or it has already been promoted to an agent task. The planned weekly **human-queue audit** (cron #2 in `ROADMAP.md`) is the engine that keeps this pile from forming.
+A People-work card should rarely be a naked "you, go do this." It arrives with a draft attached and a one-tap send, or it has already been promoted to an agent task. The planned weekly **human-queue audit** (cron #2 in `ROADMAP.md`) is the engine that keeps this pile from forming.
 
 ---
 

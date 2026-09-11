@@ -89,11 +89,11 @@ Today nothing in the system *stops* an agent task from taking a real-world actio
 
 ---
 
-## 4. Rocks as the reference workflow
+## 4. A recurring metrics job as the reference workflow
 
-`metric-quarterly-rocks` + `update_rocks_xlsx.py` is the most concrete recurring agent job (Q2 2026: Home WAU and Board Member Weekly Login Rate). Harden it as the canonical pattern: byte-reproducible, scored by the judge, cron-driven, exception-review only.
+Pick your most concrete recurring agent job (e.g. a weekly OKR/scorecard refresh) and harden it as the canonical pattern: byte-reproducible, scored by the judge, cron-driven, exception-review only.
 
-**Done when:** the weekly Rocks run requires zero manual touch and you review only the delta.
+**Done when:** the recurring run requires zero manual touch and you review only the delta.
 
 ---
 
@@ -129,7 +129,7 @@ Once 1–3 hold, organize workers into **mini squads by product area** (e.g., Ho
 
 The load-bearing recurring jobs (grows to ~20 over time):
 
-1. **Rocks metrics refresh** — weekly; Home WAU + Board Member login rate (reference workflow)
+1. **Metrics/scorecard refresh** — weekly; your team's key recurring metrics (reference workflow)
 2. **Human-queue audit** — weekly; finds human tasks an agent could own, messages an agent could draft, and stale tasks to kill → proposes each as a one-tap recommendation. The self-improvement loop pointed at task *routing*; keeps the human pile from forming. See `UX_VISION.md`. **Highest QoL priority.**
 3. **Meetings-to-backlog** — nightly; new transcripts → signals / PRD proposals
 4. **Shadow judge pass** — scores cards completed since last run *(note: per-card scoring is event-driven; this is the backfill/sweep)*

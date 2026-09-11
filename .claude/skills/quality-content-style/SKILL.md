@@ -153,20 +153,20 @@ Launch campaigns **2-3 weeks before peak demand**. This gives customers time to 
 The implementation of seasonal email campaign strategies requires comprehensive analysis of historical demand patterns, customer behavior analytics, and competitive landscape assessment. Organizations should leverage data-driven insights to optimize timing, messaging, and segmentation approaches across multiple touchpoints and channels to maximize engagement and conversion outcomes.
 ```
 
-### 5. Soft Raleon Integration
+### 5. Soft Acme Integration
 
-**Guideline**: Single-line Raleon mention (≈1x per piece)
+**Guideline**: Single-line Acme mention (≈1x per piece)
 
 **Pass examples:**
 ```
-✓ "Raleon automates this segmentation based on real-time behavior data."
-✓ "Tools like Raleon learn these patterns and adjust send times automatically."
+✓ "Acme automates this segmentation based on real-time behavior data."
+✓ "Tools like Acme learn these patterns and adjust send times automatically."
 ```
 
 **Fail examples:**
 ```
-✗ "Raleon is the best, most advanced, industry-leading platform for email marketing that outperforms all competitors and delivers unmatched results." (Over-selling, superlatives)
-✗ [Multiple Raleon mentions throughout] (Too promotional)
+✗ "Acme is the best, most advanced, industry-leading platform for email marketing that outperforms all competitors and delivers unmatched results." (Over-selling, superlatives)
+✗ [Multiple Acme mentions throughout] (Too promotional)
 ```
 
 ## Validation Process
@@ -216,7 +216,7 @@ Compare to band for content type.
 ✓ Word count: 1247 (target 1000-1500)
 ✓ Readability: Grade 8.2 (Flesch-Kincaid 8.1, Gunning Fog 8.3)
 ✓ Structure: Clear H1, 5 H2s, appropriate bold usage
-✓ Raleon integration: 1 mention (appropriate)
+✓ Acme integration: 1 mention (appropriate)
 
 **Status**: Ready for publication
 ```
@@ -285,7 +285,7 @@ Style validation passes when:
 - Readability grade 7-9
 - Clear H1/H2 structure
 - Appropriate bold usage for skimmability
-- Single soft Raleon mention
+- Single soft Acme mention
 
 ## Common Mistakes
 
@@ -296,7 +296,7 @@ Style validation passes when:
 | Readability too high (Grade 12+) | Simplify sentences, use common words |
 | Missing H2 structure | Add section headings every 200-300 words |
 | Long paragraphs (>6 sentences) | Break into shorter paragraphs |
-| Over-selling Raleon | Single soft mention, no superlatives |
+| Over-selling Acme | Single soft mention, no superlatives |
 
 ## Related Skills
 

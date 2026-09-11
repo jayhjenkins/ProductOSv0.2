@@ -93,7 +93,7 @@ For each scenario:
 Bullet list of what the API MUST be able to do to support the scenarios above. Capabilities only. No verbs, paths, payloads, or schemas.
 
 Example entries:
-- "list all associations accessible to the authenticated agent, with filters for status and management company"
+- "list all associations accessible to the authenticated agent, with filters for status and owning organization"
 - "retrieve the full current configuration of a single association"
 - "apply a form template to an association in a single operation that either fully succeeds or fully rolls back"
 - "enumerate the actions available for an association given its current state"

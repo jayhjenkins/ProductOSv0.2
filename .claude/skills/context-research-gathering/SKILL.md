@@ -276,7 +276,7 @@ After gathering research from the local library and cross-dataset context, optio
 
 ### Pendo Feedback Topics
 
-Use `mcp__claude_ai_Pendo__generate_feedback_topics` (subId: `4818486697721856`) to surface AI-clustered customer feedback themes relevant to the research topic. This provides live customer voice data that may not yet exist in the research library.
+Use `mcp__claude_ai_Pendo__generate_feedback_topics` (subId: from profile (`profile_lib.py --pendo-subid`)) to surface AI-clustered customer feedback themes relevant to the research topic. This provides live customer voice data that may not yet exist in the research library.
 
 - Filter by `similaritySearchTerms` using the research topic keywords
 - Filter by relevant `feedbackTypes` based on research topic:
@@ -295,8 +295,8 @@ Surface tracked phrases and topics from sales/CS calls over the research window:
 SELECT ct.name as tracker_name, ct.phrase,
        SUM(ct.count) as total_mentions,
        COUNT(DISTINCT ct.call_id) as calls_mentioned
-FROM is_prod.gongio.call_tracker ct
-JOIN is_prod.gongio.call c ON CAST(ct.call_id AS STRING) = c.id
+FROM {catalog}.gongio.call_tracker ct
+JOIN {catalog}.gongio.call c ON CAST(ct.call_id AS STRING) = c.id
 WHERE c.started >= DATE_SUB(CURRENT_DATE(), 90)
   AND ct._fivetran_deleted = false
 GROUP BY ct.name, ct.phrase
@@ -315,7 +315,7 @@ SELECT custom_product_field,
        COUNT(*) as ticket_count,
        SUM(CASE WHEN custom_sentiment = 'negative' THEN 1 ELSE 0 END) as negative_count,
        ROUND(SUM(CASE WHEN custom_sentiment = 'negative' THEN 1.0 ELSE 0.0 END) / COUNT(*) * 100, 1) as negative_pct
-FROM is_prod.zendesk.ticket
+FROM {catalog}.zendesk.ticket
 WHERE created_at >= DATE_SUB(CURRENT_DATE(), 90)
   AND custom_product_field IS NOT NULL
 GROUP BY custom_product_field

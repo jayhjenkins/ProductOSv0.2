@@ -1,28 +1,28 @@
 # /recruiting:process-interview
 
-## MANDATORY: Use the process-interview Skill
+## MANDATORY: Use the recruiting-process-interview Skill
 
-**You MUST use the `process-interview` skill located at `.claude/skills/recruiting-process-interview/SKILL.md`**
+**You MUST use the `recruiting-process-interview` skill located at `.claude/skills/recruiting-process-interview/SKILL.md`**
 
 ## Before Starting
 
-1. **Announce**: "I'm using process-interview to generate a PM candidate assessment"
+1. **Announce**: "I'm using recruiting-process-interview to process this PM interview"
 2. **Read the skill**: Load `.claude/skills/recruiting-process-interview/SKILL.md`
 3. **Follow exactly**: Execute the skill as written
 
 ## Purpose
 
-Read job description, resume, and interview transcript; invoke the assess-pm-candidate framework; generate a complete scored assessment; save it to the candidate folder; and update the opening's stackrank.
+Transform a completed PM interview into a structured, scored assessment and update the candidate stack rank.
 
-## Execution
+## What the Skill Does
 
-The skill orchestrates:
-1. Ask user to select job opening
-2. Ask user to select candidate
-3. Read job-description.md, resume.md, and interview-transcript.md
-4. Invoke assess-pm-candidate skill — apply full 4-dimension framework
-5. Generate complete assessment draft using pm-assessment-template.md
-6. Display to user, incorporate any adjustments
-7. Save as {YYYY-MM-DD}-assessment.md in candidate folder
-8. Display current stackrank and ask for candidate's rank
-9. Update stackrank.md with new candidate row and last_updated date
+- Self-scaffolds `datasets/recruiting/` structure if needed
+- Prompts for opening and candidate selection
+- Reads job description, resume, and interview transcript
+- Applies the `hiring-assess-pm-candidate` framework (4 dimensions, scored 1-5)
+- Generates and saves an assessment file
+- Updates `stackrank.md` with the candidate's scores and rank position
+
+## No Rationalization
+
+Follow the skill exactly.

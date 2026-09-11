@@ -51,25 +51,25 @@ After synthesizing customer meetings, optionally enrich with live external data 
 
 Pull product usage data for the specific customer account:
 
-1. **Account identification**: Use `mcp__claude_ai_Pendo__searchEntities` (subId: `4818486697721856`, appId: `-323232`, itemType: ["Account"], search: "{customer_name}", search_fallback: ["{customer_name}"]) to find the account and get its ID.
+1. **Account identification**: Use `mcp__claude_ai_Pendo__searchEntities` (subId: from profile (`profile_lib.py --pendo-subid`), appId: from profile `app_ids` map, itemType: ["Account"], search: "{customer_name}", search_fallback: ["{customer_name}"]) to find the account and get its ID.
 
-2. **Account metadata**: Use `mcp__claude_ai_Pendo__accountQuery` (subId: `4818486697721856`, accountId: "{account_id}", select: [relevant metadata fields from `accountMetadataSchema`]) to pull account-level properties like ARR, plan tier, etc.
+2. **Account metadata**: Use `mcp__claude_ai_Pendo__accountQuery` (subId: from profile (`profile_lib.py --pendo-subid`), accountId: "{account_id}", select: [relevant metadata fields from `accountMetadataSchema`]) to pull account-level properties like ARR, plan tier, etc.
 
-3. **Account activity**: Use `mcp__claude_ai_Pendo__activityQuery` (subId: `4818486697721856`, appId: "-323232", entityType: "account", accountId: "{account_id}", dateRange: {range: "relative", lastNDays: 90}) for usage metrics (events, minutes, unique visitors).
+3. **Account activity**: Use `mcp__claude_ai_Pendo__activityQuery` (subId: from profile (`profile_lib.py --pendo-subid`), appId: from profile `app_ids` map, entityType: "account", accountId: "{account_id}", dateRange: {range: "relative", lastNDays: 90}) for usage metrics (events, minutes, unique visitors).
 
 4. **Feature adoption**: Use `mcp__claude_ai_Pendo__activityQuery` with entityType: "feature", accountId: "{account_id}", group: ["featureId"], sort: ["-numEvents"] to see which features the customer uses most/least.
 
 #### Pendo Account Feedback
 
-Use `mcp__claude_ai_Pendo__get_feedback_items` (subId: `4818486697721856`, filters: {accountIds: ["{account_id}"]}) to surface feedback the customer has submitted through Pendo Listen. Also check `mcp__claude_ai_Pendo__get_feedback_insights` with the same filter for AI-extracted insights.
+Use `mcp__claude_ai_Pendo__get_feedback_items` (subId: from profile (`profile_lib.py --pendo-subid`), filters: {accountIds: ["{account_id}"]}) to surface feedback the customer has submitted through Pendo Listen. Also check `mcp__claude_ai_Pendo__get_feedback_insights` with the same filter for AI-extracted insights.
 
 #### Zendesk Ticket History (via Databricks)
 
 ```sql
 SELECT t.id, t.subject, t.status, t.priority, t.custom_product_field,
        t.custom_intent, t.custom_sentiment, t.created_at, t.updated_at
-FROM is_prod.zendesk.ticket t
-JOIN is_prod.zendesk.organization o ON t.organization_id = o.id
+FROM {catalog}.zendesk.ticket t
+JOIN {catalog}.zendesk.organization o ON t.organization_id = o.id
 WHERE LOWER(o.name) LIKE LOWER('%{customer_name}%')
   AND t.created_at >= DATE_SUB(CURRENT_DATE(), {days})
 ORDER BY t.created_at DESC
@@ -79,9 +79,9 @@ LIMIT 50
 Also pull CSAT for the customer:
 ```sql
 SELECT sr.score, sr.created_at, t.subject
-FROM is_prod.zendesk.satisfaction_rating sr
-JOIN is_prod.zendesk.ticket t ON sr.ticket_id = t.id
-JOIN is_prod.zendesk.organization o ON t.organization_id = o.id
+FROM {catalog}.zendesk.satisfaction_rating sr
+JOIN {catalog}.zendesk.ticket t ON sr.ticket_id = t.id
+JOIN {catalog}.zendesk.organization o ON t.organization_id = o.id
 WHERE LOWER(o.name) LIKE LOWER('%{customer_name}%')
   AND sr.created_at >= DATE_SUB(CURRENT_DATE(), {days})
 ORDER BY sr.created_at DESC
@@ -92,7 +92,7 @@ ORDER BY sr.created_at DESC
 ```sql
 SELECT c.id, c.title, c.started, c.brief, c.duration,
        c.call_outcome_category, c.call_outcome_name
-FROM is_prod.gongio.call c
+FROM {catalog}.gongio.call c
 WHERE LOWER(c.title) LIKE LOWER('%{customer_name}%')
   AND c.started >= DATE_SUB(CURRENT_DATE(), {days})
   AND c._fivetran_deleted = false
@@ -102,8 +102,8 @@ ORDER BY c.started DESC
 For key points from those calls:
 ```sql
 SELECT c.title, c.started, ckp.text as key_point
-FROM is_prod.gongio.call c
-JOIN is_prod.gongio.call_key_point ckp ON c.id = ckp.call_id
+FROM {catalog}.gongio.call c
+JOIN {catalog}.gongio.call_key_point ckp ON c.id = ckp.call_id
 WHERE LOWER(c.title) LIKE LOWER('%{customer_name}%')
   AND c.started >= DATE_SUB(CURRENT_DATE(), {days})
   AND c._fivetran_deleted = false
