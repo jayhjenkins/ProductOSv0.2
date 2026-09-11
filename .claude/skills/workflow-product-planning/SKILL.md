@@ -16,8 +16,8 @@ Transform meeting signals into actionable PRDs:
 ## When to Use
 
 Activate when:
-- User invokes `/project:meetings-to-backlog`
-- Automated processing via scheduled runs
+- Processing new meeting transcripts into backlog signals / PRD proposals
+- Automated processing via scheduled / headless runs
 - Regular PRD intake cycles
 
 ## Workflow Steps
@@ -94,7 +94,7 @@ Fill in what's known from signals:
 
 **For each PRD proposal:**
 - Apply 5-point rubric
-- Drafting PRDs may have warnings (missing timeline, etc.)
+- Drafting PRDs may have warnings (missing timeline, metrics, etc.)
 - Note required additions for Actionable status
 - If fundamentally incomplete: flag for interactive completion
 
@@ -117,7 +117,7 @@ The `meeting-synthesis` skill (invoked in Step 2) now includes optional MCP enri
 
 When checking proposed PRDs against existing backlog, also verify against Pendo instrumentation:
 
-Use `mcp__claude_ai_Pendo__searchEntities` (subId: `4818486697721856`, appId: "-323232", itemType: ["Feature", "Page"], search: "{proposed_feature_name}", search_fallback: ["{feature_keyword}"]) to check:
+Use `mcp__claude_ai_Pendo__searchEntities` (subId: from profile (`profile_lib.py --pendo-subid`), appId: from profile `app_ids` map, itemType: ["Feature", "Page"], search: "{proposed_feature_name}", search_fallback: ["{feature_keyword}"]) to check:
 - Whether the feature/page already exists in Pendo (suggesting it may already be built)
 - Whether related features exist that the PRD should reference
 - Get Pendo entity IDs to include in the PRD for future measurement
@@ -126,7 +126,7 @@ Use `mcp__claude_ai_Pendo__searchEntities` (subId: `4818486697721856`, appId: "-
 
 For high-priority PRD candidates, optionally pull supporting data:
 - **Usage evidence**: `mcp__claude_ai_Pendo__activityQuery` for current state of the area being improved
-- **Support burden**: Zendesk ticket count for the product area via `SELECT COUNT(*) FROM is_prod.zendesk.ticket WHERE custom_product_field LIKE '%{area}%' AND created_at >= DATE_SUB(CURRENT_DATE(), 90)`
+- **Support burden**: Zendesk ticket count for the product area via `SELECT COUNT(*) FROM {catalog}.zendesk.ticket WHERE custom_product_field LIKE '%{area}%' AND created_at >= DATE_SUB(CURRENT_DATE(), 90)`
 - **Customer feedback**: `mcp__claude_ai_Pendo__get_feedback_items` with `similaritySearchTerms` matching the PRD topic
 
 ### 7. Output PRD Proposals
@@ -150,12 +150,10 @@ For high-priority PRD candidates, optionally pull supporting data:
 {Previous backlog content...}
 ```
 
-**Write individual PRD files** to the canonical single-source location — each PRD lives in its own package folder:
-`datasets/product/packages/{YYYY}/{slug}/PRD_{slug}.md`
+**Write individual PRD files:**
+`datasets/product/packages/{YYYY}/{slug}/PRD_{slug}.md` (canonical single location)
 
-Slug generation: lowercase, hyphens, remove special chars.
-
-**Before creating each PRD's package folder, run the duplicate-initiative preflight** (this is a batch run from meetings — duplication risk is highest here): glob existing `datasets/product/packages/{YYYY}/*/` slugs and semantically match each proposed PRD against them (use `context-search` over `product_artifacts` when the slug isn't an obvious match). If a proposed PRD overlaps an existing package, **update/extend that package's PRD rather than creating a new folder**, and note it in the intake summary. Only scaffold a new package folder for genuinely new initiatives. Do not write to the retired `prds/{YYYY}/` mirror.
+Slug generation: lowercase, hyphens, remove special chars
 
 ### 8. Update State Tracking
 
@@ -174,7 +172,7 @@ Product planning complete when:
 - Signals clustered into PRD themes
 - PRD validation applied (flags issues, doesn't fabricate)
 - PRD proposals written to backlog.md
-- Individual PRD files created in their package folders at packages/{YYYY}/{slug}/ (no duplicates of existing initiatives)
+- Individual PRD files created in packages/{YYYY}/{slug}/
 - State file updated with current timestamp
 
 ## PRD Statuses

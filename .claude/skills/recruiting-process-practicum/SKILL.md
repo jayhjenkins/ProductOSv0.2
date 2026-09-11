@@ -1,6 +1,7 @@
 ---
 name: recruiting-process-practicum
-description: Use when processing a completed PM practicum — reads the opening's practicum prompt and the candidate's practicum transcript, generates a scored assessment via assess-pm-practicum, saves it to the candidate folder, and updates the opening's stackrank notes
+description: Use when processing a completed PM practicum  -  reads the opening's practicum prompt and the candidate's practicum transcript, generates a scored assessment via hiring-assess-pm-practicum, saves it to the candidate folder, and updates the opening's stackrank notes
+allowed-tools: Read, Write, Edit, Grep, Glob, Bash
 ---
 
 # Process Practicum
@@ -9,7 +10,7 @@ description: Use when processing a completed PM practicum — reads the opening'
 
 Transform a live product practicum into a structured, scored assessment of product craft:
 - Read the opening's practicum prompt and the candidate's practicum transcript
-- Apply the `assess-pm-practicum` framework — score five craft dimensions against a level matrix modeled on PM career ladders
+- Apply the `hiring-assess-pm-practicum` framework  -  score five craft dimensions against a level matrix modeled on PM career ladders
 - Generate a complete assessment document
 - Save assessment to the candidate folder
 - Offer to update `stackrank.md` with a refreshed rank and practicum-informed note
@@ -24,9 +25,19 @@ Activate when:
 
 ## Workflow Steps
 
+### 0. Ensure Folder Structure (self-scaffold)
+
+This workflow operates on a folder layout under `datasets/recruiting/`. If that structure does not exist yet (no scaffolder skill has run), create the minimum needed before proceeding:
+
+- If `datasets/recruiting/` does not exist, create it.
+- If no opening folder exists for the opening you are processing, create `datasets/recruiting/<opening-slug>/` with stub `job-description.md`, `practicum-prompt.md`, and `stackrank.md` files. The `stackrank.md` stub should carry frontmatter with `last_updated` and an empty rankings table (columns: Rank, Candidate, Recommendation, Tech, Team Fit, AI Fluency, Values, Interview Date, Notes).
+- If no candidate folder exists for the candidate, create `datasets/recruiting/<opening-slug>/candidates/<candidate-slug>/` with a stub `practicum-transcript.md` file.
+
+Keep stubs minimal  -  a heading plus a one-line HTML comment marking them as awaiting content is enough. Then warn the user that any freshly created stub needs its content pasted in before a real assessment can be produced.
+
 ### 1. Select Job Opening
 
-Scan `~/pm-os/datasets/recruiting/` for subdirectories, excluding `templates/`.
+Scan `datasets/recruiting/` for subdirectories, excluding `templates/`.
 
 Display the available openings and ask the user to select one.
 
@@ -43,7 +54,7 @@ Read the required source files:
 - **Practicum prompt:** `{opening-path}/practicum-prompt.md`
 - **Practicum transcript:** `{opening-path}/candidates/{slug}/practicum-transcript.md`
 
-Also read for background context (optional — use for tie-breaks only, not primary evidence):
+Also read for background context (optional  -  use for tie-breaks only, not primary evidence):
 
 - `{opening-path}/job-description.md`
 - `{opening-path}/candidates/{slug}/resume.md`
@@ -56,30 +67,30 @@ If the practicum prompt or practicum transcript is empty or missing content belo
 
 Do not proceed with an empty required source file.
 
-### 4. Invoke assess-pm-practicum Skill
+### 4. Invoke hiring-assess-pm-practicum Skill
 
-**Announce:** "I'm using assess-pm-practicum to evaluate {Candidate Name}'s practicum for {Job Title}"
+**Announce:** "I'm using hiring-assess-pm-practicum to evaluate {Candidate Name}'s practicum for {Job Title}"
 
 **Load:** `.claude/skills/hiring-assess-pm-practicum/SKILL.md`
 
 **Apply the full framework:**
-- Score Problem Framing & User Insight (1–5) against the Craft Level Matrix, with evidence-backed narrative and explicit matrix-level reference
-- Score Strategic Thinking & Vision (1–5) with evidence-backed narrative
-- Score Prioritization & Tradeoffs (1–5) with evidence-backed narrative
-- Score AI-First Product Thinking (1–5) with evidence-backed narrative
-- Score Metrics & Outcomes (1–5) with evidence-backed narrative
-- Write the Session Dynamics observational note (not scored — observational only)
+- Score Problem Framing & User Insight (1-5) against the Craft Level Matrix, with evidence-backed narrative and explicit matrix-level reference
+- Score Strategic Thinking & Vision (1-5) with evidence-backed narrative
+- Score Prioritization & Tradeoffs (1-5) with evidence-backed narrative
+- Score AI-First Product Thinking (1-5) with evidence-backed narrative
+- Score Metrics & Outcomes (1-5) with evidence-backed narrative
+- Write the Session Dynamics observational note (not scored  -  observational only)
 - Synthesize the Craft Level Read (1 sentence: Foundational / Developing / Proficient / Strong / Exceptional, relative to the role level)
-- Apply recommendation guidance (Strong Yes / Weak Yes / Weak No / Strong No) — compare demonstrated craft level to role level
+- Apply recommendation guidance (Strong Yes / Weak Yes / Weak No / Strong No)  -  compare demonstrated craft level to role level
 - Identify standout moments (3 bullets)
 - Identify concerns (or "None identified")
 
 ### 5. Generate Assessment Draft
 
-Using the `pm-practicum-assessment-template.md` format from `~/pm-os/datasets/recruiting/templates/`, produce a complete filled-in assessment:
+Using the `pm-practicum-assessment-template.md` format from `datasets/recruiting/templates/`, produce a complete filled-in assessment:
 
 - All frontmatter fields populated
-- All five dimension scores and narratives filled in, with each narrative explicitly referencing the Craft Level Matrix anchor ("This is a 3 because…")
+- All five dimension scores and narratives filled in, with each narrative explicitly referencing the Craft Level Matrix anchor ("This is a 3 because...")
 - Overall Recommendation checked
 - Summary paragraph and Craft Level Read written
 - Standout Moments and Concerns populated
@@ -122,7 +133,7 @@ Update the stackrank table in `{opening-path}/stackrank.md`:
 
 - Move the candidate to the specified rank position (or keep current if 'same')
 - Shift other candidates' ranks accordingly
-- Update the Notes column with a 1-2 sentence comment that folds in the practicum finding — specifically what the practicum revealed that the interview did not
+- Update the Notes column with a 1-2 sentence comment that folds in the practicum finding  -  specifically what the practicum revealed that the interview did not
 - Update the `last_updated` frontmatter field to today's date
 
 Do NOT change the existing Tech / Team Fit / AI Fluency / Values columns. Those are interview-scored. The practicum scores live in the practicum assessment file and inform the Notes column and the rank position, not the column values.
@@ -144,7 +155,7 @@ Stackrank updated:
 ## Success Criteria
 
 - Practicum prompt and practicum transcript both read without errors
-- `assess-pm-practicum` framework fully applied — no dimension left unscored
+- `hiring-assess-pm-practicum` framework fully applied  -  no dimension left unscored
 - Assessment file saved with the `-practicum-assessment.md` suffix so it is distinguishable from the interview assessment
 - User had opportunity to review and adjust before saving
 - `stackrank.md` Notes and rank refreshed; interview-scored columns left untouched
@@ -157,11 +168,7 @@ Scores and narratives must be grounded in evidence from the practicum prompt and
 ## Related Skills
 
 **Invokes:**
-- `assess-pm-practicum`: Provides the evaluation framework and rating anchors
-
-**Depends on:**
-- `setup-new-opening`: Created the opening folder
-- `prep-interview`: Created the candidate folder
+- `hiring-assess-pm-practicum`: Provides the evaluation framework and rating anchors
 
 **Reads:**
 - `datasets/recruiting/templates/pm-practicum-assessment-template.md`
@@ -169,4 +176,4 @@ Scores and narratives must be grounded in evidence from the practicum prompt and
 - `datasets/recruiting/{opening}/candidates/{slug}/practicum-transcript.md`
 
 **Complementary to:**
-- `process-interview`: The practicum is a separate signal from the interview. Run both, save both, let the stackrank reflect the integrated picture.
+- `recruiting-process-interview`: The practicum is a separate signal from the interview. Run both, save both, let the stackrank reflect the integrated picture.

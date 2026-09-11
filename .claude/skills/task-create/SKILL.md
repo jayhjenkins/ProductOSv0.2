@@ -30,16 +30,16 @@ Select exactly one queue based on who owns the next action:
 
 | Queue | Use When | Examples |
 |-------|----------|---------|
-| `human` | Requires Jay's physical presence or personal action that cannot be delegated to an agent at all | Send a personal Slack message, attend an event, make a phone call, submit an access request |
+| `human` | Requires the operator's physical presence or personal action that cannot be delegated to an agent at all | Send a personal Slack message, attend an event, make a phone call, submit an access request |
 | `agent` | Fully autonomous; agent can complete without asking | Summarize transcript, generate report, sync data |
 | `collab` | Agent takes action on external systems, but human must approve before execution | Calendar management (scheduling meetings), sending emails/comms, updating Jira/HubSpot/other systems |
 | `waiting` | Delegated to someone outside the system | Waiting on legal review, design mockups from another team |
 
 **Rule of thumb:** If the agent could do it alone with no ambiguity, it is `agent`. If a human must decide or approve, it is `human`. If blocked on an external party, it is `waiting`. If the agent acts on an external system but needs human approval first, it is `collab`.
 
-**"Talk to someone" ≠ `human`:** When Jay needs to connect with someone, the first step is almost always scheduling a meeting — and that's `collab` with `--task-type schedule-meeting`. The agent finds availability, drafts the invite, and Jay approves. Only use `human` when the action is truly unschedulable (e.g., an impromptu hallway conversation, a quick Slack DM).
+**"Talk to someone" ≠ `human`:** When the operator needs to connect with someone, the first step is almost always scheduling a meeting — and that's `collab` with `--task-type schedule-meeting`. The agent finds availability, drafts the invite, and the operator approves. Only use `human` when the action is truly unschedulable (e.g., an impromptu hallway conversation, a quick Slack DM).
 
-Example: "Talk to Greg about voting requirements" → `collab` + `--task-type schedule-meeting` (agent schedules a meeting with Greg, Jay approves the invite).
+Example: "Talk to Greg about voting requirements" → `collab` + `--task-type schedule-meeting` (agent schedules a meeting with Greg, the operator approves the invite).
 
 > **Note:** The `collab` queue is currently dormant — no dispatcher support yet. Tasks should be queued here for future supervised-action capability.
 

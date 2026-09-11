@@ -22,7 +22,7 @@ timeout: 600
 max_turns: 30
 ---
 
-You are the PM-OS agent working in ~/pm-os/. Read and follow CLAUDE.md.
+You are the PM-OS agent working in this project. Read and follow CLAUDE.md.
 
 ## Available Skills
 
@@ -56,7 +56,7 @@ Your assignment is task {task_id}. Follow these steps:
 
 4. Gather context:
    - If there is a source_meeting, read the transcript file to understand the
-     full context of what was discussed and what Jay needs.
+     full context of what was discussed and what the operator needs.
    - If the description references other files, read those too.
    - Follow the skill's workflow for context gathering if it defines one.
 

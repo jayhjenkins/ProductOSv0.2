@@ -6,17 +6,17 @@
 # sync_paths: Glob patterns for files to sync (relative to pm-os/)
 # sync_exclude: Glob patterns to exclude from sync
 
-onedrive_root: "~/Library/CloudStorage/OneDrive-Vantaca,LLC/"
+onedrive_root: ""
 sharepoint_site: "PM-OS"
-sync_enabled: true
+sync_enabled: false
 
 sync_paths:
   - datasets/product/**/*.md
   - datasets/research/**/*.md
   - datasets/strategy/**/*.md
 
-sharepoint_tenant_url: "https://vantaca-my.sharepoint.com"
-sharepoint_doc_root: "/personal/jay_jenkins_vantaca_com/Documents"
+sharepoint_tenant_url: ""
+sharepoint_doc_root: ""
 
 sync_exclude:
   - datasets/meetings/**

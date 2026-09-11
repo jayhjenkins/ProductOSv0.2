@@ -24,7 +24,7 @@ Activate when:
 
 ### 1. List Existing Openings
 
-Scan `~/pm-os/datasets/recruiting/` for subdirectories, excluding `templates/`.
+Scan `datasets/recruiting/` for subdirectories, excluding `templates/`.
 
 Display the available openings:
 
@@ -86,7 +86,7 @@ candidate: {Full Name}
 position: {Job Title from opening folder}
 opening: {opening folder slug}
 interview_date: {YYYY-MM-DD}
-interviewer: Jay Jenkins
+interviewer: {Interviewer Name}
 ---
 
 <!-- Paste the interview transcript below this line -->

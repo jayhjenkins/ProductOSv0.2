@@ -1,0 +1,69 @@
+# Which external tools this operator uses. Onboarding fills these in.
+project_management:
+  provider: "none"       # jira | asana | linear | none
+  jira:
+    # Everything below this line is normally EMPTY on a fresh clone. The
+    # workflow-jira-home skill's First-Run Setup discovers these values from
+    # your live Jira instance (via the Jira MCP) the first time you use it,
+    # confirms them with you, and writes them here — so you never re-enter
+    # them. You can also fill them in by hand if you already know your IDs.
+    cloud_id: ""         # e.g. yourorg.atlassian.net
+    project_key: ""      # e.g. ABC
+    project_id: ""       # numeric Jira project id
+    board_id: ""         # e.g. 1096 — the team's Jira board id
+    product_area: ""     # e.g. "Home AI DLC" — free-form label for the team's product area/board
+    component_id: ""
+    component_name: ""
+    auto_label: ""       # optional swim-lane label your board uses to route automated work (leave empty if none)
+    default_assignee: "" # Jira accountId — default assignee for top-level (Feature/Epic-role) issues
+    conventions: ""      # free-form team nuance the factory captures (e.g. "always set Sprint")
+    email: ""            # Atlassian account email for REST API auth
+    api_token: ""        # Jira API token (id.atlassian.com > Security > API tokens)
+    # Map of logical role -> {name, id} for this instance's actual issue types.
+    # top_level = your PRD-scale capability type (e.g. Feature); work_item =
+    # your default small-change type (e.g. Unit/Task). epic/story are the
+    # standard Jira types almost every instance has; the rest are optional —
+    # leave a role's id empty if your instance has no equivalent.
+    issue_types:
+      top_level: {name: "", id: ""}
+      work_item: {name: "", id: ""}
+      bug: {name: "Bug", id: ""}
+      regression: {name: "", id: ""}
+      spike: {name: "", id: ""}
+      hotfix: {name: "", id: ""}
+      epic: {name: "Epic", id: ""}
+      story: {name: "Story", id: ""}
+    # Map of logical field -> this instance's Jira custom fieldId (e.g.
+    # "customfield_10011"). Discovered the same way as issue_types; leave a
+    # field empty if your instance has no equivalent (the skill will just
+    # skip populating it).
+    custom_fields:
+      top_level_name: ""   # short-label field for Feature/Epic-role issues
+      target_date: ""      # e.g. GTM / release date
+      early_access_date: ""
+      spec_reference: ""   # URL field for a linked PRD/spec doc
+      commitment: ""       # optional select field for event/commitment tagging
+      release_notes: ""    # select field: e.g. None / Internal Only / External
+    commitment_values: []  # allowed values for the `commitment` field, if configured (discovered from the Jira field schema)
+transcript:
+  provider: "none"       # otter | granola | none
+  target: "datasets/meetings/"
+calendar:
+  provider: "none"       # m365 | google | none
+messaging:
+  provider: "none"       # m365 | none — set m365 to enable Outlook + Teams sends (via mgc)
+  m365:
+    confirmed: false     # Tier-2 gate: one plain-language confirm before the first send
+doc_sync:
+  onedrive_root: ""      # auto-detected by the Doctor (OneDrive-* under ~/Library/CloudStorage)
+  sharepoint_site: "PM-OS"
+  enabled: false
+analytics:
+  pendo:
+    provider: "none"      # pendo | none
+    subscription_id: ""
+    app_ids: {}
+  databricks:
+    provider: "none"      # databricks | none
+    catalog: ""
+    sources: {}

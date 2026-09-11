@@ -321,7 +321,7 @@ When MCP data sources are connected, validate goal targets against historical ba
 
 ### Historical Baselines from Pendo
 
-Use `mcp__claude_ai_Pendo__activityQuery` (subId: `4818486697721856`, appId for relevant app, entityType matching the goal metric, period: "weekly", dateRange: {range: "custom", startDate: "{12_months_ago}", endDate: "{today}"}) to establish:
+Use `mcp__claude_ai_Pendo__activityQuery` (subId: from profile (`profile_lib.py --pendo-subid`), appId for relevant app, entityType matching the goal metric, period: "weekly", dateRange: {range: "custom", startDate: "{12_months_ago}", endDate: "{today}"}) to establish:
 - Current metric value (baseline)
 - Historical growth rate (trend over 12 months)
 - Seasonal patterns (week-over-week variation)
@@ -336,7 +336,7 @@ For satisfaction-related goals:
 SELECT DATE_TRUNC('month', sr.created_at) as month,
        COUNT(*) as responses,
        AVG(CAST(sr.score AS DOUBLE)) as avg_score
-FROM is_prod.zendesk.satisfaction_rating sr
+FROM {catalog}.zendesk.satisfaction_rating sr
 WHERE sr.created_at >= DATE_SUB(CURRENT_DATE(), 365)
 GROUP BY DATE_TRUNC('month', sr.created_at)
 ORDER BY month

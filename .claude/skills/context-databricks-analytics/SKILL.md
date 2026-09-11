@@ -4,9 +4,14 @@ description: Query Gong sales calls, Zendesk support tickets, and Azure DevOps w
 allowed-tools: mcp__claude_ai_VantacaDatabricks__execute_sql_read_only, mcp__claude_ai_VantacaDatabricks__execute_sql, mcp__claude_ai_VantacaDatabricks__poll_sql_result
 ---
 
+> **Adapting this skill:** the `VantacaDatabricks` tool name above is this install's configured
+> MCP server name. Rename it (in the frontmatter and every `MCP Tool` reference below) to match
+> whatever your own Databricks MCP server is called — the catalog/schema names are already
+> profile-driven and need no changes.
+
 ## Purpose
 
-Query the Vantaca data warehouse for support tickets, sales call analysis, and engineering data to enrich PM workflows with live external data.
+Query the operator's data warehouse for support tickets, sales call analysis, and engineering data to enrich PM workflows with live external data.
 
 ## When to Use This Skill
 
@@ -19,13 +24,20 @@ Query the Vantaca data warehouse for support tickets, sales call analysis, and e
 ## Connection Details
 
 - **MCP Tool**: `mcp__claude_ai_VantacaDatabricks__execute_sql_read_only` (prefer for all reads)
-- **Catalog**: `is_prod`
-- **Syntax**: Databricks SQL (DBSQL). Always use fully qualified names: `is_prod.schema.table`
+- **Catalog**: **not hardcoded** — read it from the active profile at runtime:
+
+  ```bash
+  python3 scripts/profile_lib.py --databricks-catalog
+  ```
+
+  (or read `profile/integrations.yaml` → `analytics.databricks.catalog` directly). This works identically headless or interactively — both read the same profile file. **If `analytics.databricks.provider` is `none`** (or the catalog comes back empty), Databricks is not configured for this install. Tell the user and stop — **never guess a catalog name**.
+- **Schemas (source → schema map)**: also profile-supplied. Read `analytics.databricks.sources` from `profile/integrations.yaml` — a map of logical source name (e.g. `gong`, `zendesk`, `azure_devops`) to the schema name in the warehouse. Resolve schema names from there rather than assuming them.
+- **Syntax**: Databricks SQL (DBSQL). Always use fully qualified names: `{catalog}.{schema}.{table}`, where `{catalog}` is the profile value above and `{schema}` comes from the `sources` map. Throughout this skill, SQL examples use `{catalog}` as a placeholder — substitute the resolved profile value before running.
 - For long-running queries, tool returns a `statement_id` — poll with `mcp__claude_ai_VantacaDatabricks__poll_sql_result`
 
 ## Available Schemas
 
-### Gong (`is_prod.gongio`)
+### Gong (`{catalog}.gongio`)
 
 Sales/CS call recordings, transcripts, and analytics.
 
@@ -45,7 +57,7 @@ Sales/CS call recordings, transcripts, and analytics.
 | `users` | Gong user info |
 | `tracker` / `tracker_language` / `language_keywords` | Tracker definitions |
 
-### Zendesk (`is_prod.zendesk`)
+### Zendesk (`{catalog}.zendesk`)
 
 Support tickets, CSAT, organizations.
 
@@ -59,7 +71,7 @@ Support tickets, CSAT, organizations.
 | `ticket_custom_field` | ticket_id, field values | Additional custom fields |
 | `csat_survey_answer` / `csat_survey_question` | CSAT survey details |
 
-### Zendesk Modeled (`is_prod.zendesk_zendesk`)
+### Zendesk Modeled (`{catalog}.zendesk_zendesk`)
 
 Pre-built analytics models from Fivetran.
 
@@ -70,7 +82,7 @@ Pre-built analytics models from Fivetran.
 | `zendesk__ticket_summary` | Aggregated ticket statistics |
 | `zendesk__ticket_backlog` | Current open ticket backlog |
 
-### Azure DevOps (`is_prod.azure_devops`)
+### Azure DevOps (`{catalog}.azure_devops`)
 
 Engineering work items, PRs, commits.
 
@@ -94,7 +106,7 @@ SELECT
   SUM(CASE WHEN priority = 'urgent' OR priority = 'high' THEN 1 ELSE 0 END) as high_priority,
   SUM(CASE WHEN custom_confirmed_bug = true THEN 1 ELSE 0 END) as confirmed_bugs,
   SUM(CASE WHEN custom_escalated_client = true THEN 1 ELSE 0 END) as escalated
-FROM is_prod.zendesk.ticket
+FROM {catalog}.zendesk.ticket
 WHERE created_at >= DATE_SUB(CURRENT_DATE(), {days})
   AND custom_product_field IS NOT NULL
 GROUP BY custom_product_field
@@ -106,8 +118,8 @@ ORDER BY ticket_count DESC
 ```sql
 SELECT t.id, t.subject, t.status, t.priority, t.custom_product_field,
        t.custom_intent, t.custom_sentiment, t.created_at
-FROM is_prod.zendesk.ticket t
-JOIN is_prod.zendesk.organization o ON t.organization_id = o.id
+FROM {catalog}.zendesk.ticket t
+JOIN {catalog}.zendesk.organization o ON t.organization_id = o.id
 WHERE LOWER(o.name) LIKE LOWER('%{customer_name}%')
   AND t.created_at >= DATE_SUB(CURRENT_DATE(), {days})
 ORDER BY t.created_at DESC
@@ -119,7 +131,7 @@ LIMIT 50
 ```sql
 SELECT DATE(created_at) as day, COUNT(*) as tickets,
        SUM(CASE WHEN custom_sentiment = 'negative' THEN 1 ELSE 0 END) as negative
-FROM is_prod.zendesk.ticket
+FROM {catalog}.zendesk.ticket
 WHERE created_at >= DATE_SUB(CURRENT_DATE(), {days})
 GROUP BY DATE(created_at)
 ORDER BY day
@@ -131,7 +143,7 @@ ORDER BY day
 SELECT DATE_TRUNC('month', sr.created_at) as month,
        COUNT(*) as responses,
        AVG(CAST(sr.score AS DOUBLE)) as avg_score
-FROM is_prod.zendesk.satisfaction_rating sr
+FROM {catalog}.zendesk.satisfaction_rating sr
 WHERE sr.created_at >= DATE_SUB(CURRENT_DATE(), 365)
 GROUP BY DATE_TRUNC('month', sr.created_at)
 ORDER BY month
@@ -142,8 +154,8 @@ ORDER BY month
 ```sql
 SELECT c.id, c.title, c.started, c.brief, c.purpose,
        c.call_outcome_category, ckp.text as key_point
-FROM is_prod.gongio.call c
-JOIN is_prod.gongio.call_key_point ckp ON c.id = ckp.call_id
+FROM {catalog}.gongio.call c
+JOIN {catalog}.gongio.call_key_point ckp ON c.id = ckp.call_id
 WHERE c.started >= DATE_SUB(CURRENT_DATE(), {days})
   AND c._fivetran_deleted = false
 ORDER BY c.started DESC
@@ -156,8 +168,8 @@ LIMIT 100
 SELECT ct.name as tracker_name, ct.phrase,
        SUM(ct.count) as total_mentions,
        COUNT(DISTINCT ct.call_id) as calls_mentioned
-FROM is_prod.gongio.call_tracker ct
-JOIN is_prod.gongio.call c ON CAST(ct.call_id AS STRING) = c.id
+FROM {catalog}.gongio.call_tracker ct
+JOIN {catalog}.gongio.call c ON CAST(ct.call_id AS STRING) = c.id
 WHERE c.started >= DATE_SUB(CURRENT_DATE(), {days})
   AND ct._fivetran_deleted = false
 GROUP BY ct.name, ct.phrase
@@ -170,8 +182,8 @@ LIMIT 30
 ```sql
 SELECT c.id, c.title, c.started, c.brief, c.duration,
        c.call_outcome_category, c.call_outcome_name
-FROM is_prod.gongio.call c
-JOIN is_prod.gongio.call_participant cp ON c.id = cp.call_id
+FROM {catalog}.gongio.call c
+JOIN {catalog}.gongio.call_participant cp ON c.id = cp.call_id
 WHERE LOWER(cp.name) LIKE LOWER('%{customer_name}%')
   AND c.started >= DATE_SUB(CURRENT_DATE(), {days})
   AND c._fivetran_deleted = false
@@ -182,7 +194,7 @@ ORDER BY c.started DESC
 
 ```sql
 SELECT title, state, changed_date
-FROM is_prod.azure_devops.work_item
+FROM {catalog}.azure_devops.work_item
 WHERE changed_date >= DATE_SUB(CURRENT_DATE(), {days})
   AND state IN ('Closed', 'Resolved', 'Done')
 ORDER BY changed_date DESC
@@ -193,7 +205,7 @@ LIMIT 50
 
 ```sql
 SELECT custom_intent, custom_sentiment, COUNT(*) as count
-FROM is_prod.zendesk.ticket
+FROM {catalog}.zendesk.ticket
 WHERE created_at >= DATE_SUB(CURRENT_DATE(), {days})
   AND custom_intent IS NOT NULL
 GROUP BY custom_intent, custom_sentiment
@@ -243,7 +255,7 @@ LIMIT 30
 
 1. **Always state the time window** — "Last 30 days" not just raw numbers
 2. **Include row counts** — "Found 47 tickets matching..." for context
-3. **Cite the source** — "Per Zendesk data (is_prod.zendesk.ticket)" for auditability
+3. **Cite the source** — e.g. "Per Zendesk data ({catalog}.zendesk.ticket)" for auditability
 4. **Flag data quality** — Note if NULL counts are high or if results seem incomplete
 5. **Contextualize** — Calculate rates, percentages, and period-over-period comparisons
 6. **Use the modeled layer when possible** — `zendesk_zendesk` tables have pre-computed metrics
@@ -256,7 +268,7 @@ LIMIT 30
 | Permission denied on schema | Note which schema is inaccessible (e.g., `strata` requires elevated permissions) |
 | Long-running query | Tool returns statement_id; use `poll_sql_result` to check status |
 | No results | Widen date range or check filter spelling; note if data may not be populated |
-| Column not found | Use `DESCRIBE TABLE is_prod.{schema}.{table}` to verify column names |
+| Column not found | Use `DESCRIBE TABLE {catalog}.{schema}.{table}` to verify column names |
 
 ## Related Skills
 

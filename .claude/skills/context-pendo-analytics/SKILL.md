@@ -1,6 +1,6 @@
 ---
 name: context-pendo-analytics
-description: Use when pulling Pendo product analytics data for prioritization, decision-making, or feature analysis - connects to Pendo MCP server to query page/feature usage, visitor behavior, segment data, customer feedback (Listen), session replays, and AI agent analytics for Vantaca products
+description: Use when pulling Pendo product analytics data for prioritization, decision-making, or feature analysis - connects to Pendo MCP server to query page/feature usage, visitor behavior, segment data, customer feedback (Listen), session replays, and AI agent analytics for the operator's products
 allowed-tools: Read, Grep, Glob, Bash
 ---
 
@@ -14,7 +14,7 @@ Pull Pendo product analytics data into PM workflows:
 - Retrieve segment definitions and membership data
 - Surface customer feedback and AI-extracted insights via Pendo Listen
 - Investigate UX issues through session replays with frustration filtering
-- Monitor AI agent performance (HOAi, Vantaca IQ)
+- Monitor AI agent performance (any AI agents instrumented in the operator's Pendo)
 - Support data-driven product decisions with real usage evidence
 - Provide analytics context for strategy sessions, PRDs, and roadmap reviews
 
@@ -29,28 +29,27 @@ Activate automatically when:
 - Comparing feature usage across segments or accounts
 - Gathering customer feedback or sentiment for a product area
 - Investigating UX friction through session replay frustration signals
-- Monitoring HOAi or Vantaca IQ agent performance and conversation patterns
+- Monitoring AI agent performance and conversation patterns
 
 ## Prerequisites
 
-### Vantaca Pendo Connection
+### Pendo Connection
 
-MCP is already configured. Authentication is handled via OAuth through Pendo login.
+MCP is configured per install. Authentication is handled via OAuth through Pendo login.
 
-**Subscription**: Vantaca
-**subId** (required on every MCP call): `4818486697721856`
+**The Pendo subscription ID is _not_ hardcoded** — read it from the active profile at runtime:
 
-**Applications:**
+```bash
+python3 scripts/profile_lib.py --pendo-subid
+```
 
-| App | appId | Notes |
-|-----|-------|-------|
-| Vantaca IQ | `-323232` |  |
-| Vantaca Manage | `5412977898749952` | |
-| Vantaca Home | `5961191088521216` | Default app; use when no specific app is specified |
-| HOAi | `6037667364143104` | AI agent app |
-| Vantaca Core | `6243085483048960` | |
+(or read `profile/integrations.yaml` → `analytics.pendo.subscription_id` directly). This works identically whether the skill runs headless or in an interactive session — both read the same profile file.
 
-**Critical**: All `mcp__claude_ai_Pendo__*` tool calls require `subId: "4818486697721856"` as a parameter. Most also require `appId` -- default to `-323232` (Vantaca IQ) unless the query targets a specific app.
+**If `analytics.pendo.provider` is `none`** (or the subscription ID comes back empty), Pendo is not configured for this install. Tell the user so and stop — **never guess a subscription ID**.
+
+**Applications:** App IDs are also profile-supplied, not hardcoded. Read them from `analytics.pendo.app_ids` in `profile/integrations.yaml` (a name → appId map the operator fills in during onboarding, e.g. a default/primary app plus any product-specific apps). If a query targets a specific product app, look it up by name in that map; otherwise use the operator's designated default app. If `app_ids` is empty, ask the user which app to target rather than guessing an ID.
+
+**Critical**: Every `mcp__claude_ai_Pendo__*` tool call requires `subId` (the value from `--pendo-subid`) as a parameter. Most also require `appId` (a value from the `app_ids` map). Resolve both from the profile before calling — do not embed literal IDs.
 
 ### Admin Requirements
 - A Pendo subscription admin must enable the MCP server in Pendo settings
@@ -58,7 +57,7 @@ MCP is already configured. Authentication is handled via OAuth through Pendo log
 
 ## Available MCP Tools
 
-All tools are prefixed with `mcp__claude_ai_Pendo__`. Every call must include `subId: "4818486697721856"`.
+All tools are prefixed with `mcp__claude_ai_Pendo__`. Every call must include `subId` — the profile value from `python3 scripts/profile_lib.py --pendo-subid` (see Prerequisites). Examples below use `{subId}` / `{appId}` as placeholders for the resolved profile values.
 
 ### Usage Analytics
 
@@ -125,7 +124,7 @@ All tools are prefixed with `mcp__claude_ai_Pendo__`. Every call must include `s
 | `list_use_cases` | Conversation clustering analysis (topics, metrics per cluster) | Agent ID |
 | `list_ai_agent_issues` | Detected issues with instance/conversation counts | Agent ID |
 
-Useful for monitoring HOAi and Vantaca IQ agent performance, identifying common user intents, and surfacing agent issues.
+Useful for monitoring AI agent performance, identifying common user intents, and surfacing agent issues.
 
 ## Querying Patterns
 
@@ -213,7 +212,7 @@ Useful for monitoring HOAi and Vantaca IQ agent performance, identifying common 
 **Example with filters:**
 ```
 get_feedback_insights:
-  subId: "4818486697721856"
+  subId: "{subId}"   # from `profile_lib.py --pendo-subid`
   similaritySearchTerms: "invoicing payments billing"
   accountTypes: ["Customer"]
   feedbackTypes: ["Product Enhancement Request", "Pain Point"]
@@ -229,17 +228,17 @@ get_feedback_insights:
 - **Alerts**: {Churn Risk: N, High Frustration: N, Blocker to Sale: N}
 ```
 
-### Pattern 6: Native Mobile App Usage (Vantaca Home)
+### Pattern 6: Native Mobile App Usage (single-app web + native)
 
 **Use case:** "How many users are on the native Android/iOS app?" or "What's our mobile app adoption?"
 
-**Background:** Vantaca Home (`5961191088521216`) serves both web and native mobile app traffic under a single Pendo app ID. There are no separate app IDs for iOS/Android. Native app users are identified by mobile-specific visitor metadata fields set by the native SDK at login.
+**Background:** If your install has a Pendo app that serves both web and native mobile traffic under a single app ID (common when one app spans web + iOS + Android), there are no separate app IDs per platform. Use the relevant `app_ids` entry from the profile. Native app users are identified by mobile-specific visitor metadata fields set by the native SDK at login. This pattern only applies if the operator's product has a native mobile app instrumented in Pendo — skip it otherwise.
 
 **Key metadata fields (all in `metadata.agent.*`):**
 
 | Field | Type | Purpose |
 |-------|------|---------|
-| `mobilewhitelabelid` | string | White-label brand (e.g., `vantaca-home`, `cma-home`, `alliant-association-management`, `cadden-connect`, `ips-portal`) |
+| `mobilewhitelabelid` | string | White-label brand id, if the product is white-labeled (the operator's brand slugs) |
 | `mobileplatformos` | string | **Lowercase** values: `"android"`, `"ios"` |
 | `mobiledevicetype` | string | Device type |
 | `mobileappversion` | string | App version |
@@ -261,8 +260,8 @@ These same fields also exist under `metadata.custom.*` as mirrors.
 **Query approach — Visitor counts (all-time or with metadata filters):**
 ```
 visitorQuery:
-  subId: "4818486697721856"
-  appId: "5961191088521216"
+  subId: "{subId}"     # from `profile_lib.py --pendo-subid`
+  appId: "{appId}"     # the profile app_ids entry for the native-capable app
   count: true
   metadataFilter: 'metadata.agent.mobileplatformos == "android"'
 ```
@@ -271,8 +270,8 @@ visitorQuery:
 ```
 activityQuery:
   entityType: visitor
-  subId: "4818486697721856"
-  appId: "5961191088521216"
+  subId: "{subId}"
+  appId: "{appId}"
   dateRange: { range: relative, lastNDays: 7 }
   group: [visitorId]
   count: true
@@ -289,8 +288,8 @@ Note: this undercounts because visitors who also used web will show their last O
 **Query approach — Sample visitors with metadata details:**
 ```
 visitorQuery:
-  subId: "4818486697721856"
-  appId: "5961191088521216"
+  subId: "{subId}"
+  appId: "{appId}"
   count: false
   limit: 50
   select: [metadata.agent.mobileplatformos, metadata.agent.mobilewhitelabelid, metadata.agent.mobileappversion]
@@ -299,13 +298,13 @@ visitorQuery:
 
 **Output format:**
 ```markdown
-## Native Mobile App Usage: Vantaca Home
+## Native Mobile App Usage: {App Name}
 - **Period**: {start_date} to {end_date}
 - **Total native app visitors**: {count} (mobilebuildnumber > 0)
 - **Android**: {count}
 - **iOS**: {count}
-- **White-label breakdown**: vantaca-home ({n}), cma-home ({n}), ...
-- **Note**: All native mobile traffic routes through the Vantaca Home app ID; no other Pendo apps capture mobile metadata.
+- **White-label breakdown**: {brand_slug} ({n}), {brand_slug} ({n}), ...
+- **Note**: All native mobile traffic routes through the single native-capable app ID; no other Pendo apps capture mobile metadata.
 ```
 
 ### Pattern 7: Session Replay Investigation
@@ -382,7 +381,7 @@ When presenting Pendo data in PM workflows:
 4. **Cite the source** -- "Per Pendo analytics, {date range}" for auditability
 5. **Contextualize** -- Raw numbers without context are not useful; calculate rates, percentages, and comparisons
 6. **Flag data gaps** -- If a feature is not instrumented in Pendo, say so explicitly
-7. **Specify the app** -- When reporting cross-app data, always note which Vantaca app the data comes from
+7. **Specify the app** -- When reporting cross-app data, always note which app (by name from the profile `app_ids` map) the data comes from
 
 ## Error Handling
 
@@ -400,7 +399,7 @@ When presenting Pendo data in PM workflows:
 Pendo analytics query complete when:
 - Requested data retrieved and formatted
 - Time period clearly stated
-- App identified (Vantaca IQ, Manage, Home, HOAi, or Core)
+- App identified (by name from the profile `app_ids` map)
 - Trends calculated where applicable
 - Data contextualized for the PM decision at hand
 - Sources cited for audit trail
@@ -415,8 +414,8 @@ Pendo analytics query complete when:
 | Ignoring segments | Break down by relevant segments when available |
 | Treating absence of data as zero usage | Feature may not be instrumented -- flag this |
 | Not connecting data to the decision | Frame analytics in terms of the PM question being answered |
-| Omitting subId from MCP calls | Every call requires `subId: "4818486697721856"` |
-| Using wrong appId | Default to `-323232` (Vantaca IQ); confirm app if query targets Manage, Home, HOAi, or Core |
+| Omitting subId from MCP calls | Every call requires `subId` — resolve it from `profile_lib.py --pendo-subid`, never embed a literal |
+| Hardcoding or guessing an appId | Resolve appId from the profile `app_ids` map by name; if the map is empty or the app is ambiguous, ask the user |
 | Mixing app data without labeling | Always note which app the data comes from |
 | Using `"Android"` / `"iOS"` for native SDK fields | Native SDK fields (`mobileplatformos`) use lowercase: `"android"`, `"ios"`. Only `auto.lastoperatingsystem` uses title case. |
 | Using `!= ""` to find populated fields | `null != ""` is true in Pendo. Use `> ""` instead. |

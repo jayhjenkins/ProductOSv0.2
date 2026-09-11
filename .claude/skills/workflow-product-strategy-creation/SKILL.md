@@ -65,14 +65,14 @@ When MCP data sources are connected, enrich specific strategy phases with live e
 
 Supplement meeting-derived problem evidence with quantitative data:
 
-**Pendo Listen pain points**: Use `mcp__claude_ai_Pendo__get_feedback_items` (subId: `4818486697721856`, filters: {feedbackTypes: ["Pain Point", "Product Issues"]}) to surface customer-reported problems. Use `mcp__claude_ai_Pendo__get_feedback_insights` with the same filters for AI-extracted insights with supporting quotes.
+**Pendo Listen pain points**: Use `mcp__claude_ai_Pendo__get_feedback_items` (subId: from profile (`profile_lib.py --pendo-subid`), filters: {feedbackTypes: ["Pain Point", "Product Issues"]}) to surface customer-reported problems. Use `mcp__claude_ai_Pendo__get_feedback_insights` with the same filters for AI-extracted insights with supporting quotes.
 
 **Zendesk ticket volume by product area**:
 ```sql
 SELECT custom_product_field, COUNT(*) as ticket_count,
        SUM(CASE WHEN priority IN ('urgent', 'high') THEN 1 ELSE 0 END) as high_priority,
        SUM(CASE WHEN custom_confirmed_bug = true THEN 1 ELSE 0 END) as confirmed_bugs
-FROM is_prod.zendesk.ticket
+FROM {catalog}.zendesk.ticket
 WHERE created_at >= DATE_SUB(CURRENT_DATE(), 90)
   AND custom_product_field IS NOT NULL
 GROUP BY custom_product_field
@@ -83,14 +83,14 @@ Use ticket patterns to quantify problem severity and identify which product area
 
 ### Phase 4 Enhancement: Competitive Assessment
 
-**Pendo Listen competitive intelligence**: Use `mcp__claude_ai_Pendo__get_feedback_items` (subId: `4818486697721856`, filters: {feedbackTypes: ["Competitor Weakness", "Competitor Strength"]}) to surface customer feedback about competitors. This provides direct customer voice on competitive positioning.
+**Pendo Listen competitive intelligence**: Use `mcp__claude_ai_Pendo__get_feedback_items` (subId: from profile (`profile_lib.py --pendo-subid`), filters: {feedbackTypes: ["Competitor Weakness", "Competitor Strength"]}) to surface customer feedback about competitors. This provides direct customer voice on competitive positioning.
 
 **Gong competitive tracker data**:
 ```sql
 SELECT ct.name as tracker_name, ct.phrase, SUM(ct.count) as total_mentions,
        COUNT(DISTINCT ct.call_id) as calls_mentioned
-FROM is_prod.gongio.call_tracker ct
-JOIN is_prod.gongio.call c ON CAST(ct.call_id AS STRING) = c.id
+FROM {catalog}.gongio.call_tracker ct
+JOIN {catalog}.gongio.call c ON CAST(ct.call_id AS STRING) = c.id
 WHERE c.started >= DATE_SUB(CURRENT_DATE(), 90)
   AND ct._fivetran_deleted = false
 GROUP BY ct.name, ct.phrase
@@ -102,14 +102,14 @@ Filter for competitor-related trackers to see which competitors come up most in 
 
 ### Phase 6 Enhancement: Current User Experience
 
-**Pendo session replays**: Use `mcp__claude_ai_Pendo__sessionReplayList` (subId: `4818486697721856`) with frustration filtering to find replays of critical flow friction:
+**Pendo session replays**: Use `mcp__claude_ai_Pendo__sessionReplayList` (subId: from profile (`profile_lib.py --pendo-subid`)) with frustration filtering to find replays of critical flow friction:
 - `frustrationTypes`: [{"frustrationType": "rageClick", "fact": "occurred"}, {"frustrationType": "deadClick", "fact": "occurred"}]
 
-**Pendo feature adoption**: Use `mcp__claude_ai_Pendo__activityQuery` (subId: `4818486697721856`, appId for relevant app, entityType: "feature", group: ["featureId"], sort: ["-uniqueVisitorCount"], dateRange: {range: "relative", lastNDays: 30}) to identify most/least used features as evidence for UX assessment.
+**Pendo feature adoption**: Use `mcp__claude_ai_Pendo__activityQuery` (subId: from profile (`profile_lib.py --pendo-subid`), appId for relevant app, entityType: "feature", group: ["featureId"], sort: ["-uniqueVisitorCount"], dateRange: {range: "relative", lastNDays: 30}) to identify most/least used features as evidence for UX assessment.
 
 ### Phase 9 Enhancement: Differentiation, Goals & Metrics
 
-**Current baselines**: Use `mcp__claude_ai_Pendo__productEngagementScore` (subId: `4818486697721856`, appId for relevant app) to establish current PES as baseline for goal-setting within the strategy.
+**Current baselines**: Use `mcp__claude_ai_Pendo__productEngagementScore` (subId: from profile (`profile_lib.py --pendo-subid`), appId for relevant app) to establish current PES as baseline for goal-setting within the strategy.
 
 **Existing instrumentation check**: Use `mcp__claude_ai_Pendo__searchEntities` to verify proposed metrics can be measured with existing Pendo instrumentation.
 

@@ -21,7 +21,7 @@ Legend:
 
 ### 1. `.claude/CLAUDE.md` (Cursor-specific)
 
-**Location**: `/Users/jjenkins11/Documents/superpowers-llm/.claude/CLAUDE.md`
+**Location**: `.claude/CLAUDE.md`
 
 **For Meta Skills:**
 - [ ] Added to "Meta Skills" list (line ~80)
@@ -47,7 +47,7 @@ Legend:
 
 ### 2. `CLAUDE.md` (Root-level, Claude Code)
 
-**Location**: `/Users/jjenkins11/Documents/superpowers-llm/CLAUDE.md`
+**Location**: `CLAUDE.md`
 
 **For Meta Skills:**
 - [ ] Added to "Meta Skills" category (line ~18)
@@ -70,7 +70,7 @@ Legend:
 
 ### 3. `CURSOR-PM-SYSTEM.md` (Architecture)
 
-**Location**: `/Users/jjenkins11/Documents/superpowers-llm/CURSOR-PM-SYSTEM.md`
+**Location**: `CURSOR-PM-SYSTEM.md`
 
 **Only update if:**
 - New workflow category (major capability addition)
@@ -87,7 +87,7 @@ Legend:
 
 ### 4. `AGENTS.md` (Agent capabilities)
 
-**Location**: `/Users/jjenkins11/Documents/superpowers-llm/AGENTS.md`
+**Location**: `AGENTS.md`
 
 **For User-Facing Workflows:**
 - [ ] Added to relevant agent's "Capabilities" section (line ~13-20)
@@ -104,7 +104,7 @@ Legend:
 
 ### 5. `README.md` (Main documentation)
 
-**Location**: `/Users/jjenkins11/Documents/superpowers-llm/README.md`
+**Location**: `README.md`
 
 **For User-Facing Workflows:**
 - [ ] Added to relevant agent description (line ~14-37)
@@ -121,7 +121,7 @@ Legend:
 
 ### 6. `.cursor/rules/*.mdc` (Cursor workflow definitions)
 
-**Location**: `/Users/jjenkins11/Documents/superpowers-llm/.cursor/rules/`
+**Location**: `.cursor/rules/`
 
 **Choose the appropriate file:**
 - `core-system.mdc` — System-wide behavior, file structure, safety rails

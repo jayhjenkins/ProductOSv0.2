@@ -65,9 +65,9 @@ YYYY-MM-DD_{type}_{titleSlug}_{companyOrFunctionSlug}_{participantsSlug}.md
 
 **Examples:**
 ```
-2025-10-15_sales_discovery-call_prettyboy_jenna-mike.md
+2025-10-15_sales_discovery-call_acmeco_jenna-mike.md
 2025-10-14_product_feature-planning_internal_jay-sarah.md
-2025-10-13_customersuccess_qbr_compoundstudio_alex.md
+2025-10-13_customersuccess_qbr_northwind_alex.md
 ```
 
 **Components:**
@@ -115,7 +115,7 @@ datasets/meetings/
 
 **Examples:**
 ```
-datasets/meetings/Customers/PrettyBoy/2025/10-15_sales_discovery-call_prettyboy_jenna-mike.md
+datasets/meetings/Customers/AcmeCo/2025/10-15_sales_discovery-call_acmeco_jenna-mike.md
 datasets/meetings/Internal/Product/2025/10-14_product_feature-planning_internal_jay-sarah.md
 ```
 
@@ -196,19 +196,19 @@ grep -q "## ⬇️ Links" meeting.md
 ```markdown
 # Meeting Schema Validation: PASS
 
-**File**: 2025-10-15_sales_discovery-call_prettyboy_jenna-mike.md
+**File**: 2025-10-15_sales_discovery-call_acmeco_jenna-mike.md
 
 ✓ YAML frontmatter complete: All required fields present
 ✓ Field formats valid:
   - date: 2025-10-15 (valid ISO format)
   - type: sales (valid type)
-  - customer: PrettyBoy (present)
-  - companies: ["PrettyBoy"] (array, 1 entry)
+  - customer: AcmeCo (present)
+  - companies: ["AcmeCo"] (array, 1 entry)
   - participants: ["Jenna Smith", "Mike Johnson"] (array, 2 entries)
 ✓ Filename format valid: YYYY-MM-DD_{type}_{title}_{customer}_{participants}.md
 ✓ Filename consistency: Date and type match frontmatter
 ✓ Required sections present: AI Summary, Action Items, Full Transcript, Links
-✓ Directory placement valid: Customers/PrettyBoy/2025/
+✓ Directory placement valid: Customers/AcmeCo/2025/
 
 **Status**: Meeting schema validated
 ```
@@ -217,7 +217,7 @@ grep -q "## ⬇️ Links" meeting.md
 ```markdown
 # Meeting Schema Validation: FAIL
 
-**File**: 2025-10-15_discovery_prettyboy.md
+**File**: 2025-10-15_discovery_acmeco.md
 
 ✗ YAML frontmatter incomplete:
   - Missing field: `participants`
@@ -225,21 +225,21 @@ grep -q "## ⬇️ Links" meeting.md
 
 ✗ Filename format invalid:
   - Expected: YYYY-MM-DD_{type}_{title}_{customer}_{participants}.md
-  - Actual: 2025-10-15_discovery_prettyboy.md
+  - Actual: 2025-10-15_discovery_acmeco.md
   - Missing: {participants} component
 
 ✗ Required sections missing:
   - Missing: ## ⬇️ Action Items
 
 ✗ Directory placement incorrect:
-  - File location: datasets/meetings/2025-10-15_discovery_prettyboy.md
-  - Expected: datasets/meetings/Customers/PrettyBoy/2025/
+  - File location: datasets/meetings/2025-10-15_discovery_acmeco.md
+  - Expected: datasets/meetings/Customers/AcmeCo/2025/
 
 **Required fixes**:
 1. Add missing frontmatter fields: participants, companies
 2. Rename file to include all components
 3. Add missing section: ## ⬇️ Action Items
-4. Move file to correct directory: Customers/PrettyBoy/2025/
+4. Move file to correct directory: Customers/AcmeCo/2025/
 
 **Status**: NEEDS_FIX
 ```
@@ -275,7 +275,7 @@ grep -q "## ⬇️ Links" meeting.md
 **Direct usage:**
 User can validate existing meetings:
 ```
-"Validate meeting schema for datasets/meetings/Customers/PrettyBoy/2025/10-15_sales_discovery-call_prettyboy_jenna-mike.md"
+"Validate meeting schema for datasets/meetings/Customers/AcmeCo/2025/10-15_sales_discovery-call_acmeco_jenna-mike.md"
 ```
 
 ## Auto-Correction

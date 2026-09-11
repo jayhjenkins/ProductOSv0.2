@@ -594,8 +594,8 @@ When MCP data sources are connected, auto-query external systems to supplement o
 
 Instead of only asking stakeholders about which user groups are affected, programmatically compare:
 
-1. **List segments**: `mcp__claude_ai_Pendo__segmentList` (subId: `4818486697721856`) to enumerate available user segments.
-2. **Segment comparison**: For each relevant segment, run `mcp__claude_ai_Pendo__activityQuery` (subId: `4818486697721856`, appId for relevant app, entityType matching the metric, segmentId: "{segment_id}", dateRange covering the investigation window) and compare metrics across segments.
+1. **List segments**: `mcp__claude_ai_Pendo__segmentList` (subId: from profile (`profile_lib.py --pendo-subid`)) to enumerate available user segments.
+2. **Segment comparison**: For each relevant segment, run `mcp__claude_ai_Pendo__activityQuery` (subId: from profile (`profile_lib.py --pendo-subid`), appId for relevant app, entityType matching the metric, segmentId: "{segment_id}", dateRange covering the investigation window) and compare metrics across segments.
 3. **People dimension**: Compare enterprise vs. SMB, new vs. existing, power users vs. casual via segment-filtered queries.
 4. **Technology dimension**: If platform segments exist, compare web vs. mobile, browser-specific segments.
 
@@ -607,8 +607,8 @@ Replace or supplement stakeholder interviews with direct data queries:
 ```sql
 SELECT ct.name as tracker_name, ct.phrase, SUM(ct.count) as mentions,
        COUNT(DISTINCT ct.call_id) as calls
-FROM is_prod.gongio.call_tracker ct
-JOIN is_prod.gongio.call c ON CAST(ct.call_id AS STRING) = c.id
+FROM {catalog}.gongio.call_tracker ct
+JOIN {catalog}.gongio.call c ON CAST(ct.call_id AS STRING) = c.id
 WHERE c.started >= DATE_SUB(CURRENT_DATE(), 30)
   AND ct._fivetran_deleted = false
 GROUP BY ct.name, ct.phrase
@@ -621,7 +621,7 @@ LIMIT 20
 SELECT DATE(created_at) as day, COUNT(*) as tickets,
        SUM(CASE WHEN priority IN ('urgent', 'high') THEN 1 ELSE 0 END) as high_priority,
        SUM(CASE WHEN custom_sentiment = 'negative' THEN 1 ELSE 0 END) as negative_sentiment
-FROM is_prod.zendesk.ticket
+FROM {catalog}.zendesk.ticket
 WHERE created_at >= DATE_SUB(CURRENT_DATE(), 30)
 GROUP BY DATE(created_at)
 ORDER BY day
@@ -633,7 +633,7 @@ Also check for Pendo Listen churn/frustration signals:
 **Engineering perspective (Azure DevOps via Databricks)**:
 ```sql
 SELECT title, state, changed_date
-FROM is_prod.azure_devops.work_item
+FROM {catalog}.azure_devops.work_item
 WHERE changed_date >= DATE_SUB(CURRENT_DATE(), 14)
   AND state IN ('Closed', 'Resolved', 'Done')
 ORDER BY changed_date DESC
@@ -641,7 +641,7 @@ LIMIT 30
 ```
 
 **UX investigation (Pendo Session Replays)**:
-Use `mcp__claude_ai_Pendo__sessionReplayList` (subId: `4818486697721856`, startDate/endDate covering the metric change period) with frustration type filtering to find sessions showing user struggle:
+Use `mcp__claude_ai_Pendo__sessionReplayList` (subId: from profile (`profile_lib.py --pendo-subid`), startDate/endDate covering the metric change period) with frustration type filtering to find sessions showing user struggle:
 - `frustrationTypes`: [{"frustrationType": "rageClick", "fact": "occurred"}, {"frustrationType": "errorClick", "fact": "occurred"}]
 
 ### Mapping MCP Findings to Hypothesis Table

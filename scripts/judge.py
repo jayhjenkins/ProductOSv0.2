@@ -83,24 +83,24 @@ Return ONLY a single JSON object, no prose around it, no markdown fences:
 
 
 DEFAULT_RUBRIC_MESSAGE = """You are the PM-OS shadow judge. You score a DRAFTED MESSAGE a worker agent \
-prepared for Jay to send, judging whether Jay could send it as-is. A draft usually contains BOTH a \
+prepared for the operator to send, judging whether the operator could send it as-is. A draft usually contains BOTH a \
 Teams / short version AND an email version — judge both.
 
-A JAY'S VOICE GUIDE is provided below the task. Use it as the standard for the `voice` and `format` \
-dimensions — the message should sound like Jay and follow his channel conventions, not generic "good writing".
+The OPERATOR'S VOICE GUIDE is provided below the task. Use it as the standard for the `voice` and `format` \
+dimensions — the message should sound like the operator and follow their channel conventions, not generic "good writing".
 
 Score on a 1-10 integer scale across four dimensions:
-- voice       — does it sound like Jay per the voice guide (direct, plain, warm-but-efficient, no em dashes, \
-his asks and rhythm)? Both the Teams and email versions.
+- voice       — does it sound like the operator per the voice guide (direct, plain, warm-but-efficient, no em dashes, \
+their asks and rhythm)? Both the Teams and email versions.
 - format      — channel-fit per the guide: the Teams version tight, low-caps, minimal greeting/sign-off; the \
 email version subject + greeting + close, 1-3 sentence paragraphs, skimmable. Name the weaker channel.
 - fulfils_ask — does it make the actual request the task asked, to the right recipient, framed for them?
 - clarity     — clear, self-contained, sendable; no placeholders, loose ends, or buried ask.
 
 Do NOT penalize a message for lacking citations, footnotes, or verbatim source quotes — it is a message, \
-not a document. Judge it as something Jay will actually send.
+not a document. Judge it as something the operator will actually send.
 
-Then give an overall score (1-10) for whether Jay could send it with at most a quick glance. \
+Then give an overall score (1-10) for whether the operator could send it with at most a quick glance. \
 Calibration: 9-10 = send as-is. 7-8 = send after a small tweak. 5-6 = usable but needs real edits. \
 3-4 = significant rework. 1-2 = off-target.
 
@@ -153,7 +153,7 @@ DEFAULT_RUBRIC = DEFAULT_RUBRIC_DOCUMENT
 
 # Minimal inline fallback if the voice file and LangFuse are both unavailable.
 DEFAULT_VOICE = (
-    "Jay's voice: direct, plain, warm but efficient. No em dashes. Lead with the ask. "
+    "The operator's voice: direct, plain, warm but efficient. No em dashes. Lead with the ask. "
     "Teams = tight, low caps, minimal greeting/sign-off. Email = subject + greeting + close, "
     "1-3 sentence paragraphs, ask up front."
 )
@@ -232,19 +232,19 @@ def fetch_rubric(kind):
 
 
 def fetch_voice():
-    """Return (voice_text, source_label) for Jay's voice guide.
+    """Return (voice_text, source_label) for the operator's voice guide.
 
-    Prefer the LangFuse prompt (`judge-voice-jay`); fall back to reading the
+    Prefer the LangFuse prompt (`judge-voice-operator`); fall back to reading the
     on-disk source of truth; final fallback is a minimal inline default.
     """
     try:
         from langfuse_client import fetch_prompt
-        p = fetch_prompt("judge-voice-jay")
+        p = fetch_prompt("judge-voice-operator")
         if p is not None:
             text = p.prompt if hasattr(p, "prompt") else None
             version = getattr(p, "version", None)
             if text:
-                return text, f"langfuse:judge-voice-jay:v{version}" if version else "langfuse:judge-voice-jay"
+                return text, f"langfuse:judge-voice-operator:v{version}" if version else "langfuse:judge-voice-operator"
     except Exception as e:
         log(f"voice fetch from LangFuse failed ({e}); falling back to file")
     try:

@@ -18,6 +18,7 @@ import hashlib
 import json
 import os
 import re
+import shutil
 import subprocess
 import sys
 import time
@@ -32,11 +33,57 @@ CONFIG_PATH = SCRIPT_DIR / "sync_config.yaml"
 MANIFEST_PATH = SCRIPT_DIR / "_sync_manifest.json"
 REFERENCE_DOCX = SCRIPT_DIR / "pandoc_reference.docx"
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+try:
+    import profile_lib
+except Exception:  # pragma: no cover — profile_lib optional at import time
+    profile_lib = None
+
 # ─── Config Loading ───────────────────────────────────────────────────────────
 
+def _profile_doc_sync():
+    """Return the profile's doc_sync config if profile_lib is importable, else {}."""
+    if profile_lib is None:
+        return {}
+    try:
+        return profile_lib.doc_sync_config()
+    except Exception:
+        return {}
+
+
 def load_config():
-    """Load sync configuration from sync_config.yaml."""
+    """Load sync configuration.
+
+    Precedence: when the profile's integrations.yaml has a populated doc_sync
+    block (enabled: true), its onedrive_root/sharepoint_site override the
+    legacy sync_config.yaml values. The legacy sync_config.yaml remains the
+    source for fields the profile doesn't carry (tenant URL, doc root,
+    sync_paths, etc.) and the sole source when the profile isn't enabled.
+    """
+    prof = _profile_doc_sync()
+    prof_enabled = bool(prof.get("enabled"))
+
+    # If the profile owns doc_sync but sync_config.yaml is absent, build a
+    # minimal config from the profile so legacy-free installs still work.
     if not CONFIG_PATH.exists():
+        if prof_enabled:
+            resolved_root = os.path.expanduser(prof.get("onedrive_root", ""))
+            if not resolved_root:
+                print(
+                    "Error: doc_sync is enabled but onedrive_root is not set — "
+                    "run the Doctor to detect your OneDrive root, or set "
+                    "doc_sync.onedrive_root in profile/integrations.yaml"
+                )
+                sys.exit(1)
+            return {
+                "onedrive_root": resolved_root,
+                "sharepoint_site": prof.get("sharepoint_site", "PM-OS"),
+                "sharepoint_tenant_url": "",
+                "sharepoint_doc_root": "",
+                "sync_enabled": True,
+                "sync_paths": [],
+                "sync_exclude": [],
+            }
         print(f"Error: Config not found at {CONFIG_PATH}")
         print("Run scripts/setup_doc_sync.sh to initialize.")
         sys.exit(1)
@@ -78,6 +125,13 @@ def load_config():
                 config[current_list].append(line.strip()[2:].strip())
             elif not line.strip().startswith("#") and ":" in line and not line.startswith(" "):
                 current_list = None
+
+    # Profile wins for the fields it carries when doc_sync is enabled there.
+    if prof_enabled:
+        if prof.get("onedrive_root"):
+            config["onedrive_root"] = os.path.expanduser(prof["onedrive_root"])
+        if prof.get("sharepoint_site"):
+            config["sharepoint_site"] = prof["sharepoint_site"]
 
     return config
 
@@ -191,12 +245,18 @@ def reattach_frontmatter(frontmatter_str, body):
 
 # ─── Conversion ───────────────────────────────────────────────────────────────
 
+def _require_pandoc():
+    if not shutil.which("pandoc"):
+        raise RuntimeError("pandoc not found — install pandoc to enable Word sync")
+
+
 def md_to_docx(md_path, docx_path):
     """Convert a markdown file to docx via pandoc.
 
     Strips YAML frontmatter before conversion (pandoc doesn't need it).
     Uses reference template for styling if available.
     """
+    _require_pandoc()
     md_path = Path(md_path)
     docx_path = Path(docx_path)
 
@@ -233,6 +293,7 @@ def docx_to_md(docx_path, md_path):
 
     Re-attaches the YAML frontmatter from the existing local markdown file.
     """
+    _require_pandoc()
     docx_path = Path(docx_path)
     md_path = Path(md_path)
 
@@ -546,7 +607,7 @@ def _build_sharepoint_url(config, onedrive_rel_path):
 
     Uses the :w:/r/ URL pattern which opens .docx files in Word Online.
     Example: PM-OS/product/file.docx ->
-      https://vantaca-my.sharepoint.com/:w:/r/personal/.../Documents/PM-OS/product/file.docx
+      https://<yourtenant>-my.sharepoint.com/:w:/r/personal/.../Documents/PM-OS/product/file.docx
     """
     tenant_url = config.get("sharepoint_tenant_url")
     doc_root = config.get("sharepoint_doc_root")

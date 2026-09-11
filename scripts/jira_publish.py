@@ -15,17 +15,39 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
+import profile_lib
+
 PM_OS_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-# Jira config (from workflow-jira-home skill)
-JIRA_CLOUD_ID = "vantaca.atlassian.net"
-JIRA_PROJECT_KEY = "VNT"
-JIRA_COMPONENT_ID = "10011"  # Vantaca HXP
-JIRA_AUTO_LABEL = "home_aidlc"  # AI DLC swim lane indicator. Not auto-applied — drafts decide; see Swim Lane Rule in workflow-jira-home/SKILL.md.
-JIRA_DEFAULT_ASSIGNEE = "712020:aeec48b7-3829-433b-9125-c8c2a4c84e6f"  # Jay Jenkins — default assignee for Features
+
+def _load_jira_config():
+    """Read Jira instance config from profile/integrations.yaml (see
+    workflow-jira-home/SKILL.md's First-Run Setup). Never hardcode instance
+    IDs here — they differ per Jira Cloud site and are discovered once,
+    interactively, then written to the profile."""
+    cfg = profile_lib.jira_config()
+    if not cfg.get("cloud_id") or not cfg.get("project_key"):
+        print(
+            "Error: Jira is not configured yet. Run the workflow-jira-home skill "
+            "interactively once (e.g. `/jira:create`) to complete first-run setup — "
+            "it discovers your instance's IDs and writes them to profile/integrations.yaml.",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+    return cfg
+
+
+JIRA_CFG = _load_jira_config()
+JIRA_CLOUD_ID = JIRA_CFG.get("cloud_id", "")
+JIRA_PROJECT_KEY = JIRA_CFG.get("project_key", "")
+JIRA_COMPONENT_ID = JIRA_CFG.get("component_id", "")
+JIRA_AUTO_LABEL = JIRA_CFG.get("auto_label", "")  # optional swim-lane label, if your board uses one. Not auto-applied — drafts decide; see Swim Lane Rule in workflow-jira-home/SKILL.md.
+JIRA_DEFAULT_ASSIGNEE = JIRA_CFG.get("default_assignee", "")  # default assignee accountId for top-level (Feature/Epic-role) types
+CUSTOM_FIELDS = JIRA_CFG.get("custom_fields") or {}  # logical name -> Jira fieldId, discovered per-instance
 
 # Canonical type names. Drafts that arrive with different casing or shorthand
 # get normalized so Jira's case-sensitive issueTypeName check doesn't fail.
+# Extend/override via profile if your instance uses different type names.
 JIRA_TYPE_CANONICAL = {
     "bug": "Bug",
     "regression defect": "Regression Defect",
@@ -40,9 +62,19 @@ JIRA_TYPE_CANONICAL = {
     "performance defect": "Performance Defect",
     "security defect": "Security Defect",
 }
+for _role_cfg in (JIRA_CFG.get("issue_types") or {}).values():
+    _name = (_role_cfg or {}).get("name")
+    if _name:
+        JIRA_TYPE_CANONICAL[_name.strip().lower()] = _name
 
-# Types that use the Feature/Epic-name custom field (customfield_10011).
-NAMED_PARENT_TYPES = {"Feature", "Epic"}
+# Types that use the top-level-name custom field (e.g. Feature/Epic Name).
+# Derived from profile issue_types roles "top_level" and "epic", falling back
+# to the common Jira defaults if unconfigured.
+_ISSUE_TYPES = JIRA_CFG.get("issue_types") or {}
+NAMED_PARENT_TYPES = {
+    (_ISSUE_TYPES.get("top_level") or {}).get("name") or "Feature",
+    (_ISSUE_TYPES.get("epic") or {}).get("name") or "Epic",
+}
 
 
 def normalize_type(raw):
@@ -141,22 +173,22 @@ def build_claude_prompt(draft):
     if draft.get("priority"):
         additional_fields["priority"] = {"name": draft["priority"]}
 
-    if draft.get("release_notes"):
-        additional_fields["customfield_10499"] = {"value": draft["release_notes"]}
+    if draft.get("release_notes") and CUSTOM_FIELDS.get("release_notes"):
+        additional_fields[CUSTOM_FIELDS["release_notes"]] = {"value": draft["release_notes"]}
 
-    # Feature / Epic — use customfield_10011 for the short name.
+    # Feature / Epic — use the discovered top-level-name custom field.
     if issue_type in NAMED_PARENT_TYPES:
         name = draft.get("feature_name") or draft.get("epic_name")
-        if name:
-            additional_fields["customfield_10011"] = name
-        if draft.get("gtm_date"):
-            additional_fields["customfield_10300"] = draft["gtm_date"]
-        if draft.get("ea_date"):
-            additional_fields["customfield_10683"] = draft["ea_date"]
-        if draft.get("spec_reference"):
-            additional_fields["customfield_10783"] = draft["spec_reference"]
-        if draft.get("client_commitment"):
-            additional_fields["customfield_10298"] = [draft["client_commitment"]]
+        if name and CUSTOM_FIELDS.get("top_level_name"):
+            additional_fields[CUSTOM_FIELDS["top_level_name"]] = name
+        if draft.get("gtm_date") and CUSTOM_FIELDS.get("target_date"):
+            additional_fields[CUSTOM_FIELDS["target_date"]] = draft["gtm_date"]
+        if draft.get("ea_date") and CUSTOM_FIELDS.get("early_access_date"):
+            additional_fields[CUSTOM_FIELDS["early_access_date"]] = draft["ea_date"]
+        if draft.get("spec_reference") and CUSTOM_FIELDS.get("spec_reference"):
+            additional_fields[CUSTOM_FIELDS["spec_reference"]] = draft["spec_reference"]
+        if draft.get("client_commitment") and CUSTOM_FIELDS.get("commitment"):
+            additional_fields[CUSTOM_FIELDS["commitment"]] = [draft["client_commitment"]]
 
     # Parent link — typically for Unit → Feature/Epic. Jira accepts a top-level
     # `parent` key in additional_fields.
@@ -164,7 +196,8 @@ def build_claude_prompt(draft):
     if parent_key:
         additional_fields["parent"] = {"key": parent_key}
 
-    # Assignee — Features default to Jay Jenkins unless the draft overrides.
+    # Assignee — top-level types default to the profile-configured default
+    # assignee unless the draft overrides.
     assignee_id = (draft.get("assignee") or "").strip()
     if issue_type in NAMED_PARENT_TYPES:
         additional_fields["assignee"] = {"accountId": assignee_id or JIRA_DEFAULT_ASSIGNEE}
@@ -191,7 +224,7 @@ Call mcp__claude_ai_Jira__createJiraIssue with:
 After the tool returns, output EXACTLY one line in this format:
 JIRA_RESULT:ISSUE_KEY|ISSUE_URL
 
-For example: JIRA_RESULT:VNT-1234|https://vantaca.atlassian.net/browse/VNT-1234
+For example: JIRA_RESULT:{JIRA_PROJECT_KEY}-1234|https://{JIRA_CLOUD_ID}/browse/{JIRA_PROJECT_KEY}-1234
 
 If the tool fails, output: JIRA_ERROR:description of what went wrong
 
@@ -249,10 +282,10 @@ def publish_to_jira(draft):
         raise RuntimeError(f"Jira creation failed: {err_match.group(1).strip()}")
 
     # Try to find issue key in output (fallback)
-    key_match = re.search(r"(VNT-\d+)", output)
-    url_match = re.search(r"(https://vantaca\.atlassian\.net/browse/VNT-\d+)", output)
+    key_match = re.search(rf"({re.escape(JIRA_PROJECT_KEY)}-\d+)", output)
+    url_match = re.search(rf"(https://{re.escape(JIRA_CLOUD_ID)}/browse/{re.escape(JIRA_PROJECT_KEY)}-\d+)", output)
     if key_match:
-        url = url_match.group(1) if url_match else f"https://vantaca.atlassian.net/browse/{key_match.group(1)}"
+        url = url_match.group(1) if url_match else f"https://{JIRA_CLOUD_ID}/browse/{key_match.group(1)}"
         return key_match.group(1), url
 
     raise RuntimeError(f"Could not parse Jira result from Claude output. Exit code: {result.returncode}. Output: {output[:500]}")
@@ -333,7 +366,7 @@ def main():
         print(f"  EA Date:     {draft['ea_date'] or '(none)'}")
         print(f"  Spec Ref:    {draft['spec_reference'] or '(none)'}")
         print(f"  Commitment:  {draft['client_commitment'] or '(none)'}")
-        assignee_display = draft.get("assignee") or JIRA_DEFAULT_ASSIGNEE + " (default: Jay Jenkins)"
+        assignee_display = draft.get("assignee") or (JIRA_DEFAULT_ASSIGNEE + " (profile default)" if JIRA_DEFAULT_ASSIGNEE else "(none)")
         print(f"  Assignee:    {assignee_display}")
     print(f"  Description: {draft['description'][:200]}...")
 

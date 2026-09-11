@@ -392,7 +392,7 @@ When MCP data sources are connected, map dashboard metrics to actual data source
 
 ### Map Metrics to Pendo Entities
 
-For each proposed dashboard metric, use `mcp__claude_ai_Pendo__searchEntities` (subId: `4818486697721856`, appId for relevant app, itemType: ["Feature", "Page", "Guide"], search: "{metric_behavior}", search_fallback: ["{metric_keyword}"]) to:
+For each proposed dashboard metric, use `mcp__claude_ai_Pendo__searchEntities` (subId: from profile (`profile_lib.py --pendo-subid`), appId for relevant app, itemType: ["Feature", "Page", "Guide"], search: "{metric_behavior}", search_fallback: ["{metric_keyword}"]) to:
 - Find the Pendo entity that corresponds to each metric
 - Record the entity ID for dashboard implementation
 - Flag metrics that have no Pendo instrumentation as requiring setup
@@ -400,11 +400,11 @@ For each proposed dashboard metric, use `mcp__claude_ai_Pendo__searchEntities` (
 ### Zendesk Health Metrics
 
 Suggest including support-derived metrics in the dashboard:
-- **Ticket volume trend**: From `is_prod.zendesk_zendesk.zendesk__ticket_summary` or daily aggregation of `is_prod.zendesk.ticket`
-- **CSAT score trend**: From `is_prod.zendesk.satisfaction_rating` with monthly aggregation
-- **Resolution time**: From `is_prod.zendesk_zendesk.zendesk__ticket_metrics` (first reply time, resolution time)
-- **Open ticket backlog**: From `is_prod.zendesk_zendesk.zendesk__ticket_backlog`
-- **Escalation rate**: From `is_prod.zendesk.ticket` WHERE `custom_escalated_client = true`
+- **Ticket volume trend**: From `{catalog}.zendesk_zendesk.zendesk__ticket_summary` or daily aggregation of `{catalog}.zendesk.ticket`
+- **CSAT score trend**: From `{catalog}.zendesk.satisfaction_rating` with monthly aggregation
+- **Resolution time**: From `{catalog}.zendesk_zendesk.zendesk__ticket_metrics` (first reply time, resolution time)
+- **Open ticket backlog**: From `{catalog}.zendesk_zendesk.zendesk__ticket_backlog`
+- **Escalation rate**: From `{catalog}.zendesk.ticket` WHERE `custom_escalated_client = true`
 
 ### Data Source Mapping Table
 

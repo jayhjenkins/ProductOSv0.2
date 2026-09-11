@@ -41,13 +41,13 @@ Wait for response before proceeding.
 
 **Opening folder name:** `{slug}_{YYYY-MM-DD}` using today's date
 
-**Full path:** `~/pm-os/datasets/recruiting/{slug}_{YYYY-MM-DD}/`
+**Full path:** `datasets/recruiting/{slug}_{YYYY-MM-DD}/`
 
 ### 3. Create Folder Structure
 
 Create:
-- `~/pm-os/datasets/recruiting/{slug}_{YYYY-MM-DD}/`
-- `~/pm-os/datasets/recruiting/{slug}_{YYYY-MM-DD}/candidates/`
+- `datasets/recruiting/{slug}_{YYYY-MM-DD}/`
+- `datasets/recruiting/{slug}_{YYYY-MM-DD}/candidates/`
 
 ### 4. Create Blank job-description.md
 
@@ -93,10 +93,10 @@ Report the paths created:
 
 ```
 Opening created:
-  ~/pm-os/datasets/recruiting/{slug}_{YYYY-MM-DD}/
-  ~/pm-os/datasets/recruiting/{slug}_{YYYY-MM-DD}/candidates/
-  ~/pm-os/datasets/recruiting/{slug}_{YYYY-MM-DD}/job-description.md
-  ~/pm-os/datasets/recruiting/{slug}_{YYYY-MM-DD}/stackrank.md
+  datasets/recruiting/{slug}_{YYYY-MM-DD}/
+  datasets/recruiting/{slug}_{YYYY-MM-DD}/candidates/
+  datasets/recruiting/{slug}_{YYYY-MM-DD}/job-description.md
+  datasets/recruiting/{slug}_{YYYY-MM-DD}/stackrank.md
 
 Next step: Paste the full job description into job-description.md
 ```

@@ -7,7 +7,7 @@ description: Find available meeting times via Microsoft 365 MCP and write struct
 
 ## Purpose
 
-Automate the scheduling legwork: find mutually available times for meeting attendees using the Microsoft 365 MCP, format them as selectable options in the task, and let Jay pick one in the web UI.
+Automate the scheduling legwork: find mutually available times for meeting attendees using the Microsoft 365 MCP, format them as selectable options in the task, and let the operator pick one in the web UI.
 
 ## When to Use
 
@@ -16,15 +16,15 @@ Automate the scheduling legwork: find mutually available times for meeting atten
 
 ## Core Rule (MANDATORY)
 
-You ALWAYS deliver 3–4 selectable slots and end with `agent:complete`. The web UI renders a slot picker — Jay's interaction is clicking, not answering questions.
+You ALWAYS deliver 3–4 selectable slots and end with `agent:complete`. The web UI renders a slot picker — the operator's interaction is clicking, not answering questions.
 
 Never use `agent:ask` to:
 - Ask which slot is best
 - Ask permission to widen the search
 - Ask whether to propose imperfect options (soft calendar conflicts are fine — note them inline)
-- Ask whether to propose despite missing attendee availability (use the Jay-only fallback in Step 4)
+- Ask whether to propose despite missing attendee availability (use the the operator-only fallback in Step 4)
 
-`agent:ask` is reserved for hard blockers only: unresolvable attendee email, mgc auth failure, or genuinely zero Jay availability across 10 business days.
+`agent:ask` is reserved for hard blockers only: unresolvable attendee email, mgc auth failure, or genuinely zero the operator availability across 10 business days.
 
 ## Workflow
 
@@ -41,7 +41,7 @@ Extract from frontmatter:
 - `meeting_description` — event body text
 - `source_meeting` — transcript that spawned this task (if any)
 
-**Validate `meeting_description` for calendar appropriateness.** The `meeting_description` field becomes the calendar invite body that all attendees see. If it is empty, reads like internal task notes (e.g., "Jay mentioned wanting to..." or "At end of catch-up, Zach suggested..."), or describes how the task was created rather than what the meeting is *for*, rewrite it:
+**Validate `meeting_description` for calendar appropriateness.** The `meeting_description` field becomes the calendar invite body that all attendees see. If it is empty, reads like internal task notes (e.g., "the operator mentioned wanting to..." or "At end of catch-up, someone suggested..."), or describes how the task was created rather than what the meeting is *for*, rewrite it:
 
 1. Derive the meeting's purpose from the task title, task description, and source meeting transcript (if available)
 2. Write 1-2 concise sentences describing what the meeting is about from the attendees' perspective
@@ -50,9 +50,9 @@ Extract from frontmatter:
 Examples of rewrites:
 | Original | Rewritten |
 |---|---|
-| *(empty)* | "Biweekly sync to review Home product roadmap progress and discuss blockers" |
-| "During standup Jay said he'd set up time with Brandon to align on HOAi rollout" | "Align on HOAi rollout plan, timeline, and next steps" |
-| "Zach suggested standardizing a recurring touch base to stay aligned on Pay" | "Recurring sync to stay aligned on Pay priorities and surface blockers early" |
+| *(empty)* | "Biweekly sync to review product roadmap progress and discuss blockers" |
+| "During standup the operator said they'd set up time to align on the mobile rollout" | "Align on mobile rollout plan, timeline, and next steps" |
+| "A teammate suggested standardizing a recurring touch base to stay aligned on billing" | "Recurring sync to stay aligned on billing priorities and surface blockers early" |
 
 ### 2. Gather Time Preferences (Optional)
 
@@ -70,7 +70,7 @@ If any attendee entry looks like a name (no `@`), attempt to resolve it in this 
 1. **Check the source transcript** — if `source_meeting` exists, read it and look for the `participant_emails:` frontmatter field. This maps participant names to corporate emails (resolved at ingest via Microsoft Graph). Match attendee names against this mapping.
 2. **Check the email cache** — read `datasets/people/email_cache.json` which accumulates all resolved name→email mappings across transcripts.
 3. **Search Outlook** — use MCP tool `outlook_email_search` to search your mailbox for messages from/to that person's name and extract their email from the results.
-4. **If all fail** — use `agent:ask` to request the email from Jay:
+4. **If all fail** — use `agent:ask` to request the email from the operator:
    ```bash
    ./scripts/task.sh agent:ask {TASK_ID} "I need the email address for {name}. Who should I invite?"
    ```
@@ -101,9 +101,9 @@ If the result has zero slots (`"slots": []`) OR `empty_reason` indicates `Attend
 
 1. **Expand once.** Add 5 more business days via `--start`/`--end` and retry. If that returns slots, use them.
 
-2. **Jay-only fallback.** If still zero/unknown, propose 4 slots from Jay's preferred ad hoc windows (Tue/Thu afternoons, Mon 2:00–4:00 PM ET) that do not conflict with Jay's calendar. Run `find_meeting_times.py` with `--attendees "<jay's email only>"` to confirm Jay is free, then format those as the suggested times. In the display line for each slot, append `(attendee calendar not visible — they'll RSVP)` instead of the normal `(all attendees free)` parenthetical.
+2. **the operator-only fallback.** If still zero/unknown, propose 4 slots from the operator's preferred ad hoc windows (Tue/Thu afternoons, Mon 2:00–4:00 PM ET) that do not conflict with the operator's calendar. Run `find_meeting_times.py` with `--attendees "<jay's email only>"` to confirm the operator is free, then format those as the suggested times. In the display line for each slot, append `(attendee calendar not visible — they'll RSVP)` instead of the normal `(all attendees free)` parenthetical.
 
-3. **Hard block only.** Only call `agent:ask` if Jay himself has zero availability across the next 10 business days — that is a real scheduling failure. Do NOT ask whether to widen, whether to propose anyway, or which option is best.
+3. **Hard block only.** Only call `agent:ask` if the operator himself has zero availability across the next 10 business days — that is a real scheduling failure. Do NOT ask whether to widen, whether to propose anyway, or which option is best.
 
 **Do NOT use MCP tools for availability lookup** — the headless dispatch environment does not have MCP access. Always use the `find_meeting_times.py` script.
 
@@ -111,7 +111,7 @@ If the result has zero slots (`"slots": []`) OR `empty_reason` indicates `Attend
 
 Write a `## Suggested Times` section into the task description. Each slot MUST include an HTML comment with machine-parseable data followed by a human-readable line.
 
-**For each slot, cross-reference the ET time against Jay's Calendar Structure Reference (below) and append a short contextual note** after the availability info. The note should help Jay evaluate soft tradeoffs at a glance. Keep each note to 1 short sentence max.
+**For each slot, cross-reference the ET time against the operator's Calendar Structure Reference (below) and append a short contextual note** after the availability info. The note should help the operator evaluate soft tradeoffs at a glance. Keep each note to 1 short sentence max.
 
 Context notes should cover whichever of these is most relevant to that slot:
 - Whether it falls in a designated block (1:1 block, focus time, etc.)
@@ -160,45 +160,38 @@ Also update the description body to include the `## Suggested Times` section. Us
 ./scripts/task.sh agent:complete {TASK_ID}
 ```
 
-The task stays in the `collab` queue with `agent_status: complete` for Jay to review and select a time slot in the web UI.
+The task stays in the `collab` queue with `agent_status: complete` for the operator to review and select a time slot in the web UI.
 
-## Jay's Calendar Structure Reference
+## The Operator's Calendar Structure Reference
 
-Use this reference when annotating suggested time slots in Step 5.
+Use this reference when annotating suggested time slots in Step 5. **This section is a
+placeholder template** — it's personal scheduling nuance, so per this system's own convention
+(never bake person-specific nuance into a shared skill), replace it with your own real patterns
+before relying on it. The shape below shows what's worth capturing; the specifics are illustrative
+only.
 
 ### Work Hours & Hard Constraints
-- **Work hours:** 9:00 AM - 5:00 PM ET, Monday-Friday
-- **Hard start:** 9:30 AM (school drop-off buffer before 9:30)
-- **Hard end:** 5:00 PM
-- **Lunch Hold:** Noon-1:00 PM daily
-- **School pickup windows:** 11:45 AM-12:15 PM (early) or 12:45-1:15 PM (standard) — variable days, avoid 11:45 AM-1:15 PM when uncertain
+- **Work hours:** e.g. 9:00 AM - 5:00 PM ET, Monday-Friday
+- **Hard start / end:** any buffer before/after standard hours you protect
+- **Lunch hold:** e.g. Noon-1:00 PM daily
+- **Other recurring personal constraints:** any other daily windows that are consistently unavailable
 
 ### Daily Anchors (Every Day)
-- 9:00-9:30 AM — School drop-off buffer (no meetings)
-- 10:00-10:30 AM — Home Standup (tentative)
-- 10:30-11:00 AM — Pay Standup (tentative)
-- 2:00-2:25 PM — HOAi Voice Sync (optional daily standup)
+- List any daily recurring standups/syncs that should never be double-booked, with their time and whether they're tentative or hard.
 
 ### Focus Time Blocks (Hard-Protected)
-- **Monday 11:00 AM-Noon** — Focus Time
-- **Wednesday 9:30 AM-Noon** — Extended Focus Time (most protected block of the week)
-- **Friday 9:30 AM-Noon** — Focus Time
-- **Friday 2:00-5:00 PM** — Protected (no new meetings unless urgent)
+- List the blocks you protect for deep work, by day and time, noting which are most protected.
 
 ### Day Characters
-- **Monday** — Leadership & Strategy. Key meetings: Weekly Prep (9:30), RE Product Collab (1 PM), Product Leadership Connect (2:30), AI-DLC/CMP L10 (3 PM bi-weekly), Haoyu 1:1 (4 PM bi-weekly). 3rd Monday: exec-facing monthly reviews.
-- **Tuesday** — Team Operations (heaviest day). Morning packed: Dave RE Q&A + Payments L10 (9 AM), Release Planning (10), Pay Triage (11 bi-weekly). Afternoons lighter but use sparingly.
-- **Wednesday** — Deep Work & Home L10. Morning fully protected (focus). Afternoon: RE/Portal Refinement (1 PM), Home L10 (2:30-4), L10 Follow-Ups (4:30-5:30).
-- **Thursday** — People & Product Rhythm. CS Standup (9:30), Product L10 (10 bi-weekly), Sprint Demo (11 bi-weekly). **1:1 Block: 1:00-3:00 PM** (designated home for all recurring 1:1s). Trisha 1:1 (4 PM bi-weekly).
-- **Friday** — Light & Reset. Focus until noon. One recurring check-in (1:30 PM). Afternoon protected.
+- For each weekday, a one-line summary of that day's typical rhythm and its key recurring meetings — useful context for the model when suggesting or avoiding times.
 
 ### 1:1 Scheduling Policy
-- **Recurring 1:1s** must go in the **Thursday 1:00-3:00 PM block** (exceptions: Haoyu Mon 4 PM, Trisha Thu 4 PM — already established)
-- **Ad hoc / one-off 1:1s** are flexible — prefer Tuesday or Thursday afternoons, or Monday mid-afternoon. Avoid Wednesday mornings and Friday afternoons.
+- Where recurring 1:1s live by default, and any established exceptions.
+- Guidance for ad hoc/one-off 1:1s: which days/times you generally prefer, and which to avoid.
 
 ### Preferred Scheduling Slots (for ad hoc meetings)
-- **Best:** Tuesday afternoon, Thursday afternoon (outside 1:1 block), Monday 2:00-4:00 PM
-- **Avoid:** Wednesday before noon, Friday after 2 PM, any Focus Time block
+- **Best:** the day/time windows you'd default to when proposing ad hoc meeting slots
+- **Avoid:** the day/time windows to steer away from (focus blocks, low-energy periods, etc.)
 
 ## Error Handling
 
@@ -206,9 +199,9 @@ Use this reference when annotating suggested time slots in Step 5.
 |-------|--------|
 | `mgc` not found | `agent:fail` with install instructions |
 | mgc auth expired | `agent:fail` — "Run `mgc login --scopes 'Calendars.ReadWrite User.Read.All'`" |
-| No attendee emails resolvable | `agent:ask` Jay for email addresses |
-| Zero availability found | Expand range once, then fall through to Jay-only fallback (Step 4). Do not ask. |
-| `AttendeesUnavailableOrUnknown` | Same — propose against Jay's calendar, tag each slot "(attendee calendar not visible — they'll RSVP)". |
+| No attendee emails resolvable | `agent:ask` the operator for email addresses |
+| Zero availability found | Expand range once, then fall through to the operator-only fallback (Step 4). Do not ask. |
+| `AttendeesUnavailableOrUnknown` | Same — propose against the operator's calendar, tag each slot "(attendee calendar not visible — they'll RSVP)". |
 | All slots have soft conflicts | Propose them anyway with conflict notes inline. Do not ask "want to widen?". |
 
 ## Success Criteria

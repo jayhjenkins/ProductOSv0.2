@@ -133,12 +133,12 @@ def get_classify_system():
         return CLASSIFY_SYSTEM
     except ImportError:
         return (
-            "You are classifying meeting transcripts for a Director of Product at a B2B SaaS company "
-            "(Vantaca — property management software). Respond with ONLY the domain path, nothing else.\n\n"
-            "Domains:\n"
+            "You are classifying meeting transcripts for a Director of Product at a B2B SaaS company. "
+            "Respond with ONLY the domain path, nothing else.\n\n"
+            "Domains (customize the product/* areas below to your own team's product lines):\n"
             "- recruiting           (PM candidate interviews, hiring discussions)\n"
-            "- product/payments     (payments product meetings, Pay Standup, Payments L10)\n"
-            "- product/home         (home product feature work, home team meetings)\n"
+            "- product/area-a       (e.g. your payments/billing product meetings, standups, L10s)\n"
+            "- product/area-b       (e.g. your core product's feature work, team meetings)\n"
             "- product/platform     (platform, API, AI, technical infrastructure)\n"
             "- leadership           (1:1s with anyone, exec intros, cross-functional syncs, team standups)\n"
             "- strategy             (roadmap, quarterly planning, vendor strategy, partner intros)\n"
@@ -148,21 +148,22 @@ def get_classify_system():
 
 
 def keyword_classify(title, filename_hint=""):
-    """Keyword-based fallback classifier (mirrors otter_classify._keyword_classify)."""
+    """Keyword-based fallback classifier (mirrors otter_classify._keyword_classify).
+    Customize the keyword lists below to match your own team's product-area names."""
     t = (title + " " + filename_hint).lower()
     if any(w in t for w in ("interview", "hiring", "candidate")):
         return "recruiting"
     if any(w in t for w in ("l10", "standup", "stand-up")):
-        if any(w in t for w in ("pay", "payment", "payments")):
-            return "product/payments"
+        if any(w in t for w in ("area-a-keyword",)):
+            return "product/area-a"
         return "leadership"
     if "1:1" in t or "1-1" in t or "one on one" in t:
         return "leadership"
-    if any(w in t for w in ("payments", "payment", "pay standup", "pay release")):
-        return "product/payments"
-    if "home" in t and "product" not in t:
-        return "product/home"
-    if any(w in t for w in ("platform", "apollo", "api", "infrastructure")):
+    if any(w in t for w in ("area-a-keyword",)):
+        return "product/area-a"
+    if any(w in t for w in ("area-b-keyword",)) and "product" not in t:
+        return "product/area-b"
+    if any(w in t for w in ("platform", "api", "infrastructure")):
         return "product/platform"
     if any(w in t for w in ("customer", "demo", "prospect", "cs review")):
         return "customer"
